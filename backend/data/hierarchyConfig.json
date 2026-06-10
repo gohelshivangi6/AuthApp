@@ -1,55 +1,64 @@
 {
+  "presets": {
+    "primary": { "primary": true, "sortable": true, "width": "220px", "sticky": true },
+    "num":     { "sortable": true, "align": "right", "numberFormat": true },
+    "currency":{ "render": "currency", "align": "right", "sortable": true },
+    "pct":     { "render": "percentage", "sortable": true },
+    "badge":   { "render": "badge", "sortable": true },
+    "status":  { "render": "status", "sortable": true },
+    "date":    { "render": "date", "sortable": true }
+  },
   "levels": [
-    { "key": "Zone Head", "icon": "GroupsIcon", "color": "#6366f1", "subtitle": "Regional managers" },
-    { "key": "CSO", "icon": "SupportAgentIcon", "color": "#a855f7", "subtitle": "Chief Sales Officers" },
-    { "key": "ASM", "icon": "PeopleAltIcon", "color": "#10b981", "subtitle": "Area Sales Managers" },
-    { "key": "DB", "icon": "StorefrontIcon", "color": "#f59e0b", "subtitle": "Distributors" },
-    { "key": "Product", "icon": "Inventory2Icon", "color": "#3b82f6", "subtitle": "Product catalog" },
-    { "key": "CKU", "icon": "FactCheckIcon", "color": "#ec4899", "subtitle": "Check units" }
+    ["Zone Head", "GroupsIcon", "#6366f1"],
+    ["CSO", "SupportAgentIcon", "#a855f7"],
+    ["ASM", "PeopleAltIcon", "#10b981"],
+    ["DB", "StorefrontIcon", "#f59e0b"],
+    ["Product", "Inventory2Icon", "#3b82f6"],
+    ["CKU", "FactCheckIcon", "#ec4899"]
   ],
   "columns": {
     "Zone Head": [
-      { "field": "name", "label": "Zone Head", "primary": true, "sortable": true, "width": "220px", "sticky": true },
-      { "field": "zone", "label": "Zone", "sortable": true },
-      { "field": "region", "label": "Region", "sortable": true },
-      { "field": "employees", "label": "Employees", "sortable": true, "align": "right", "numberFormat": true },
-      { "field": "performance", "label": "Performance", "render": "percentage", "percentageOf": "target", "achievedOf": "achieved", "sortable": true },
-      { "field": "target", "label": "Target", "render": "currency", "align": "right", "sortable": true },
-      { "field": "achieved", "label": "Achieved", "render": "currency", "align": "right", "sortable": true }
+      ["name", "Zone Head", "$primary"],
+      ["zone", "Zone"],
+      ["region", "Region"],
+      ["employees", "Employees", "$num"],
+      ["performance", "Performance", "$pct", { "pctOf": "target", "achOf": "achieved" }],
+      ["target", "Target", "$currency"],
+      ["achieved", "Achieved", "$currency"]
     ],
     "CSO": [
-      { "field": "name", "label": "CSO Name", "primary": true, "sortable": true, "width": "220px", "sticky": true },
-      { "field": "territory", "label": "Territory", "sortable": true },
-      { "field": "stores", "label": "Stores", "sortable": true, "align": "right", "numberFormat": true },
-      { "field": "asmCount", "label": "ASMs", "sortable": true, "align": "right" },
-      { "field": "target", "label": "Target", "render": "currency", "align": "right", "sortable": true },
-      { "field": "achieved", "label": "Achieved", "render": "currency", "align": "right", "sortable": true }
+      ["name", "CSO Name", "$primary"],
+      ["territory", "Territory"],
+      ["stores", "Stores", "$num"],
+      ["asmCount", "ASMs", "$num"],
+      ["target", "Target", "$currency"],
+      ["achieved", "Achieved", "$currency"]
     ],
     "ASM": [
-      { "field": "name", "label": "ASM Name", "primary": true, "sortable": true, "width": "220px", "sticky": true },
-      { "field": "area", "label": "Area", "sortable": true },
-      { "field": "distributors", "label": "Distributors", "sortable": true, "align": "right" },
-      { "field": "target", "label": "Target", "render": "currency", "align": "right", "sortable": true },
-      { "field": "achieved", "label": "Achieved", "render": "currency", "align": "right", "sortable": true }
+      ["name", "ASM Name", "$primary"],
+      ["area", "Area"],
+      ["distributors", "Distributors", "$num"],
+      ["target", "Target", "$currency"],
+      ["achieved", "Achieved", "$currency"]
     ],
     "DB": [
-      { "field": "name", "label": "Distributor", "primary": true, "sortable": true, "width": "220px", "sticky": true },
-      { "field": "location", "label": "Location", "sortable": true },
-      { "field": "creditRating", "label": "Credit", "render": "badge", "sortable": true },
-      { "field": "outstanding", "label": "Outstanding", "render": "currency", "align": "right", "sortable": true }
+      ["name", "Distributor", "$primary"],
+      ["location", "Location"],
+      ["creditRating", "Credit", "$badge"],
+      ["outstanding", "Outstanding", "$currency"]
     ],
     "Product": [
-      { "field": "name", "label": "Product", "primary": true, "sortable": true, "width": "220px", "sticky": true },
-      { "field": "category", "label": "Category", "sortable": true },
-      { "field": "sku", "label": "SKU", "sortable": true },
-      { "field": "stock", "label": "Stock", "align": "right", "numberFormat": true, "sortable": true, "render": "progress", "progressMax": 1000 },
-      { "field": "sales", "label": "Sales", "render": "currency", "align": "right", "sortable": true }
+      ["name", "Product", "$primary"],
+      ["category", "Category"],
+      ["sku", "SKU"],
+      ["stock", "Stock", "$num", { "render": "progress", "progressMax": 1000 }],
+      ["sales", "Sales", "$currency"]
     ],
     "CKU": [
-      { "field": "name", "label": "CKU ID", "primary": true, "sortable": true, "width": "220px", "sticky": true },
-      { "field": "status", "label": "Status", "render": "status", "sortable": true },
-      { "field": "lastChecked", "label": "Last Checked", "render": "date", "sortable": true },
-      { "field": "notes", "label": "Notes" }
+      ["name", "CKU ID", "$primary"],
+      ["status", "Status", "$status"],
+      ["lastChecked", "Last Checked", "$date"],
+      ["notes", "Notes"]
     ]
   },
   "table": {
@@ -57,16 +66,12 @@
     "searchFields": ["name", "zone", "region", "territory", "area", "location", "category", "sku", "status"],
     "pageSize": 10,
     "emptyMessage": "No records found at this level.",
-    "rootLabel": "All Zones",
-    "dense": false,
     "striped": true,
     "exportable": ["csv"],
     "printable": true,
-    "maxDepth": 6,
-    "rowClick": "drill",
     "hoverColor": "rgba(99, 102, 241, 0.06)",
     "currency": {
-      "symbol": "$",
+      "symbol": "₹",
       "units": [
         { "threshold": 10000000, "suffix": "Cr" },
         { "threshold": 100000, "suffix": "L" },

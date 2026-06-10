@@ -1,212 +1,31 @@
 [
-  {
-    "id": "zh-001",
-    "name": "Rakesh Wadhava",
-    "zone": "North Zone",
-    "region": "Delhi NCR",
-    "employees": 45,
-    "performance": "96",
-    "target": 2500000,
-    "achieved": 2400000,
-    "annotation": "Top performer",
-    "avatar": null,
-    "children": [
-      {
-        "id": "cso-001",
-        "name": "Amit Sharma",
-        "territory": "Delhi Central",
-        "stores": 12,
-        "asmCount": 3,
-        "target": 450000,
-        "achieved": 423000,
-        "children": [
-          {
-            "id": "asm-001",
-            "name": "Vikram Singh",
-            "area": "Connaught Place",
-            "distributors": 5,
-            "target": 180000,
-            "achieved": 171000,
-            "children": [
-              {
-                "id": "db-001",
-                "name": "Delhi Distributors",
-                "location": "Connaught Place",
-                "creditRating": "A+",
-                "outstanding": 230000,
-                "children": [
-                  {
-                    "id": "prod-001",
-                    "name": "Premium Widget Pro",
-                    "category": "Electronics",
-                    "sku": "PWP-001",
-                    "stock": 450,
-                    "sales": 1250000,
-                    "children": [
-                      { "id": "cku-001", "name": "CKU-ALPHA", "status": "Active", "lastChecked": "2026-06-01", "notes": "All clear" },
-                      { "id": "cku-002", "name": "CKU-BETA", "status": "Active", "lastChecked": "2026-05-28", "notes": "Routine check" }
-                    ]
-                  },
-                  {
-                    "id": "prod-002",
-                    "name": "Gadget X200",
-                    "category": "Accessories",
-                    "sku": "GX-200",
-                    "stock": 230,
-                    "sales": 820000,
-                    "children": [
-                      { "id": "cku-003", "name": "CKU-GAMMA", "status": "Maintenance", "lastChecked": "2026-05-15", "notes": "Pending update" }
-                    ]
-                  }
-                ]
-              },
-              {
-                "id": "db-002",
-                "name": "New Delhi Traders",
-                "location": "Karol Bagh",
-                "creditRating": "A",
-                "outstanding": 180000,
-                "children": [
-                  {
-                    "id": "prod-003",
-                    "name": "Smart Home Hub",
-                    "category": "IoT",
-                    "sku": "SHH-042",
-                    "stock": 180,
-                    "sales": 670000,
-                    "children": [
-                      { "id": "cku-004", "name": "CKU-DELTA", "status": "Active", "lastChecked": "2026-06-02", "notes": "Verified" }
-                    ]
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "id": "asm-002",
-            "name": "Rajesh Kumar",
-            "area": "Karol Bagh",
-            "distributors": 3,
-            "target": 140000,
-            "achieved": 132000,
-            "children": [
-              {
-                "id": "db-003",
-                "name": "Karol Bagh Wholesale",
-                "location": "Karol Bagh",
-                "creditRating": "B+",
-                "outstanding": 120000,
-                "children": [
-                  {
-                    "id": "prod-004",
-                    "name": "Basic Utility Kit",
-                    "category": "Household",
-                    "sku": "BUK-010",
-                    "stock": 600,
-                    "sales": 310000,
-                    "children": []
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "id": "cso-002",
-        "name": "Priya Patel",
-        "territory": "Noida",
-        "stores": 8,
-        "asmCount": 2,
-        "target": 320000,
-        "achieved": 308000,
-        "children": [
-          {
-            "id": "asm-003",
-            "name": "Sunil Verma",
-            "area": "Sector 62",
-            "distributors": 4,
-            "target": 120000,
-            "achieved": 115000,
-            "children": [
-              {
-                "id": "db-004",
-                "name": "Noida Supply Chain",
-                "location": "Sector 62",
-                "creditRating": "A+",
-                "outstanding": 150000,
-                "children": []
-              }
-            ]
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "id": "zh-002",
-    "name": "Suresh Mehta",
-    "zone": "East Zone",
-    "region": "Kolkata",
-    "employees": 38,
-    "performance": "91",
-    "target": 2000000,
-    "achieved": 1820000,
-    "children": [
-      {
-        "id": "cso-003",
-        "name": "Rohit Bose",
-        "territory": "Kolkata South",
-        "stores": 10,
-        "asmCount": 2,
-        "target": 380000,
-        "achieved": 352000,
-        "children": [
-          {
-            "id": "asm-004",
-            "name": "Arun Das",
-            "area": "Park Street",
-            "distributors": 4,
-            "target": 150000,
-            "achieved": 141000,
-            "disabled": false,
-            "children": []
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "id": "zh-003",
-    "name": "Ananya Gupta",
-    "zone": "West Zone",
-    "region": "Mumbai",
-    "employees": 52,
-    "performance": "98",
-    "target": 3000000,
-    "achieved": 2940000,
-    "annotation": "Best zone Q1",
-    "children": [
-      {
-        "id": "cso-004",
-        "name": "Neha Shah",
-        "territory": "Mumbai South",
-        "stores": 15,
-        "asmCount": 4,
-        "target": 550000,
-        "achieved": 538000,
-        "children": [
-          {
-            "id": "asm-005",
-            "name": "Karan Joshi",
-            "area": "Bandra",
-            "distributors": 6,
-            "target": 220000,
-            "achieved": 216000,
-            "children": []
-          }
-        ]
-      }
-    ]
-  }
+  { "id": "zh-001", "name": "Rakesh Wadhava", "level": "Zone Head", "parentId": null, "zone": "North Zone", "region": "Delhi NCR", "employees": 45, "performance": "96", "target": 2500000, "achieved": 2400000, "annotation": "Top performer" },
+  { "id": "zh-002", "name": "Suresh Mehta", "level": "Zone Head", "parentId": null, "zone": "East Zone", "region": "Kolkata", "employees": 38, "performance": "91", "target": 2000000, "achieved": 1820000 },
+  { "id": "zh-003", "name": "Ananya Gupta", "level": "Zone Head", "parentId": null, "zone": "West Zone", "region": "Mumbai", "employees": 52, "performance": "98", "target": 3000000, "achieved": 2940000, "annotation": "Best zone Q1" },
+
+  { "id": "cso-001", "name": "Amit Sharma", "level": "CSO", "parentId": "zh-001", "territory": "Delhi Central", "stores": 12, "asmCount": 3, "target": 450000, "achieved": 423000 },
+  { "id": "cso-002", "name": "Priya Patel", "level": "CSO", "parentId": "zh-001", "territory": "Noida", "stores": 8, "asmCount": 2, "target": 320000, "achieved": 308000 },
+  { "id": "cso-003", "name": "Rohit Bose", "level": "CSO", "parentId": "zh-002", "territory": "Kolkata South", "stores": 10, "asmCount": 2, "target": 380000, "achieved": 352000 },
+  { "id": "cso-004", "name": "Neha Shah", "level": "CSO", "parentId": "zh-003", "territory": "Mumbai South", "stores": 15, "asmCount": 4, "target": 550000, "achieved": 538000 },
+
+  { "id": "asm-001", "name": "Vikram Singh", "level": "ASM", "parentId": "cso-001", "area": "Connaught Place", "distributors": 5, "target": 180000, "achieved": 171000 },
+  { "id": "asm-002", "name": "Rajesh Kumar", "level": "ASM", "parentId": "cso-001", "area": "Karol Bagh", "distributors": 3, "target": 140000, "achieved": 132000 },
+  { "id": "asm-003", "name": "Sunil Verma", "level": "ASM", "parentId": "cso-002", "area": "Sector 62", "distributors": 4, "target": 120000, "achieved": 115000 },
+  { "id": "asm-004", "name": "Arun Das", "level": "ASM", "parentId": "cso-003", "area": "Park Street", "distributors": 4, "target": 150000, "achieved": 141000, "disabled": false },
+  { "id": "asm-005", "name": "Karan Joshi", "level": "ASM", "parentId": "cso-004", "area": "Bandra", "distributors": 6, "target": 220000, "achieved": 216000 },
+
+  { "id": "db-001", "name": "Delhi Distributors", "level": "DB", "parentId": "asm-001", "location": "Connaught Place", "creditRating": "A+", "outstanding": 230000 },
+  { "id": "db-002", "name": "New Delhi Traders", "level": "DB", "parentId": "asm-001", "location": "Karol Bagh", "creditRating": "A", "outstanding": 180000 },
+  { "id": "db-003", "name": "Karol Bagh Wholesale", "level": "DB", "parentId": "asm-002", "location": "Karol Bagh", "creditRating": "B+", "outstanding": 120000 },
+  { "id": "db-004", "name": "Noida Supply Chain", "level": "DB", "parentId": "asm-003", "location": "Sector 62", "creditRating": "A+", "outstanding": 150000 },
+
+  { "id": "prod-001", "name": "Premium Widget Pro", "level": "Product", "parentId": "db-001", "category": "Electronics", "sku": "PWP-001", "stock": 450, "sales": 1250000 },
+  { "id": "prod-002", "name": "Gadget X200", "level": "Product", "parentId": "db-001", "category": "Accessories", "sku": "GX-200", "stock": 230, "sales": 820000 },
+  { "id": "prod-003", "name": "Smart Home Hub", "level": "Product", "parentId": "db-002", "category": "IoT", "sku": "SHH-042", "stock": 180, "sales": 670000 },
+  { "id": "prod-004", "name": "Basic Utility Kit", "level": "Product", "parentId": "db-003", "category": "Household", "sku": "BUK-010", "stock": 600, "sales": 310000 },
+
+  { "id": "cku-001", "name": "CKU-ALPHA", "level": "CKU", "parentId": "prod-001", "status": "Active", "lastChecked": "2026-06-01", "notes": "All clear" },
+  { "id": "cku-002", "name": "CKU-BETA", "level": "CKU", "parentId": "prod-001", "status": "Active", "lastChecked": "2026-05-28", "notes": "Routine check" },
+  { "id": "cku-003", "name": "CKU-GAMMA", "level": "CKU", "parentId": "prod-002", "status": "Maintenance", "lastChecked": "2026-05-15", "notes": "Pending update" },
+  { "id": "cku-004", "name": "CKU-DELTA", "level": "CKU", "parentId": "prod-003", "status": "Active", "lastChecked": "2026-06-02", "notes": "Verified" }
 ]

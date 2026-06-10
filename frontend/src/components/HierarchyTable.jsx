@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import axios from 'axios';
 import {
   Box,
@@ -325,6 +325,39 @@ function exportCSV(data, columns) {
   URL.revokeObjectURL(url);
 }
 
+function parseCompressedConfig(raw) {
+  const presets = raw.presets || {};
+
+  const levels = (raw.levels || []).map((l) => {
+    if (Array.isArray(l)) return { key: l[0], icon: l[1], color: l[2] };
+    return l;
+  });
+
+  const columns = {};
+  for (const [levelKey, cols] of Object.entries(raw.columns || {})) {
+    columns[levelKey] = cols.map((c) => {
+      if (Array.isArray(c)) {
+        const field = c[0];
+        const label = c.length > 1 && typeof c[1] === 'string' ? c[1] : field;
+        let presetName = null;
+        let overrides = {};
+        for (let i = 2; i < c.length; i++) {
+          if (typeof c[i] === 'string' && c[i].startsWith('$')) {
+            presetName = c[i].slice(1);
+          } else if (typeof c[i] === 'object' && c[i] !== null) {
+            overrides = c[i];
+          }
+        }
+        const base = presetName && presets[presetName] ? { ...presets[presetName] } : { sortable: true };
+        return { field, label, ...base, ...overrides };
+      }
+      return c;
+    });
+  }
+
+  return { ...raw, levels, columns };
+}
+
 export default function HierarchyTable() {
   const [path, setPath] = useState([]);
   const [animate, setAnimate] = useState(true);
@@ -342,6 +375,10 @@ export default function HierarchyTable() {
   const [colMenuAnchor, setColMenuAnchor] = useState(null);
   const [levelOrder, setLevelOrder] = useState(null);
   const [levelMenuAnchor, setLevelMenuAnchor] = useState(null);
+  const [dragState, setDragState] = useState({ active: false, dragIdx: null, overIdx: null, y: 0 });
+  const dragStartY = useRef(0);
+  const dragStartIdx = useRef(null);
+  const levelItemRefs = useRef({});
 
   useEffect(() => {
     let cancelled = false;
@@ -361,7 +398,7 @@ export default function HierarchyTable() {
 
         if (isPoll) {
           if (configStr !== prevConfigStr) {
-            setConfig(configRes.data);
+            setConfig(parseCompressedConfig(configRes.data));
             prevConfigStr = configStr;
           }
           if (dataStr !== prevDataStr) {
@@ -369,7 +406,7 @@ export default function HierarchyTable() {
             prevDataStr = dataStr;
           }
         } else {
-          setConfig(configRes.data);
+          setConfig(parseCompressedConfig(configRes.data));
           setRawData(dataRes.data);
           prevConfigStr = configStr;
           prevDataStr = dataStr;
@@ -419,20 +456,56 @@ export default function HierarchyTable() {
 
   const nodeKey = useCallback((item) => item.id || item.name, []);
 
+  const ORIG_ORDER = useMemo(() => {
+    const orderMap = { "Zone Head": 0, "CSO": 1, "ASM": 2, "DB": 3, "Product": 4, "CKU": 5 };
+    return orderMap;
+  }, []);
+
+  const findDescendants = useCallback((item, targetLevel) => {
+    const result = [];
+    const visited = new Set();
+    function search(currentKey, currentOrigIdx) {
+      if (visited.has(currentKey)) return;
+      visited.add(currentKey);
+      const nextOrigIdx = currentOrigIdx + 1;
+      const nextLevelName = Object.keys(ORIG_ORDER).find((k) => ORIG_ORDER[k] === nextOrigIdx);
+      if (!nextLevelName) return;
+      const children = rawData.filter((d) => d.parentId === currentKey && d.level === nextLevelName);
+      for (const child of children) {
+        if (child.level === targetLevel) result.push(child);
+        else search(nodeKey(child), nextOrigIdx);
+      }
+    }
+    search(nodeKey(item), ORIG_ORDER[item.level]);
+    return result;
+  }, [rawData, ORIG_ORDER, nodeKey]);
+
+  const findAncestors = useCallback((item, targetLevel) => {
+    let current = item;
+    while (current && current.level !== targetLevel) {
+      if (!current.parentId) return [];
+      current = rawData.find((d) => d.id === current.parentId);
+    }
+    return current ? [current] : [];
+  }, [rawData]);
+
+  const findRelated = useCallback((item, targetLevel) => {
+    const origItemIdx = ORIG_ORDER[item.level];
+    const origTargetIdx = ORIG_ORDER[targetLevel];
+    if (origTargetIdx > origItemIdx) return findDescendants(item, targetLevel);
+    if (origTargetIdx < origItemIdx) return findAncestors(item, targetLevel);
+    return [];
+  }, [ORIG_ORDER, findDescendants, findAncestors]);
+
   const currentData = useMemo(() => {
     let data;
     if (path.length === 0) {
-      data = rawData;
+      data = rawData.filter((item) => item.level === LEVEL_KEYS[0]);
     } else {
-      data = rawData;
-      for (const pathItem of path) {
-        const key = nodeKey(pathItem);
-        const found = data.find((d) => nodeKey(d) === key);
-        if (found && found.children) {
-          data = found.children;
-        } else {
-          return [];
-        }
+      for (let i = 0; i < path.length; i++) {
+        const nextLevel = LEVEL_KEYS[i + 1];
+        if (!nextLevel) { data = []; break; }
+        data = findRelated(path[i], nextLevel);
       }
     }
 
@@ -460,7 +533,7 @@ export default function HierarchyTable() {
     }
 
     return data;
-  }, [path, rawData, searchQuery, sortField, sortDir, tableConfig, nodeKey]);
+  }, [path, rawData, searchQuery, sortField, sortDir, tableConfig, nodeKey, findRelated, LEVEL_KEYS]);
 
   const paginatedData = useMemo(() => {
     const pageSize = tableConfig.pageSize || 0;
@@ -469,7 +542,12 @@ export default function HierarchyTable() {
     return currentData.slice(start, start + pageSize);
   }, [currentData, page, tableConfig]);
 
-  const hasChildren = (item) => item.children && item.children.length > 0;
+  const hasChildren = (item) => {
+    const idx = LEVEL_KEYS.indexOf(item.level);
+    const nextLevel = LEVEL_KEYS[idx + 1];
+    if (!nextLevel) return false;
+    return findRelated(item, nextLevel).length > 0;
+  };
   const isNodeDisabled = (item) => item.disabled === true;
   const isLevelDrillable = (lvl) => lvl?.drillable !== false;
 
@@ -638,70 +716,114 @@ export default function HierarchyTable() {
               {effectiveLevelOrder.map((key, idx) => {
                 const lvl = configLevels.find((l) => l.key === key);
                 if (!lvl) return null;
-                const isFirst = idx === 0;
-                const isLast = idx === effectiveLevelOrder.length - 1;
+                const { active, dragIdx: dIdx, overIdx: oIdx } = dragState;
+                const isDragged = active && dIdx === idx;
+                const ITEM_H = 44;
+
+                let yShift = 0;
+                if (active && dIdx !== null && oIdx !== null && dIdx !== oIdx) {
+                  if (dIdx < oIdx && idx > dIdx && idx <= oIdx) yShift = -ITEM_H;
+                  else if (dIdx > oIdx && idx < dIdx && idx >= oIdx) yShift = ITEM_H;
+                }
+                const visualY = isDragged ? dragState.y : yShift;
+
                 return (
-                  <MenuItem
+                  <Box
                     key={key}
-                    dense
+                    ref={(el) => { levelItemRefs.current[idx] = el; }}
+                    onPointerDown={(e) => {
+                      if (e.target.closest('button')) return;
+                      e.preventDefault();
+                      e.stopPropagation();
+                      const rect = levelItemRefs.current[idx]?.getBoundingClientRect();
+                      if (!rect) return;
+                      dragStartY.current = e.clientY;
+                      dragStartIdx.current = idx;
+                      setDragState({ active: true, dragIdx: idx, overIdx: idx, y: 0 });
+
+                      const itemHeight = ITEM_H;
+                      const total = effectiveLevelOrder.length;
+                      const onMove = (ev) => {
+                        const dy = ev.clientY - dragStartY.current;
+                        const shift = Math.round(dy / itemHeight);
+                        const newOver = Math.max(0, Math.min(total - 1, dragStartIdx.current + shift));
+                        setDragState((prev) => ({ ...prev, y: dy, overIdx: newOver }));
+                      };
+                      const onUp = () => {
+                        document.removeEventListener('pointermove', onMove);
+                        document.removeEventListener('pointerup', onUp);
+                        setDragState((prev) => {
+                          if (prev.active && prev.dragIdx !== null && prev.overIdx !== null && prev.dragIdx !== prev.overIdx) {
+                            moveLevel(prev.dragIdx, prev.overIdx);
+                          }
+                          return { active: false, dragIdx: null, overIdx: null, y: 0 };
+                        });
+                        document.body.style.userSelect = '';
+                        document.body.style.cursor = '';
+                      };
+                      document.addEventListener('pointermove', onMove);
+                      document.addEventListener('pointerup', onUp);
+                      document.body.style.userSelect = 'none';
+                      document.body.style.cursor = 'grabbing';
+                    }}
                     sx={{
-                      py: 0.5, px: 1,
+                      py: 0, px: 1,
+                      height: ITEM_H,
                       display: 'flex',
                       alignItems: 'center',
                       gap: 0.5,
-                      opacity: idx <= path.length ? 1 : 0.6,
+                      transform: `translateY(${visualY}px) scale(${isDragged ? 1.04 : 1})`,
+                      transition: active
+                        ? (isDragged ? 'transform 0.04s linear, box-shadow 0.2s ease, opacity 0.2s ease' : 'transform 0.25s cubic-bezier(0.2, 0, 0, 1)')
+                        : 'transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                      opacity: isDragged ? 0.5 : 1,
+                      boxShadow: isDragged ? '0 8px 24px rgba(0,0,0,0.4)' : 'none',
+                      background: !isDragged && oIdx === idx ? `${theme.primaryColor}18` : isDragged ? 'rgba(99,102,241,0.08)' : 'transparent',
+                      borderLeft: !isDragged && oIdx === idx ? `2px solid ${theme.primaryColor}` : '2px solid transparent',
+                      cursor: isDragged ? 'grabbing' : 'grab',
+                      position: 'relative',
+                      zIndex: isDragged ? 100 : 1,
+                      borderRadius: '8px',
+                      mx: 0.5,
+                      mb: 0.25,
+                      willChange: 'transform',
                     }}
                   >
+                    <DragIndicatorIcon sx={{ fontSize: 16, color: isDragged ? theme.primaryColor : '#475569', flexShrink: 0, transition: 'color 0.15s' }} />
                     <Box
                       sx={{
-                        width: 22, height: 22, borderRadius: '6px',
+                        width: 24, height: 24, borderRadius: '6px',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        background: `linear-gradient(135deg, ${lvl.color}22, ${lvl.color}11)`,
-                        border: `1px solid ${lvl.color}33`,
+                        background: `linear-gradient(135deg, ${lvl.color}30, ${lvl.color}15)`,
+                        border: `1px solid ${lvl.color}40`,
                         color: lvl.color,
                         flexShrink: 0,
+                        '& svg': { fontSize: 14 },
                       }}
                     >
                       {lvl.icon}
                     </Box>
                     <ListItemText
                       primary={key}
-                      secondary={idx <= path.length ? 'Current' : null}
                       primaryTypographyProps={{
                         sx: {
                           fontFamily: theme.fontFamily,
                           fontSize: '0.85rem',
-                          fontWeight: idx <= path.length ? 600 : 400,
+                          fontWeight: 600,
                           color: '#e2e8f0',
-                        },
-                      }}
-                      secondaryTypographyProps={{
-                        sx: {
-                          fontFamily: theme.fontFamily,
-                          fontSize: '0.6rem',
-                          color: theme.primaryColor,
+                          lineHeight: 1.2,
                         },
                       }}
                     />
-                    <Box display="flex" gap={0}>
-                      <IconButton
-                        size="small"
-                        disabled={isFirst}
-                        onClick={(e) => { e.stopPropagation(); moveLevel(idx, idx - 1); }}
-                        sx={{ color: isFirst ? '#334155' : '#94a3b8', p: 0.3 }}
-                      >
-                        <ArrowUpwardIcon sx={{ fontSize: 14 }} />
-                      </IconButton>
-                      <IconButton
-                        size="small"
-                        disabled={isLast}
-                        onClick={(e) => { e.stopPropagation(); moveLevel(idx, idx + 1); }}
-                        sx={{ color: isLast ? '#334155' : '#94a3b8', p: 0.3 }}
-                      >
-                        <ArrowDownwardIcon sx={{ fontSize: 14 }} />
-                      </IconButton>
-                    </Box>
-                  </MenuItem>
+                    {oIdx === idx && !isDragged && (
+                      <Box sx={{
+                        position: 'absolute', left: -2, top: 0, bottom: 0, width: 2,
+                        background: theme.primaryColor,
+                        borderRadius: '0 2px 2px 0',
+                        boxShadow: `0 0 8px ${theme.primaryColor}80`,
+                      }} />
+                    )}
+                  </Box>
                 );
               })}
               <Box sx={{ px: 2, py: 1, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
@@ -881,7 +1003,7 @@ export default function HierarchyTable() {
               >
                 <Link
                   underline="hover"
-                  onClick={isDrilled ? () => handleBreadcrumbClick(idx + 1) : undefined}
+                  onClick={isDrilled ? () => handleBreadcrumbClick(idx) : undefined}
                   sx={{
                     cursor: isDrilled ? 'pointer' : 'default',
                     color: isActive ? theme.primaryColor : isDrilled ? '#94a3b8' : '#64748b',
@@ -950,7 +1072,7 @@ export default function HierarchyTable() {
             '&:hover': { borderColor: 'rgba(255, 255, 255, 0.1)' },
           }}
         >
-          <Table size={tableConfig.dense ? 'small' : 'medium'}>
+          <Table>
             <TableHead>
               <TableRow>
                 {isSelectable && (

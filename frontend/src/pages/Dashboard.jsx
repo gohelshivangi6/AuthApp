@@ -39,8 +39,6 @@ const Dashboard = () => {
 
   const userr = useSelector((state) => state.auth.user);
 
-  console.log("from dashboard", userr);
-
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
