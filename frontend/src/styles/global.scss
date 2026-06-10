@@ -1,0 +1,148 @@
+@import 'variables.scss';
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: $bg-primary;
+  color: $text-primary;
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+  
+  // Custom scrollbar
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  &::-webkit-scrollbar-track {
+    background: $bg-primary;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: lighten($bg-primary, 15%);
+    border-radius: 4px;
+    &:hover {
+      background: $primary-neon;
+    }
+  }
+}
+
+// Animated mesh gradient background
+.app-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  background: radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
+              radial-gradient(circle at 90% 80%, rgba(168, 85, 247, 0.15) 0%, transparent 40%),
+              radial-gradient(circle at 50% 50%, rgba(18, 18, 38, 0.95) 0%, $bg-primary 100%);
+  background-size: 200% 200%;
+  animation: meshGradient 20s ease infinite;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+// Glassmorphism general panel
+.glass-container {
+  @include glass-panel;
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 480px;
+  margin: 2rem auto;
+  transition: $transition-smooth;
+  
+  &:hover {
+    border-color: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.5);
+  }
+}
+
+// Fade in animations
+.fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Floating animations
+.floating-element {
+  animation: floatParticles 8s ease-in-out infinite;
+}
+
+// Custom MUI form override styles
+.custom-textfield {
+  .MuiOutlinedInput-root {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: $radius-sm;
+    transition: $transition-fast;
+    color: $text-primary;
+
+    fieldset {
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    &:hover fieldset {
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    &.Mui-focused fieldset {
+      border-color: $primary-neon;
+      box-shadow: 0 0 10px rgba(99, 102, 241, 0.2);
+    }
+  }
+
+  .MuiInputLabel-root {
+    color: $text-secondary;
+    &.Mui-focused {
+      color: $primary-neon;
+    }
+  }
+}
+
+// Custom Button
+.custom-btn {
+  background: linear-gradient(135deg, $primary-neon, $accent-neon) !important;
+  color: white !important;
+  font-family: 'Outfit', sans-serif !important;
+  font-weight: 600 !important;
+  border-radius: $radius-sm !important;
+  padding: 0.75rem 1.5rem !important;
+  text-transform: none !important;
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3) !important;
+  transition: $transition-fast !important;
+
+  &:hover {
+    filter: brightness(1.1);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5) !important;
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+
+  &.Mui-disabled {
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: rgba(255, 255, 255, 0.3) !important;
+    box-shadow: none !important;
+  }
+}

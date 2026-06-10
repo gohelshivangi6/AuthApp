@@ -1,0 +1,82 @@
+{
+  "users": [
+    {
+      "id": "5e88e4c0-b1c6-428b-a842-3979f5f21dc0",
+      "name": "shivangi",
+      "email": "shivangi@gmail.com",
+      "passwordHash": "$2b$12$oXprhFK.ILxwfusdW7UBZ..ijhgpri5AukqfBSWyfaFGypyWtQgru",
+      "status": "VERIFIED",
+      "twoFactorSecretEncrypted": "34f1b9f5ad79036fb0022370a00c3b04:ba49350887ee27761712d9b05504440e94ae841afab979752b8e6c55eb865e69a517a180f119df9ae83af3d5f1de0849fa1625e4218db3769fb586ccfda18f09",
+      "failedAttempts": 0,
+      "lockUntil": null,
+      "createdAt": "2026-06-04T12:21:19.942Z",
+      "resetPasswordToken": "ed04aa4bbb3267997c50e204fdbce9a0b90f11e743f3922dfe10e2bacdd3ee99",
+      "resetPasswordExpires": "2026-06-04T12:40:34.744Z"
+    },
+    {
+      "id": "c7ec691c-1354-4c09-ab92-df798b06092a",
+      "name": "XYZ",
+      "email": "xyz@gmail.com",
+      "passwordHash": "$2b$12$q.dGAE7r1abdy21GlTGHuOPusJfbXk5LZELueRhZthjAd47pa1j8u",
+      "status": "VERIFIED",
+      "twoFactorSecretEncrypted": "f16f7e796dfb2c4ef1152ee9b0b4c1b7:405362e57aee1bbfb7e2c94e28c371efe8c05cd597f2b1631892718cae74b548fa01500a09c13cfe734a099e836fbb5b1b240ccd7a37c522ec4b110ae090b76e",
+      "failedAttempts": 0,
+      "lockUntil": null,
+      "createdAt": "2026-06-05T05:29:26.551Z",
+      "resetPasswordToken": null,
+      "resetPasswordExpires": null
+    },
+    {
+      "id": "1aad0788-6912-4fe4-8553-3625297a4953",
+      "name": "h",
+      "email": "a@gmail.com",
+      "passwordHash": "$2b$12$38rxoYEeO.3h.KoUVQ.bo.GO5YlAYwLCMRrt5pSvjOcG46Oz3vqaG",
+      "status": "VERIFIED",
+      "twoFactorSecretEncrypted": "b400d102099345de890d66dbab4e4b3a:30154212bb5e10019cfe2b8850d009fdfa69ef30e9b2cbfdfdbb91c55998dbe22e36b83b18015a21e02412502c6164b5b8a36d618f5695459543c4d4d2a1bd92",
+      "failedAttempts": 0,
+      "lockUntil": null,
+      "createdAt": "2026-06-05T06:56:52.569Z",
+      "resetPasswordToken": null,
+      "resetPasswordExpires": null
+    },
+    {
+      "id": "3bc30f57-2fd7-4c55-a224-e36ce338932d",
+      "name": "S",
+      "email": "s@gmail.com",
+      "passwordHash": "$2b$12$c0ja7k/hrCDNCtQl4rXLp.pMGS8pRZoZLDneeBHZXkTjRniFiQT0C",
+      "status": "VERIFIED",
+      "twoFactorSecretEncrypted": "108d57f404c36a9dc68b5c2d006bbf73:db917c8c6dca0d6a6b5ed1b3419fc963f55172aab24e211cd51d49950c4f943df1d4f4ca230f1ed0a7e175e6587945f51cced3d8085ad269a11d263b52cb52e4",
+      "failedAttempts": 1,
+      "lockUntil": null,
+      "createdAt": "2026-06-05T10:42:23.232Z",
+      "resetPasswordToken": null,
+      "resetPasswordExpires": null
+    },
+    {
+      "id": "77b063ca-36c6-4965-b688-6787f9f0f7b5",
+      "name": "q",
+      "email": "q@gmail.com",
+      "passwordHash": "$2b$12$0dz7JKXJ7jgx0E0AETN5C.bjFku5EWwMkuVqqIjtBfr9aHbnmP..S",
+      "status": "VERIFIED",
+      "twoFactorSecretEncrypted": "5635e90f34c1410204f11dd9545a28e2:eca3cc7d5e50c9797fe96d2a989b4ac80950ac2126bb05fd4da5501d7e52061413b2b249f42cc1a68e7aa92b3962f8be072e8767b8dfb12e75ea60fb88b9ec67",
+      "failedAttempts": 0,
+      "lockUntil": null,
+      "createdAt": "2026-06-05T10:51:46.427Z",
+      "resetPasswordToken": null,
+      "resetPasswordExpires": null
+    },
+    {
+      "id": "5d335914-d80b-4edc-b6ea-b2317854539d",
+      "name": "Shivangi Gohel",
+      "email": "shivangigohel18@gmail.com",
+      "passwordHash": "$2b$12$9DcPM0tXiIlUU9hlbcuzjuLZ5RuI0xl93fwOKzMtoDVqqM9XdoY9S",
+      "status": "VERIFIED",
+      "twoFactorSecretEncrypted": "3fb86981c619521bc2dd1a82160e28d7:405b1d5f7c8033c1b8e0d20e1aab61f2f416c38e641c1599a10b1e646298014a08fec2cd8579ef5b7614c2d242f642fea79c2e0822c8f8ef7f8185df672bde5d",
+      "failedAttempts": 0,
+      "lockUntil": null,
+      "createdAt": "2026-06-08T05:25:16.883Z",
+      "resetPasswordToken": null,
+      "resetPasswordExpires": null
+    }
+  ]
+}

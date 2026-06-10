@@ -1,0 +1,75 @@
+// --- Color Palette (Harmonious Neon-Dark Theme) ---
+$bg-primary: #0a0a16;
+$bg-secondary: #12122b;
+$primary-neon: #6366f1; // Indigo
+$primary-glow: rgba(99, 102, 241, 0.4);
+$accent-neon: #a855f7; // Purple
+$accent-glow: rgba(168, 85, 247, 0.4);
+$success-neon: #10b981; // Teal-green
+$error-neon: #ef4444; // Coral-red
+
+// Text Colors
+$text-primary: #f8fafc;
+$text-secondary: #94a3b8;
+$text-muted: #64748b;
+
+// Glassmorphism Token Settings
+$glass-bg: rgba(18, 18, 38, 0.6);
+$glass-border: rgba(255, 255, 255, 0.08);
+$glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+$glass-blur: 16px;
+
+// --- Border Radius ---
+$radius-sm: 8px;
+$radius-md: 16px;
+$radius-lg: 24px;
+
+// --- Transitions ---
+$transition-fast: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+$transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+// --- Animation Mixins & Keyframes ---
+@keyframes meshGradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes floatParticles {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-20px) rotate(180deg);
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 15px $primary-glow;
+  }
+  50% {
+    box-shadow: 0 0 30px $primary-glow, 0 0 15px $accent-glow;
+  }
+}
+
+@mixin glass-panel {
+  background: $glass-bg;
+  backdrop-filter: blur($glass-blur);
+  -webkit-backdrop-filter: blur($glass-blur);
+  border: 1px solid $glass-border;
+  box-shadow: $glass-shadow;
+  border-radius: $radius-md;
+}
+
+@mixin focus-glow($color) {
+  outline: none;
+  border-color: $color;
+  box-shadow: 0 0 0 4px rgba($color, 0.15);
+}

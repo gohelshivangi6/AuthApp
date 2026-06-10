@@ -1,0 +1,146 @@
+[
+  {
+    "id": "mq544lmxdge",
+    "to": "a@gmail.com",
+    "subject": "SecureAuthApp - Password Changed successfully",
+    "text": "Hello h,\n\nYour account password has been successfully updated. If you did not make this change, contact us immediately.",
+    "html": "<p>Hello h,</p><p>Your account password has been successfully updated. If you did not make this change, contact us immediately.</p>",
+    "timestamp": "2026-06-08T11:13:34.857Z"
+  },
+  {
+    "id": "mq5445de279",
+    "to": "a@gmail.com",
+    "subject": "SecureAuthApp - Password Reset Request",
+    "text": "Hello h,\n\nYou requested a password reset. Reset your password here:\nhttp://localhost:5173/reset-password?token=273179031a03880084d6f508ac66ad06a80c6f1845b6c60680ae92a2e09f06d4\n\nThis link will expire in 15 minutes.",
+    "html": "<p>Hello h,</p><p>You requested a password reset. Reset your password by clicking the link below:</p><p><a href=\"http://localhost:5173/reset-password?token=273179031a03880084d6f508ac66ad06a80c6f1845b6c60680ae92a2e09f06d4\">http://localhost:5173/reset-password?token=273179031a03880084d6f508ac66ad06a80c6f1845b6c60680ae92a2e09f06d4</a></p><p>This link will expire in 15 minutes.</p>",
+    "timestamp": "2026-06-08T11:13:13.778Z"
+  },
+  {
+    "id": "mq542dax572",
+    "to": "xyz@gmail.com",
+    "subject": "SecureAuthApp - Password Changed successfully",
+    "text": "Hello XYZ,\n\nYour account password has been successfully updated. If you did not make this change, contact us immediately.",
+    "html": "<p>Hello XYZ,</p><p>Your account password has been successfully updated. If you did not make this change, contact us immediately.</p>",
+    "timestamp": "2026-06-08T11:11:50.745Z"
+  },
+  {
+    "id": "mq541ya1xi9",
+    "to": "xyz@gmail.com",
+    "subject": "SecureAuthApp - Password Reset Request",
+    "text": "Hello XYZ,\n\nYou requested a password reset. Reset your password here:\nhttp://localhost:5173/reset-password?token=14a63799104f7b4af4bd6e0492cc2ddd6589ec8fb80dde55e5822dda9d3765bf\n\nThis link will expire in 15 minutes.",
+    "html": "<p>Hello XYZ,</p><p>You requested a password reset. Reset your password by clicking the link below:</p><p><a href=\"http://localhost:5173/reset-password?token=14a63799104f7b4af4bd6e0492cc2ddd6589ec8fb80dde55e5822dda9d3765bf\">http://localhost:5173/reset-password?token=14a63799104f7b4af4bd6e0492cc2ddd6589ec8fb80dde55e5822dda9d3765bf</a></p><p>This link will expire in 15 minutes.</p>",
+    "timestamp": "2026-06-08T11:11:31.274Z"
+  },
+  {
+    "id": "mq4rooru2kg",
+    "to": "shivangigohel18@gmail.com",
+    "subject": "Welcome to SecureAuthApp - Finish 2FA Registration",
+    "text": "Hello Shivangi Gohel,\n\nPlease complete your registration by configuring Two-Factor Authentication.\nYour 2FA manual entry code is: OFIHK23HHBXW2PCEKBPEQOKSIJEGG5REOYYGON3BOFFTGPZ2IEQQ",
+    "html": "<p>Hello Shivangi Gohel,</p><p>Please complete your registration by configuring Two-Factor Authentication.</p><p>Your 2FA manual entry code is: <strong>OFIHK23HHBXW2PCEKBPEQOKSIJEGG5REOYYGON3BOFFTGPZ2IEQQ</strong></p>",
+    "timestamp": "2026-06-08T05:25:17.034Z"
+  },
+  {
+    "id": "mq0t103edw1",
+    "to": "q@gmail.com",
+    "subject": "Welcome to SecureAuthApp - Finish 2FA Registration",
+    "text": "Hello q,\n\nPlease complete your registration by configuring Two-Factor Authentication.\nYour 2FA manual entry code is: PMUSC2ZWJRJFKMZWH53DIP35EVPCYVZ3GVBVKMJZKJGHW2CKLNPA",
+    "html": "<p>Hello q,</p><p>Please complete your registration by configuring Two-Factor Authentication.</p><p>Your 2FA manual entry code is: <strong>PMUSC2ZWJRJFKMZWH53DIP35EVPCYVZ3GVBVKMJZKJGHW2CKLNPA</strong></p>",
+    "timestamp": "2026-06-05T10:51:46.491Z"
+  },
+  {
+    "id": "mq0soxi6mkj",
+    "to": "s@gmail.com",
+    "subject": "Welcome to SecureAuthApp - Finish 2FA Registration",
+    "text": "Hello S,\n\nPlease complete your registration by configuring Two-Factor Authentication.\nYour 2FA manual entry code is: JUUWE5DZN44TIZZKJRGUC3KKPNTWOXKXKQQVITJZHBCWWPSEKAZA",
+    "html": "<p>Hello S,</p><p>Please complete your registration by configuring Two-Factor Authentication.</p><p>Your 2FA manual entry code is: <strong>JUUWE5DZN44TIZZKJRGUC3KKPNTWOXKXKQQVITJZHBCWWPSEKAZA</strong></p>",
+    "timestamp": "2026-06-05T10:42:23.262Z"
+  },
+  {
+    "id": "mq0sk2kwszb",
+    "to": "s@gmail.com",
+    "subject": "Welcome to SecureAuthApp - Finish 2FA Registration",
+    "text": "Hello S,\n\nPlease complete your registration by configuring Two-Factor Authentication.\nYour 2FA manual entry code is: NYVHQU3UNREDUMRGHZQVCXJXGREVIMDVIFCFIYSOIFEDQMJFO5YQ",
+    "html": "<p>Hello S,</p><p>Please complete your registration by configuring Two-Factor Authentication.</p><p>Your 2FA manual entry code is: <strong>NYVHQU3UNREDUMRGHZQVCXJXGREVIMDVIFCFIYSOIFEDQMJFO5YQ</strong></p>",
+    "timestamp": "2026-06-05T10:38:36.560Z"
+  },
+  {
+    "id": "mq0sfo2kb1y",
+    "to": "shivangigohel18@gmail.com",
+    "subject": "Welcome to SecureAuthApp - Finish 2FA Registration",
+    "text": "Hello Shivangi Gohel,\n\nPlease complete your registration by configuring Two-Factor Authentication.\nYour 2FA manual entry code is: MIUFMS2GMRUS4JDJKBKF4YTUHI5HON3XNA3EIIJ3KRTUCMLUIZJA",
+    "html": "<p>Hello Shivangi Gohel,</p><p>Please complete your registration by configuring Two-Factor Authentication.</p><p>Your 2FA manual entry code is: <strong>MIUFMS2GMRUS4JDJKBKF4YTUHI5HON3XNA3EIIJ3KRTUCMLUIZJA</strong></p>",
+    "timestamp": "2026-06-05T10:35:11.132Z"
+  },
+  {
+    "id": "mq0s32c6s64",
+    "to": "shivangigohel18@gmail.com",
+    "subject": "Welcome to SecureAuthApp - Finish 2FA Registration",
+    "text": "Hello Shivangi Gohel,\n\nPlease complete your registration by configuring Two-Factor Authentication.\nYour 2FA manual entry code is: MJTVGVRTNVNDQVTQJI7CC4ZIIAYWIXRINBKGMLTRGRRCCTRXKQ2A",
+    "html": "<p>Hello Shivangi Gohel,</p><p>Please complete your registration by configuring Two-Factor Authentication.</p><p>Your 2FA manual entry code is: <strong>MJTVGVRTNVNDQVTQJI7CC4ZIIAYWIXRINBKGMLTRGRRCCTRXKQ2A</strong></p>",
+    "timestamp": "2026-06-05T10:25:23.094Z"
+  },
+  {
+    "id": "mq0rth92raw",
+    "to": "shivangigohel18@gmail.com",
+    "subject": "Welcome to SecureAuthApp - Finish 2FA Registration",
+    "text": "Hello Shivangi Gohel,\n\nPlease complete your registration by configuring Two-Factor Authentication.\nYour 2FA manual entry code is: GZ5ECOK5FBFGCMZPHE3VKZJPFRBT46LGF5AWGWCLLJEFORT5PBGQ",
+    "html": "<p>Hello Shivangi Gohel,</p><p>Please complete your registration by configuring Two-Factor Authentication.</p><p>Your 2FA manual entry code is: <strong>GZ5ECOK5FBFGCMZPHE3VKZJPFRBT46LGF5AWGWCLLJEFORT5PBGQ</strong></p>",
+    "timestamp": "2026-06-05T10:17:55.863Z"
+  },
+  {
+    "id": "mq0rjfaa816",
+    "to": "shivangigohel18@gmail.com",
+    "subject": "Welcome to SecureAuthApp - Finish 2FA Registration",
+    "text": "Hello Shivangi Gohel,\n\nPlease complete your registration by configuring Two-Factor Authentication.\nYour 2FA manual entry code is: NR4WSYJRHYXCKW2HONYGCSCDHM7SQ52KENYTK2ZZMJND6TJILM5A",
+    "html": "<p>Hello Shivangi Gohel,</p><p>Please complete your registration by configuring Two-Factor Authentication.</p><p>Your 2FA manual entry code is: <strong>NR4WSYJRHYXCKW2HONYGCSCDHM7SQ52KENYTK2ZZMJND6TJILM5A</strong></p>",
+    "timestamp": "2026-06-05T10:10:06.754Z"
+  },
+  {
+    "id": "mq0repcyvbm",
+    "to": "shivangigohel18@gmail.com",
+    "subject": "Welcome to SecureAuthApp - Finish 2FA Registration",
+    "text": "Hello Shivangi Gohel,\n\nPlease complete your registration by configuring Two-Factor Authentication.\nYour 2FA manual entry code is: OUUTMOLDI55WMKSGPFNVCL3RGFJCGQDRO4XXS4CHPVSSQTC3FAXQ",
+    "html": "<p>Hello Shivangi Gohel,</p><p>Please complete your registration by configuring Two-Factor Authentication.</p><p>Your 2FA manual entry code is: <strong>OUUTMOLDI55WMKSGPFNVCL3RGFJCGQDRO4XXS4CHPVSSQTC3FAXQ</strong></p>",
+    "timestamp": "2026-06-05T10:06:26.531Z"
+  },
+  {
+    "id": "mq0ouncdzr2",
+    "to": "shivangigohel18@gmail.com",
+    "subject": "Welcome to SecureAuthApp - Finish 2FA Registration",
+    "text": "Hello Shivangi Gohel,\n\nPlease complete your registration by configuring Two-Factor Authentication.\nYour 2FA manual entry code is: PVBWGQLUPVDVW2Z4ER4GMMKKORRTCTCIMQVEIUKGEYZDMMSOMNDQ",
+    "html": "<p>Hello Shivangi Gohel,</p><p>Please complete your registration by configuring Two-Factor Authentication.</p><p>Your 2FA manual entry code is: <strong>PVBWGQLUPVDVW2Z4ER4GMMKKORRTCTCIMQVEIUKGEYZDMMSOMNDQ</strong></p>",
+    "timestamp": "2026-06-05T08:54:51.565Z"
+  },
+  {
+    "id": "mq0ok5g0pux",
+    "to": "shivangigohel18@gmail.com",
+    "subject": "Welcome to SecureAuthApp - Finish 2FA Registration",
+    "text": "Hello Shivangi Gohel,\n\nPlease complete your registration by configuring Two-Factor Authentication.\nYour 2FA manual entry code is: EZJCU3CUEFEXMQKFPN5UQPDOOY2EW3BKHRXVITLPFRUHGS2KGZKA",
+    "html": "<p>Hello Shivangi Gohel,</p><p>Please complete your registration by configuring Two-Factor Authentication.</p><p>Your 2FA manual entry code is: <strong>EZJCU3CUEFEXMQKFPN5UQPDOOY2EW3BKHRXVITLPFRUHGS2KGZKA</strong></p>",
+    "timestamp": "2026-06-05T08:46:41.809Z"
+  },
+  {
+    "id": "mq0o4zupl0p",
+    "to": "shivangigohel18@gmail.com",
+    "subject": "SecureAuthApp - Password Reset Request",
+    "text": "Hello Shivangi Gohel,\n\nYou requested a password reset. Reset your password here:\nhttp://localhost:5173/reset-password?token=64eae103bf1288f5144edef74a8c85ec7540d18a0c70879969238fa345faf7f7\n\nThis link will expire in 15 minutes.",
+    "html": "<p>Hello Shivangi Gohel,</p><p>You requested a password reset. Reset your password by clicking the link below:</p><p><a href=\"http://localhost:5173/reset-password?token=64eae103bf1288f5144edef74a8c85ec7540d18a0c70879969238fa345faf7f7\">http://localhost:5173/reset-password?token=64eae103bf1288f5144edef74a8c85ec7540d18a0c70879969238fa345faf7f7</a></p><p>This link will expire in 15 minutes.</p>",
+    "timestamp": "2026-06-05T08:34:54.721Z"
+  },
+  {
+    "id": "mq0o11rwpgy",
+    "to": "qwer@gmail.com",
+    "subject": "Welcome to SecureAuthApp - Finish 2FA Registration",
+    "text": "Hello qwer,\n\nPlease complete your registration by configuring Two-Factor Authentication.\nYour 2FA manual entry code is: PBBFKZKYLVLGYOTEJBIUYS2MPFCDI5SOLJQVQLCKOUYCK2KAIIZQ",
+    "html": "<p>Hello qwer,</p><p>Please complete your registration by configuring Two-Factor Authentication.</p><p>Your 2FA manual entry code is: <strong>PBBFKZKYLVLGYOTEJBIUYS2MPFCDI5SOLJQVQLCKOUYCK2KAIIZQ</strong></p>",
+    "timestamp": "2026-06-05T08:31:50.588Z"
+  },
+  {
+    "id": "mq0ny1vgrwh",
+    "to": "a@gmail.com",
+    "subject": "SecureAuthApp - Password Reset Request",
+    "text": "Hello h,\n\nYou requested a password reset. Reset your password here:\nhttp://localhost:5173/reset-password?token=530721ff7d4fca6caf3f735cbfb89c2df528ed0d761df23388d58d23a10367b3\n\nThis link will expire in 15 minutes.",
+    "html": "<p>Hello h,</p><p>You requested a password reset. Reset your password by clicking the link below:</p><p><a href=\"http://localhost:5173/reset-password?token=530721ff7d4fca6caf3f735cbfb89c2df528ed0d761df23388d58d23a10367b3\">http://localhost:5173/reset-password?token=530721ff7d4fca6caf3f735cbfb89c2df528ed0d761df23388d58d23a10367b3</a></p><p>This link will expire in 15 minutes.</p>",
+    "timestamp": "2026-06-05T08:29:30.748Z"
+  }
+]
