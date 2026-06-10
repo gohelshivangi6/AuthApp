@@ -134,7 +134,7 @@ function getPerformanceColor(value) {
 function renderCellValue(col, item, theme, currencyConfig) {
   const value = item[col.field];
 
-  if (col.primary) {
+  if (col?.logoInitial) {
     return (
       <Box display="flex" alignItems="center" gap={1.5}>
         {item.avatar ? (
@@ -174,18 +174,6 @@ function renderCellValue(col, item, theme, currencyConfig) {
           >
             {value}
           </Typography>
-          {item.annotation && (
-            <Typography
-              sx={{
-                fontFamily: theme.fontFamily,
-                fontSize: '0.7rem',
-                color: theme.primaryColor,
-                opacity: 0.8,
-              }}
-            >
-              {item.annotation}
-            </Typography>
-          )}
         </Box>
       </Box>
     );
@@ -260,7 +248,7 @@ function renderCellValue(col, item, theme, currencyConfig) {
   }
 
   if (col.render === 'status') {
-    const cfg = STATUS_CONFIG[value] || STATUS_CONFIG.Inactive;
+    const cfg = STATUS_CONFIG[value] || STATUS_CONFIG.Active;
     return (
       <Chip
         icon={cfg.icon}
@@ -511,7 +499,7 @@ export default function HierarchyTable() {
 
     if (searchQuery && tableConfig.searchable) {
       const q = searchQuery.toLowerCase();
-      const searchFields = tableConfig.searchFields || ['name'];
+      const searchFields = ["name", "zone", "region", "territory", "area", "location", "category", "sku", "status"];
       data = data.filter((item) =>
         searchFields.some((f) => String(item[f] || '').toLowerCase().includes(q))
       );
@@ -1067,7 +1055,7 @@ export default function HierarchyTable() {
             border: '1px solid rgba(255, 255, 255, 0.06)',
             borderRadius: theme.borderRadius,
             boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
-            overflow: 'hidden',
+            overflowX: 'auto',
             transition: 'all 0.3s ease',
             '&:hover': { borderColor: 'rgba(255, 255, 255, 0.1)' },
           }}
@@ -1117,7 +1105,21 @@ export default function HierarchyTable() {
                         {col.sortable && (
                           <Box sx={{ display: 'flex', flexDirection: 'column', ml: 0.3 }}>
                             {sortField === col.field ? (
-                              sortDir === 'asc' ? <ArrowUpwardIcon sx={{ fontSize: 14 }} /> : <ArrowDownwardIcon sx={{ fontSize: 14 }} />
+                              <Box display="flex" alignItems="center" gap={0.25}>
+                                {sortDir === 'asc' ? <ArrowUpwardIcon sx={{ fontSize: 14 }} /> : <ArrowDownwardIcon sx={{ fontSize: 14 }} />}
+                                <Box
+                                  onClick={(e) => { e.stopPropagation(); setSortField(null); setSortDir('asc'); }}
+                                  sx={{
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    width: 14, height: 14, borderRadius: '50%',
+                                    background: 'rgba(255,255,255,0.1)', cursor: 'pointer',
+                                    '&:hover': { background: 'rgba(239,68,68,0.3)', color: '#ef4444' },
+                                    transition: 'all 0.15s ease',
+                                  }}
+                                >
+                                  <Box sx={{ fontSize: 9, fontWeight: 700, lineHeight: 1, mt: '-1px' }}>x</Box>
+                                </Box>
+                              </Box>
                             ) : (
                               <UnfoldMoreIcon sx={{ fontSize: 14, opacity: 0.3 }} />
                             )}
@@ -1127,11 +1129,6 @@ export default function HierarchyTable() {
                     </TableCell>
                   );
                 })}
-                {/* {(isLevelDrillable(levelInfo) || activeColumns.some(c => c.expandable)) && (
-                  <TableCell sx={{ ...cellHeadStyle(theme), textAlign: 'right', pr: 3, width: 60 }}>
-                    {isLevelDrillable(levelInfo) ? 'Drill' : ''}
-                  </TableCell>
-                )} */}
               </TableRow>
             </TableHead>
             <TableBody>

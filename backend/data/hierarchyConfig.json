@@ -1,8 +1,7 @@
 {
   "presets": {
-    "primary": { "primary": true, "sortable": true, "width": "220px", "sticky": true },
-    "num":     { "sortable": true, "align": "right", "numberFormat": true },
-    "currency":{ "render": "currency", "align": "right", "sortable": true },
+    "primary": { "logoInitial": true, "sortable": true, "width": "220px", "sticky": true },
+    "currency":{ "render": "currency", "sortable": true },
     "pct":     { "render": "percentage", "sortable": true },
     "badge":   { "render": "badge", "sortable": true },
     "status":  { "render": "status", "sortable": true },
@@ -21,23 +20,32 @@
       ["name", "Zone Head", "$primary"],
       ["zone", "Zone"],
       ["region", "Region"],
-      ["employees", "Employees", "$num"],
-      ["performance", "Performance", "$pct", { "pctOf": "target", "achOf": "achieved" }],
+      ["employees", "Employees"],
+      ["headCount", "Head Count"],
+      ["budget", "Budget", "$currency"],
+      ["performance", "Performance", "$pct"],
       ["target", "Target", "$currency"],
-      ["achieved", "Achieved", "$currency"]
+      ["achieved", "Achieved", "$currency"],
+      ["avgTenure", "Avg Tenure"],
+      ["turnoverRate", "Turnover"],
+      ["nps", "NPS"],
+      ["storesCount", "Stores"],
+      ["coverage", "Coverage"],
+      ["compliance", "Compliance"],
+      ["annotation", "Annotation"]
     ],
     "CSO": [
       ["name", "CSO Name", "$primary"],
       ["territory", "Territory"],
-      ["stores", "Stores", "$num"],
-      ["asmCount", "ASMs", "$num"],
+      ["stores", "Stores"],
+      ["asmCount", "ASMs"],
       ["target", "Target", "$currency"],
       ["achieved", "Achieved", "$currency"]
     ],
     "ASM": [
       ["name", "ASM Name", "$primary"],
       ["area", "Area"],
-      ["distributors", "Distributors", "$num"],
+      ["distributors", "Distributors"],
       ["target", "Target", "$currency"],
       ["achieved", "Achieved", "$currency"]
     ],
@@ -51,7 +59,7 @@
       ["name", "Product", "$primary"],
       ["category", "Category"],
       ["sku", "SKU"],
-      ["stock", "Stock", "$num", { "render": "progress", "progressMax": 1000 }],
+      ["stock", "Stock"],
       ["sales", "Sales", "$currency"]
     ],
     "CKU": [
@@ -63,13 +71,10 @@
   },
   "table": {
     "searchable": true,
-    "searchFields": ["name", "zone", "region", "territory", "area", "location", "category", "sku", "status"],
     "pageSize": 10,
     "emptyMessage": "No records found at this level.",
     "striped": true,
-    "exportable": ["csv"],
-    "printable": true,
-    "hoverColor": "rgba(99, 102, 241, 0.06)",
+    "exportable": ["pdf", "csv"],
     "currency": {
       "symbol": "₹",
       "units": [
