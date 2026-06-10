@@ -26,7 +26,6 @@ import {
   ListItemText,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import HomeIcon from '@mui/icons-material/Home';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
@@ -862,47 +861,50 @@ export default function HierarchyTable() {
         </Box>
 
         <Breadcrumbs separator={<ArrowForwardIcon sx={{ fontSize: 14, color: 'rgba(255,255,255,0.2)' }} />} sx={{ mb: 3 }}>
-          <Link
-            underline="hover" onClick={() => handleBreadcrumbClick(0)}
-            sx={{
-              display: 'flex', alignItems: 'center', gap: 0.5, cursor: 'pointer',
-              color: path.length === 0 ? theme.primaryColor : '#94a3b8',
-              fontFamily: theme.fontFamily, fontSize: '0.82rem',
-              fontWeight: path.length === 0 ? 600 : 400,
-              '&:hover': { color: theme.primaryColor },
-            }}
-          >
-            <HomeIcon sx={{ fontSize: 16 }} />
-            {tableConfig.rootLabel || 'All Zones'}
-          </Link>
-          {path.map((item, idx) => {
-            const lvl = levels[idx];
+          {levels.map((lvl, idx) => {
+            const isDrilled = idx < path.length;
             const labelField = lvl?.labelField || 'name';
+            const label = isDrilled
+              ? (path[idx][labelField] || path[idx].name || lvl.key)
+              : lvl.key;
+            const tooltipText = isDrilled
+              ? `${lvl.key}: ${path[idx][labelField] || path[idx].name || lvl.key}`
+              : lvl.key;
+            const isActive = idx === path.length;
             return (
-              <Link
-                key={idx} underline="hover" onClick={() => handleBreadcrumbClick(idx + 1)}
-                sx={{
-                  cursor: 'pointer',
-                  color: idx === path.length - 1 ? theme.primaryColor : '#94a3b8',
-                  fontFamily: theme.fontFamily, fontSize: '0.82rem',
-                  fontWeight: idx === path.length - 1 ? 600 : 400,
-                  '&:hover': { color: theme.primaryColor },
-                  display: 'flex', alignItems: 'center', gap: 0.5,
-                }}
+              <Tooltip
+                key={idx}
+                title={tooltipText}
+                arrow
+                placement="top"
+                sx={{ '& .MuiTooltip-tooltip': { fontSize: '0.78rem', fontFamily: theme.fontFamily } }}
               >
-                {item[labelField] || item.name}
-                {lvl?.badge && item[lvl.badge.field] && (
-                  <Chip
-                    label={item[lvl.badge.field]}
-                    size="small"
-                    sx={{
-                      height: 16, fontSize: '0.6rem',
-                      background: (lvl.badge.colorMap && lvl.badge.colorMap[item[lvl.badge.field]]) || 'rgba(255,255,255,0.1)',
-                      color: '#fff', fontWeight: 600,
-                    }}
-                  />
-                )}
-              </Link>
+                <Link
+                  underline="hover"
+                  onClick={isDrilled ? () => handleBreadcrumbClick(idx + 1) : undefined}
+                  sx={{
+                    cursor: isDrilled ? 'pointer' : 'default',
+                    color: isActive ? theme.primaryColor : isDrilled ? '#94a3b8' : '#64748b',
+                    fontFamily: theme.fontFamily, fontSize: '0.82rem',
+                    fontWeight: isActive ? 600 : 400,
+                    '&:hover': isDrilled ? { color: theme.primaryColor } : {},
+                    display: 'flex', alignItems: 'center', gap: 0.5,
+                  }}
+                >
+                  {label}
+                  {isDrilled && lvl?.badge && path[idx][lvl.badge.field] && (
+                    <Chip
+                      label={path[idx][lvl.badge.field]}
+                      size="small"
+                      sx={{
+                        height: 16, fontSize: '0.6rem',
+                        background: (lvl.badge.colorMap && lvl.badge.colorMap[path[idx][lvl.badge.field]]) || 'rgba(255,255,255,0.1)',
+                        color: '#fff', fontWeight: 600,
+                      }}
+                    />
+                  )}
+                </Link>
+              </Tooltip>
             );
           })}
         </Breadcrumbs>
@@ -1003,11 +1005,11 @@ export default function HierarchyTable() {
                     </TableCell>
                   );
                 })}
-                {(isLevelDrillable(levelInfo) || activeColumns.some(c => c.expandable)) && (
+                {/* {(isLevelDrillable(levelInfo) || activeColumns.some(c => c.expandable)) && (
                   <TableCell sx={{ ...cellHeadStyle(theme), textAlign: 'right', pr: 3, width: 60 }}>
                     {isLevelDrillable(levelInfo) ? 'Drill' : ''}
                   </TableCell>
-                )}
+                )} */}
               </TableRow>
             </TableHead>
             <TableBody>

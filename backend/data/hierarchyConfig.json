@@ -1,11 +1,11 @@
 {
   "levels": [
-    { "key": "Zone Head", "icon": "GroupsIcon", "color": "#6366f1", "drillable": true, "subtitle": "Regional managers", "labelField": "name" },
-    { "key": "CSO", "icon": "SupportAgentIcon", "color": "#a855f7", "drillable": true, "subtitle": "Chief Sales Officers" },
-    { "key": "ASM", "icon": "PeopleAltIcon", "color": "#10b981", "drillable": true, "subtitle": "Area Sales Managers" },
-    { "key": "DB", "icon": "StorefrontIcon", "color": "#f59e0b", "drillable": true, "subtitle": "Distributors" },
-    { "key": "Product", "icon": "Inventory2Icon", "color": "#3b82f6", "drillable": true, "subtitle": "Product catalog" },
-    { "key": "CKU", "icon": "FactCheckIcon", "color": "#ec4899", "drillable": false, "subtitle": "Check units" }
+    { "key": "Zone Head", "icon": "GroupsIcon", "color": "#6366f1", "subtitle": "Regional managers" },
+    { "key": "CSO", "icon": "SupportAgentIcon", "color": "#a855f7", "subtitle": "Chief Sales Officers" },
+    { "key": "ASM", "icon": "PeopleAltIcon", "color": "#10b981", "subtitle": "Area Sales Managers" },
+    { "key": "DB", "icon": "StorefrontIcon", "color": "#f59e0b", "subtitle": "Distributors" },
+    { "key": "Product", "icon": "Inventory2Icon", "color": "#3b82f6", "subtitle": "Product catalog" },
+    { "key": "CKU", "icon": "FactCheckIcon", "color": "#ec4899", "subtitle": "Check units" }
   ],
   "columns": {
     "Zone Head": [
@@ -66,7 +66,7 @@
     "rowClick": "drill",
     "hoverColor": "rgba(99, 102, 241, 0.06)",
     "currency": {
-      "symbol": "\u20B9",
+      "symbol": "$",
       "units": [
         { "threshold": 10000000, "suffix": "Cr" },
         { "threshold": 100000, "suffix": "L" },
