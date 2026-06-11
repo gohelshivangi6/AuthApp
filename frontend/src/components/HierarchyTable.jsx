@@ -78,10 +78,11 @@ const BADGE_COLORS = {
   C: '#ef4444',
 };
 
-function formatCurrency(value, currencyConfig) {
+function formatCurrency(value, currencyConfig, unitOverride) {
   if (value == null) return '—';
   const num = Number(value);
   if (isNaN(num)) return value;
+  if (!unitOverride) return num.toLocaleString('en-IN');
   const symbol = currencyConfig?.symbol || '\u20B9';
   const suffixDivisorMap = {
     'K': 1000, 'Th': 1000,
@@ -91,20 +92,10 @@ function formatCurrency(value, currencyConfig) {
     'Cr': 10000000, 'Cr.': 10000000,
     'T': 1000000000000, 'Tn': 1000000000000,
   };
-  const units = currencyConfig?.units || [
-    { threshold: 10000000, suffix: 'Cr' },
-    { threshold: 100000, suffix: 'L' },
-    { threshold: 1000, suffix: 'K' },
-  ];
-  const absNum = Math.abs(num);
-  for (const unit of units) {
-    if (absNum >= unit.threshold) {
-      const divisor = suffixDivisorMap[unit.suffix] || unit.divisor || unit.threshold;
-      const decimals = unit.decimals ?? (divisor >= 1000000 ? 2 : 1);
-      return `${symbol}${(num / divisor).toFixed(decimals)}${unit.suffix}`;
-    }
-  }
-  return `${symbol}${num.toLocaleString('en-IN')}`;
+  const divisor = suffixDivisorMap[unitOverride];
+  if (!divisor) return num.toLocaleString('en-IN');
+  const decimals = divisor >= 10000000 ? 2 : (divisor >= 1000 ? 1 : 0);
+  return `${symbol}${(num / divisor).toFixed(decimals)}${unitOverride}`;
 }
 
 function formatNumber(value) {
@@ -181,7 +172,7 @@ function renderCellValue(col, item, theme, currencyConfig) {
 
   if (value == null || value === '') return '—';
 
-  if (col.render === 'currency') return formatCurrency(value, currencyConfig);
+  if (col.render === 'currency') return formatCurrency(value, currencyConfig, col.unit);
   if (col.render === 'percentage') {
     let pctValue;
     if (col.achievedOf && item[col.achievedOf] != null && item[col.percentageOf] != null) {
@@ -1166,7 +1157,7 @@ export default function HierarchyTable() {
                       display = 'Total';
                     } else if (val != null) {
                       if (col.render === 'currency') {
-                        display = formatCurrency(val, tableConfig.currency);
+                        display = formatCurrency(val, tableConfig.currency, col.unit);
                       } else if (col.render === 'percentage') {
                         display = `${Math.round(val)}%`;
                       } else if (col.render === 'progress') {

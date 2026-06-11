@@ -22,10 +22,10 @@
       ["region", "Region"],
       ["employees", "Employees"],
       ["headCount", "Head Count"],
-      ["budget", "Budget", "$currency"],
+      ["budget", "Budget", "$currency", { "unit": "Cr" }],
       ["performance", "Performance", "$pct"],
-      ["target", "Target", "$currency"],
-      ["achieved", "Achieved", "$currency"],
+      ["target", "Target", "$currency", { "unit": "Cr" }],
+      ["achieved", "Achieved", "$currency", { "unit": "Cr" }],
       ["avgTenure", "Avg Tenure"],
       ["turnoverRate", "Turnover"],
       ["nps", "NPS"],
@@ -39,28 +39,28 @@
       ["territory", "Territory"],
       ["stores", "Stores"],
       ["asmCount", "ASMs"],
-      ["target", "Target", "$currency"],
-      ["achieved", "Achieved", "$currency"]
+      ["target", "Target", "$currency", { "unit": "L" }],
+      ["achieved", "Achieved", "$currency", { "unit": "L" }]
     ],
     "ASM": [
       ["name", "ASM Name", "$primary"],
       ["area", "Area"],
       ["distributors", "Distributors"],
-      ["target", "Target", "$currency"],
-      ["achieved", "Achieved", "$currency"]
+      ["target", "Target", "$currency", { "unit": "L" }],
+      ["achieved", "Achieved", "$currency", { "unit": "L" }]
     ],
     "DB": [
       ["name", "Distributor", "$primary"],
       ["location", "Location"],
       ["creditRating", "Credit", "$badge"],
-      ["outstanding", "Outstanding", "$currency"]
+      ["outstanding", "Outstanding", "$currency", { "unit": "Cr" }]
     ],
     "Product": [
       ["name", "Product", "$primary"],
       ["category", "Category"],
       ["sku", "SKU"],
       ["stock", "Stock"],
-      ["sales", "Sales", "$currency"]
+      ["sales", "Sales", "$currency", { "unit": "K" }]
     ],
     "CKU": [
       ["name", "CKU ID", "$primary"],
@@ -74,15 +74,7 @@
     "pageSize": 10,
     "emptyMessage": "No records found at this level.",
     "striped": true,
-    "exportable": ["csv"],
-    "currency": {
-      "symbol": "₹",
-      "units": [
-        { "threshold": 10000000, "suffix": "Cr" },
-        { "threshold": 100000, "suffix": "L" },
-        { "threshold": 1000, "suffix": "K" }
-      ]
-    }
+    "exportable": ["csv"]
   },
   "theme": {
     "primaryColor": "#6366f1",
