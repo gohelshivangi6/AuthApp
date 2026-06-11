@@ -622,6 +622,24 @@ export default function HierarchyTable() {
   const showSearch = tableConfig.searchable === true;
   const pageSize = tableConfig.pageSize || 0;
 
+  const summaryRow = useMemo(() => {
+    if (!currentData || currentData.length === 0) return null;
+    const totals = {};
+    activeColumns.forEach((col) => {
+      if (col.primary) {
+        totals[col.field] = '__TOTAL__';
+        return;
+      }
+      const nums = currentData
+        .map((item) => item[col.field])
+        .filter((v) => v != null && v !== '')
+        .map(Number)
+        .filter((n) => !isNaN(n));
+      totals[col.field] = nums.length > 0 ? nums.reduce((a, b) => a + b, 0) : null;
+    });
+    return totals;
+  }, [currentData, activeColumns]);
+
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" py={10}>
@@ -1056,12 +1074,15 @@ export default function HierarchyTable() {
             borderRadius: theme.borderRadius,
             boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
             overflowX: 'auto',
+            overflowY: 'auto',
+            scrollbarWidth: 'none',
+            '&::-webkit-scrollbar': { display: 'none' },
             transition: 'all 0.3s ease',
             '&:hover': { borderColor: 'rgba(255, 255, 255, 0.1)' },
           }}
         >
           <Table>
-            <TableHead>
+            <TableHead sx={{ position: 'sticky', top: 0, zIndex: 3, background: 'rgba(18,18,38,0.95)' }}>
               <TableRow>
                 {isSelectable && (
                   <TableCell sx={{ ...cellHeadStyle(theme), width: 48, pl: 2 }}>
@@ -1083,8 +1104,9 @@ export default function HierarchyTable() {
                       sx={{
                         ...cellHeadStyle(theme),
                         pl: col.primary ? 3 : 2,
-                        width: col.width || 'auto',
+                        width: isSticky ? 'auto' : (col.width || 'auto'),
                         minWidth: col.minWidth,
+                        whiteSpace: 'nowrap',
                         textAlign: col.align || 'left',
                         cursor: col.sortable ? 'pointer' : 'default',
                         userSelect: col.sortable ? 'none' : 'auto',
@@ -1130,6 +1152,60 @@ export default function HierarchyTable() {
                   );
                 })}
               </TableRow>
+              {currentData.length > 0 && summaryRow && (
+                <TableRow>
+                  {isSelectable && (
+                    <TableCell sx={{ ...cellBodyStyle(theme), py: 1.5, borderBottom: '1px solid rgba(99,102,241,0.2)', background: 'rgba(99,102,241,0.03)' }} />
+                  )}
+                  {activeColumns.map((col) => {
+                    const isSticky = col.sticky;
+                    const val = summaryRow[col.field];
+                    const isTotalLabel = val === '__TOTAL__';
+                    let display;
+                    if (isTotalLabel) {
+                      display = 'Total';
+                    } else if (val != null) {
+                      if (col.render === 'currency') {
+                        display = formatCurrency(val, tableConfig.currency);
+                      } else if (col.render === 'percentage') {
+                        display = `${Math.round(val)}%`;
+                      } else if (col.render === 'progress') {
+                        display = formatNumber(val);
+                      } else {
+                        display = formatNumber(val);
+                      }
+                    } else {
+                      display = '—';
+                    }
+                    return (
+                      <TableCell
+                        key={col.field}
+                        sx={{
+                          ...cellBodyStyle(theme),
+                          fontWeight: isTotalLabel ? 700 : 600,
+                          color: isTotalLabel ? theme.primaryColor : '#f8fafc',
+                          py: 1.5,
+                          pl: col.primary ? 3 : 2,
+                          textAlign: col.align || 'left',
+                          width: isSticky ? 'auto' : (col.width || 'auto'),
+                          minWidth: col.minWidth,
+                          whiteSpace: 'nowrap',
+                          position: isSticky ? 'sticky' : 'relative',
+                          left: isSticky ? 0 : 'auto',
+                          zIndex: isSticky ? 2 : 1,
+                          background: isSticky ? 'rgba(18,18,38,0.95)' : 'rgba(99,102,241,0.03)',
+                          borderBottom: '1px solid rgba(99,102,241,0.2)',
+                        }}
+                      >
+                        {display}
+                      </TableCell>
+                    );
+                  })}
+                  {(isLevelDrillable(levelInfo) || activeColumns.some(c => c.expandable)) && (
+                    <TableCell sx={{ ...cellBodyStyle(theme), py: 1.5, borderBottom: '1px solid rgba(99,102,241,0.2)', background: 'rgba(99,102,241,0.03)', textAlign: 'right', pr: 3 }} />
+                  )}
+                </TableRow>
+              )}
             </TableHead>
             <TableBody>
               {paginatedData.length === 0 ? (
@@ -1193,7 +1269,9 @@ export default function HierarchyTable() {
                               fontWeight: col.primary ? 600 : 400,
                               color: col.primary ? '#f8fafc' : '#cbd5e1',
                               textAlign: col.align || 'left',
-                              width: col.width || 'auto',
+                              width: isSticky ? 'auto' : (col.width || 'auto'),
+                              minWidth: col.minWidth,
+                              whiteSpace: 'nowrap',
                               position: isSticky ? 'sticky' : 'relative',
                               left: isSticky ? 0 : 'auto',
                               zIndex: isSticky ? 2 : 1,

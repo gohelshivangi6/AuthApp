@@ -1,6 +1,6 @@
 {
   "presets": {
-    "primary": { "logoInitial": true, "sortable": true, "width": "220px", "sticky": true },
+    "primary": { "logoInitial": true, "sortable": true, "minWidth": "120px", "sticky": true },
     "currency":{ "render": "currency", "sortable": true },
     "pct":     { "render": "percentage", "sortable": true },
     "badge":   { "render": "badge", "sortable": true },
@@ -74,7 +74,7 @@
     "pageSize": 10,
     "emptyMessage": "No records found at this level.",
     "striped": true,
-    "exportable": ["pdf", "csv"],
+    "exportable": ["csv"],
     "currency": {
       "symbol": "₹",
       "units": [
