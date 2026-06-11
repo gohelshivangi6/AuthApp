@@ -45,6 +45,7 @@ import ViewColumnIcon from '@mui/icons-material/ViewColumn';
 import ErrorIcon from '@mui/icons-material/Error';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ScheduleIcon from '@mui/icons-material/Schedule';
+import { decryptData } from '../decrypt/decryption';
 
 const API_BASE = 'http://localhost:5000/api/hierarchy';
 
@@ -372,21 +373,25 @@ export default function HierarchyTable() {
         ]);
         if (cancelled) return;
 
-        const configStr = JSON.stringify(configRes.data);
-        const dataStr = JSON.stringify(dataRes.data);
+        // const configStr = JSON.stringify(configRes.data);
+        // const dataStr = JSON.stringify(dataRes.data);
+        const configStr = await decryptData(configRes.data);
+        const dataStr = await decryptData(dataRes.data);
+        console.log("dataStr", dataStr);
+       
 
         if (isPoll) {
           if (configStr !== prevConfigStr) {
-            setConfig(parseCompressedConfig(configRes.data));
+            setConfig(parseCompressedConfig(configStr));
             prevConfigStr = configStr;
           }
           if (dataStr !== prevDataStr) {
-            setRawData(dataRes.data);
+            setRawData(dataStr);
             prevDataStr = dataStr;
           }
         } else {
-          setConfig(parseCompressedConfig(configRes.data));
-          setRawData(dataRes.data);
+          setConfig(parseCompressedConfig(configStr));
+          setRawData(dataStr);
           prevConfigStr = configStr;
           prevDataStr = dataStr;
         }
@@ -397,8 +402,12 @@ export default function HierarchyTable() {
       }
     };
 
+     
+
     fetchAll(false);
+
     const interval = setInterval(() => fetchAll(true), 50000);
+    console.log("data ", rawData);
 
     return () => {
       cancelled = true;
@@ -408,6 +417,7 @@ export default function HierarchyTable() {
 
   const configLevels = useMemo(() => {
     if (!config) return [];
+    console.log("config.... ", config);
     return config.levels.map((l) => ({
       ...l,
       icon: ICON_MAP[l.icon] || <GroupsIcon />,
@@ -420,9 +430,11 @@ export default function HierarchyTable() {
   }, [levelOrder, configLevels]);
 
   const levels = useMemo(() => {
+    console.log("config level ", configLevels);
     const map = Object.fromEntries(configLevels.map((l) => [l.key, l]));
     return effectiveLevelOrder.map((key) => map[key]).filter(Boolean);
   }, [configLevels, effectiveLevelOrder]);
+  console.log("base level", levels);
 
   const columns = useMemo(() => config?.columns || {}, [config]);
   const tableConfig = useMemo(() => config?.table || {}, [config]);
@@ -606,6 +618,7 @@ export default function HierarchyTable() {
     return true;
   });
   const levelInfo = levels[currentLevel] || levels[0];
+  console.log("level", levelInfo);
   const isSelectable = tableConfig.selectable === true;
   const isStriped = tableConfig.striped === true;
   const canExport = tableConfig.exportable?.includes('csv');
@@ -1058,6 +1071,8 @@ export default function HierarchyTable() {
         <TableContainer
           component={Paper}
           sx={{
+            width: '600px',
+            maxHeight: '400px',
             background: 'rgba(18, 18, 38, 0.7)',
             backdropFilter: 'blur(16px)',
             WebkitBackdropFilter: 'blur(16px)',

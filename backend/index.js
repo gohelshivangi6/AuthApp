@@ -12,6 +12,8 @@ const { initCleanupTask } = require('./utils/cleanup');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+console.log(`[Server] Starting Secure Auth backend in ${process.env.NODE_ENV} mode...`);
+
 // Enable CORS for frontend development server with cookie credentials allowed
 app.use(cors({
   origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
