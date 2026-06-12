@@ -288,21 +288,18 @@ function renderCellValue(col, item, theme, currencyConfig) {
   return displayValue;
 }
 
-function exportCSV(data, columns) {
-  const header = columns.map(c => c.label).join(',');
-  const rows = data.map(row => columns.map(c => {
-    let val = row[c.field] ?? '';
-    val = String(val).replace(/"/g, '""');
-    return `"${val}"`;
-  }).join(','));
-  const csv = [header, ...rows].join('\n');
-  const blob = new Blob([csv], { type: 'text/csv' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'hierarchy-export.csv';
-  a.click();
-  URL.revokeObjectURL(url);
+async function exportCSV(data, columns) {
+  try {
+    const response = await axios.post(`${API_BASE}/export/csv`, { data, columns }, { responseType: 'blob' });
+    const url = URL.createObjectURL(new Blob([response.data], { type: 'text/csv' }));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'hierarchy-export.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+  } catch (err) {
+    console.error('CSV export failed:', err);
+  }
 }
 
 function parseCompressedConfig(raw) {
