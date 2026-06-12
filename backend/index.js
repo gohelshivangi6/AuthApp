@@ -6,6 +6,7 @@ require('dotenv').config();
 const authRoutes = require('./routes/authRoutes');
 const hierarchyRoutes = require('./routes/hierarchy');
 const { globalLimiter } = require('./middleware/rateLimit');
+const { sessionToken } = require('./middleware/sessionToken');
 const errorHandler = require('./middleware/errorHandler');
 const { initCleanupTask } = require('./utils/cleanup');
 
@@ -19,7 +20,7 @@ app.use(cors({
   origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Session-Token']
 }));
 
 // Body parsing middleware
@@ -28,6 +29,9 @@ app.use(cookieParser());
 
 // Global Rate Limiting
 app.use(globalLimiter);
+
+// Session token validation
+app.use(sessionToken);
 
 // Mount API routes
 app.use('/api/auth', authRoutes);

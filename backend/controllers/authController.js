@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const speakeasy = require("speakeasy");
 const qrcode = require("qrcode");
 const { v4: uuidv4 } = require("uuid");
+const { registerToken, removeToken } = require('../middleware/sessionToken');
 
 const { readDB, writeDB } = require("../utils/dbHelper");
 const {
@@ -222,6 +223,7 @@ const verify2FASetup = async (req, res, next) => {
     // Issue permanent auth token
     const authToken = signAuthToken(user.id);
     res.cookie("token", authToken, COOKIE_OPTIONS);
+    registerToken(req.sessionToken);
 
     res.status(200).json({
       success: true,
@@ -415,6 +417,7 @@ const verify2FALogin = async (req, res, next) => {
 
     const authToken = signAuthToken(user.id);
     res.cookie("token", authToken, COOKIE_OPTIONS);
+    registerToken(req.sessionToken);
 
     res.status(200).json({
       success: true,
@@ -549,6 +552,7 @@ const resetPassword = async (req, res, next) => {
  */
 const logout = (req, res) => {
   res.clearCookie("token");
+  removeToken(req.sessionToken);
   res.status(200).json({
     success: true,
     message: "Logged out successfully.",
