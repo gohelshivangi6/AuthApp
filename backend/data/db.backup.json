@@ -75,8 +75,8 @@
       "failedAttempts": 0,
       "lockUntil": null,
       "createdAt": "2026-06-08T05:25:16.883Z",
-      "resetPasswordToken": null,
-      "resetPasswordExpires": null
+      "resetPasswordToken": "d8fb8935fad6a624f84103cfa4bd8a49b96d127e34862eb94db17ee5f4ef9339",
+      "resetPasswordExpires": "2026-06-12T09:22:26.384Z"
     }
   ]
 }

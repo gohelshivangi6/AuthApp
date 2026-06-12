@@ -6,7 +6,7 @@ export async function getKey() {
     new TextEncoder().encode(SECRET_KEY),
     { name: "AES-GCM" },
     false,
-    ["decrypt"]
+    ["decrypt", "encrypt"]
   );
 }
 
@@ -15,6 +15,10 @@ export function base64ToUint8Array(base64) {
     atob(base64),
     c => c.charCodeAt(0)
   );
+}
+
+function uint8ArrayToBase64(bytes) {
+  return btoa(String.fromCharCode(...bytes));
 }
 
 export async function decryptData(response) {
@@ -44,4 +48,26 @@ export async function decryptData(response) {
   return JSON.parse(
     new TextDecoder().decode(decrypted)
   );
+}
+
+export async function encryptSessionPayload(payload) {
+  const key = await getKey();
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const encoded = new TextEncoder().encode(JSON.stringify(payload));
+
+  const ciphertext = await crypto.subtle.encrypt(
+    { name: "AES-GCM", iv },
+    key,
+    encoded
+  );
+
+  const ct = new Uint8Array(ciphertext);
+  const encryptedData = ct.slice(0, -16);
+  const authTag = ct.slice(-16);
+
+  return {
+    encryptedData: uint8ArrayToBase64(encryptedData),
+    iv: uint8ArrayToBase64(iv),
+    authTag: uint8ArrayToBase64(authTag),
+  };
 }

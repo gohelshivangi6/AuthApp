@@ -38,9 +38,9 @@ router.post('/login', authLimiter, validateLogin, handleValidationErrors, login)
 router.post('/verify-2fa-login', authLimiter, validate2FA, handleValidationErrors, verify2FALogin);
 router.post('/forgot-password', passwordResetLimiter, validateForgotPassword, handleValidationErrors, forgotPassword);
 router.post('/reset-password', passwordResetLimiter, validateResetPassword, handleValidationErrors, resetPassword);
-router.get('/me', requireRegisteredToken, requireAuth, me);
+router.get('/me', requireAuth, me);
 router.post('/logout', requireRegisteredToken, logout);
-router.get('/status', requireRegisteredToken, checkStatus);
+router.get('/status', checkStatus);
 
 // --- Protected Dashboard Data Route ---
 router.get('/dashboard-data', requireRegisteredToken, requireAuth, (req, res) => {
