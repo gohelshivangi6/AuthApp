@@ -223,7 +223,7 @@ const verify2FASetup = async (req, res, next) => {
     // Issue permanent auth token
     const authToken = signAuthToken(user.id);
     res.cookie("token", authToken, COOKIE_OPTIONS);
-    registerToken(req.sessionToken);
+    registerToken(req.sessionNonce);
 
     res.status(200).json({
       success: true,
@@ -417,7 +417,7 @@ const verify2FALogin = async (req, res, next) => {
 
     const authToken = signAuthToken(user.id);
     res.cookie("token", authToken, COOKIE_OPTIONS);
-    registerToken(req.sessionToken);
+    registerToken(req.sessionNonce);
 
     res.status(200).json({
       success: true,
@@ -552,7 +552,7 @@ const resetPassword = async (req, res, next) => {
  */
 const logout = (req, res) => {
   res.clearCookie("token");
-  removeToken(req.sessionToken);
+  removeToken(req.sessionNonce);
   res.status(200).json({
     success: true,
     message: "Logged out successfully.",
@@ -634,6 +634,7 @@ const requireAuth = async (req, res, next) => {
 
 const me = async (req, res, next) => {
   try {
+    registerToken(req.sessionNonce);
     const user = req.user;
     res.status(200).json({
       success: true,

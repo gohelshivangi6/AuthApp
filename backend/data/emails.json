@@ -1,5 +1,13 @@
 [
   {
+    "id": "mqapdsikb98",
+    "to": "shivangigohel18@gmail.com",
+    "subject": "SecureAuthApp - Password Reset Request",
+    "text": "Hello Shivangi Gohel,\n\nYou requested a password reset. Reset your password here:\nhttp://localhost:5173/reset-password?token=75223cfc15799e109564481425b58e5d8f645d232fd426987ac744e7b10867b8\n\nThis link will expire in 15 minutes.",
+    "html": "<p>Hello Shivangi Gohel,</p><p>You requested a password reset. Reset your password by clicking the link below:</p><p><a href=\"http://localhost:5173/reset-password?token=75223cfc15799e109564481425b58e5d8f645d232fd426987ac744e7b10867b8\">http://localhost:5173/reset-password?token=75223cfc15799e109564481425b58e5d8f645d232fd426987ac744e7b10867b8</a></p><p>This link will expire in 15 minutes.</p>",
+    "timestamp": "2026-06-12T09:07:26.493Z"
+  },
+  {
     "id": "mq544lmxdge",
     "to": "a@gmail.com",
     "subject": "SecureAuthApp - Password Changed successfully",
