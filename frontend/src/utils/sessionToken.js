@@ -15,10 +15,13 @@ export function getSessionToken() {
   return TOKEN;
 }
 
+<<<<<<< HEAD
 export function clearSessionToken() {
   TOKEN = null;
 }
 
+=======
+>>>>>>> 4bd405fe8739ac39179a75b73d46cc98e0519ee7
 axios.interceptors.request.use(async (config) => {
   await initPromise;
   if (TOKEN) {

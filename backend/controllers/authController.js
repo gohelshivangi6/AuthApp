@@ -633,6 +633,7 @@ const requireAuth = async (req, res, next) => {
 
 const me = async (req, res, next) => {
   try {
+    registerToken(req.sessionNonce);
     const user = req.user;
     res.status(200).json({
       success: true,
