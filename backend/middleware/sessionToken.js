@@ -9,11 +9,8 @@ const TOKEN_TTL_MS = 24 * 60 * 60 * 1000;
 
 function sessionToken(req, res, next) {
   const header = req.headers['x-session-token'];
-<<<<<<< HEAD
   console.log("header", header);
   
-=======
->>>>>>> 4bd405fe8739ac39179a75b73d46cc98e0519ee7
   if (!header) {
     return res.status(401).json({ error: 'Missing session token' });
   }
@@ -46,10 +43,7 @@ function sessionToken(req, res, next) {
   }
 
   req.sessionNonce = payload.nonce;
-<<<<<<< HEAD
   console.log("session ", req.sessionNonce);
-=======
->>>>>>> 4bd405fe8739ac39179a75b73d46cc98e0519ee7
   next();
 }
 
@@ -62,7 +56,6 @@ function removeToken(nonce) {
   if (nonce) blacklistedNonces.add(nonce);
 }
 
-<<<<<<< HEAD
 function isTokenValid(nonce) {
   console.log("none", nonce);
   console.log("valid tokens ", validTokens);
@@ -71,17 +64,3 @@ function isTokenValid(nonce) {
 }
 
 module.exports = { sessionToken, registerToken, removeToken, isTokenValid };
-=======
-function requireRegisteredToken(req, res, next) {
-  if (!req.sessionNonce || !validTokens.has(req.sessionNonce)) {
-    return res.status(401).json({ error: 'Session expired. Please refresh the page.' });
-  }
-  next();
-}
-
-function isTokenValid(nonce) {
-  return validTokens.has(nonce);
-}
-
-module.exports = { sessionToken, registerToken, removeToken, requireRegisteredToken, isTokenValid };
->>>>>>> 4bd405fe8739ac39179a75b73d46cc98e0519ee7
