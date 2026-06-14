@@ -29,21 +29,21 @@ const {
 } = require('../middleware/rateLimit');
 
 const { getEmails, clearEmails } = require('../utils/mailer');
-const { requireRegisteredToken } = require('../middleware/sessionToken');
+const { sessionToken } = require('../middleware/sessionToken');
 
 // --- Auth Routes ---
 router.post('/signup', authLimiter, validateSignup, handleValidationErrors, signup);
-router.post('/verify-2fa-setup', authLimiter, validate2FA, handleValidationErrors, verify2FASetup);
+router.post('/verify-2fa-setup', authLimiter, validate2FA, handleValidationErrors, sessionToken, verify2FASetup);
 router.post('/login', authLimiter, validateLogin, handleValidationErrors, login);
-router.post('/verify-2fa-login', authLimiter, validate2FA, handleValidationErrors, verify2FALogin);
+router.post('/verify-2fa-login', authLimiter, validate2FA, handleValidationErrors, sessionToken, verify2FALogin);
 router.post('/forgot-password', passwordResetLimiter, validateForgotPassword, handleValidationErrors, forgotPassword);
 router.post('/reset-password', passwordResetLimiter, validateResetPassword, handleValidationErrors, resetPassword);
 router.get('/me', requireAuth, me);
-router.post('/logout', requireRegisteredToken, logout);
+router.post('/logout', sessionToken, logout);
 router.get('/status', checkStatus);
 
 // --- Protected Dashboard Data Route ---
-router.get('/dashboard-data', requireRegisteredToken, requireAuth, (req, res) => {
+router.get('/dashboard-data', requireAuth, (req, res) => {
   res.status(200).json({
     success: true,
     secretMessage: 'Welcome to the inner sanctum. This data is cryptographically protected by double factors.',

@@ -19,6 +19,7 @@ import AccountTreeIcon from "@mui/icons-material/AccountTree";
 import axios from "axios";
 import GlassCard from "../components/GlassCard";
 import { useAuth } from "../routes/AuthContext";
+import { clearSessionToken } from "../utils/sessionToken";
 import { useDispatch, useSelector } from "react-redux";
 import { loginStart, loginSuccess, logout } from "../redux/slices/authSlice";
 import DonutChart from "../components/charts/DonutChart";
@@ -65,16 +66,16 @@ const Dashboard = () => {
   }, [navigate]);
 
   const handleLogout = async () => {
+    clearSessionToken();
     try {
       await axios.post(LOGOUT_URL, {}, { withCredentials: true });
       dispatch(logout());
-      // setUser(null); // Clear user data from context
       navigate("/login", {
         state: { alertMessage: "Logged out successfully." },
       });
     } catch (err) {
       console.error("Logout failed", err);
-      // Fallback redirection even if endpoint fails
+      dispatch(logout());
       navigate("/login");
     }
   };

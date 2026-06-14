@@ -15,6 +15,10 @@ export function getSessionToken() {
   return TOKEN;
 }
 
+export function clearSessionToken() {
+  TOKEN = null;
+}
+
 axios.interceptors.request.use(async (config) => {
   await initPromise;
   if (TOKEN) {
@@ -22,3 +26,13 @@ axios.interceptors.request.use(async (config) => {
   }
   return config;
 });
+
+axios.interceptors.response.use(
+  (res) => res,
+  (err) => {
+    if (err.response?.status === 401 && !TOKEN) {
+      window.location.href = '/login';
+    }
+    return Promise.reject(err);
+  }
+);

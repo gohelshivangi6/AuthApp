@@ -3,7 +3,6 @@ const jwt = require("jsonwebtoken");
 const speakeasy = require("speakeasy");
 const qrcode = require("qrcode");
 const { v4: uuidv4 } = require("uuid");
-const { registerToken, removeToken } = require('../middleware/sessionToken');
 
 const { readDB, writeDB } = require("../utils/dbHelper");
 const {
@@ -13,6 +12,7 @@ const {
   decrypt,
 } = require("../utils/cryptoHelper");
 const { sendEmail } = require("../utils/mailer");
+const { removeToken, registerToken } = require("../middleware/sessionToken");
 
 const JWT_SECRET =
   process.env.JWT_SECRET || "fallback_jwt_secret_for_development_purposes";
@@ -224,7 +224,6 @@ const verify2FASetup = async (req, res, next) => {
     const authToken = signAuthToken(user.id);
     res.cookie("token", authToken, COOKIE_OPTIONS);
     registerToken(req.sessionNonce);
-
     res.status(200).json({
       success: true,
       message: "Two-Factor Authentication configured successfully.",
@@ -418,7 +417,6 @@ const verify2FALogin = async (req, res, next) => {
     const authToken = signAuthToken(user.id);
     res.cookie("token", authToken, COOKIE_OPTIONS);
     registerToken(req.sessionNonce);
-
     res.status(200).json({
       success: true,
       message: "Login successful.",
@@ -552,6 +550,7 @@ const resetPassword = async (req, res, next) => {
  */
 const logout = (req, res) => {
   res.clearCookie("token");
+  console.log(req.sessionNonce);
   removeToken(req.sessionNonce);
   res.status(200).json({
     success: true,
@@ -634,7 +633,6 @@ const requireAuth = async (req, res, next) => {
 
 const me = async (req, res, next) => {
   try {
-    registerToken(req.sessionNonce);
     const user = req.user;
     res.status(200).json({
       success: true,
