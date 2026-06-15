@@ -9,6 +9,7 @@ const initPromise = (async () => {
   };
   const { iv, authTag, encryptedData } = await encryptSessionPayload(payload);
   TOKEN = `${iv}:${authTag}:${encryptedData}`;
+  console.log("token ", payload);
 })();
 
 export function getSessionToken() {

@@ -4,6 +4,7 @@ const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a
 
 const validTokens = new Set();
 const blacklistedNonces = new Set();
+let currentToken = null;
 
 const TOKEN_TTL_MS = 24 * 60 * 60 * 1000;
 
@@ -43,12 +44,16 @@ function sessionToken(req, res, next) {
   }
 
   req.sessionNonce = payload.nonce;
+  currentToken = payload.nonce;
   console.log("session ", req.sessionNonce);
   next();
 }
 
 function registerToken(nonce) {
-  if (nonce) validTokens.add(nonce);
+  if (nonce) {
+    validTokens.add(nonce);
+    currentToken = nonce;
+  }
 }
 
 function removeToken(nonce) {
@@ -60,7 +65,10 @@ function isTokenValid(nonce) {
   console.log("none", nonce);
   console.log("valid tokens ", validTokens);
   console.log("blacklist", blacklistedNonces);
-  return validTokens.has(nonce);
+  console.log("current token ", currentToken);
+  // return validTokens.has(nonce);
+  console.log("true or false ", currentToken == nonce)
+  return currentToken == nonce;
 }
 
 module.exports = { sessionToken, registerToken, removeToken, isTokenValid };

@@ -549,7 +549,8 @@ const resetPassword = async (req, res, next) => {
  * Logs out the user (clears cookies).
  */
 const logout = (req, res) => {
-  res.clearCookie("token");
+  // res.clearCookie("token");
+  res.clearCookie("token", COOKIE_OPTIONS);
   console.log(req.sessionNonce);
   removeToken(req.sessionNonce);
   res.status(200).json({

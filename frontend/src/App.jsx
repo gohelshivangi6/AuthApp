@@ -89,16 +89,16 @@ function App() {
         >
           <Routes>
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
-            {/* <Route element={<PublicRoute />}> */}
+            <Route element={<PublicRoute />}>
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/verify-2fa" element={<Verify2FA />} />
               <Route path="/setup-2fa" element={<Setup2FA />} />
-            {/* </Route> */}
+            </Route>
 
-            {/* <Route element={<ProtectedRoute />}> */}
+            <Route element={<ProtectedRoute />}>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route
                 path="/hierarchy"
@@ -108,7 +108,7 @@ function App() {
                   </Box>
                 }
               />
-            {/* </Route> */}
+            </Route>
 
             {/* Catch-all redirects back to login */}
             <Route path="*" element={<Navigate to="/login" replace />} />
