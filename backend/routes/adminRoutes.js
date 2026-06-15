@@ -43,6 +43,8 @@ router.post("/widgets", validateCreateWidget, ctrl.createWidget);
 router.put("/widgets/:id", validateUpdateWidget, ctrl.updateWidget);
 router.delete("/widgets/:id", ctrl.deleteWidget);
 
+router.get("/dashboards", ctrl.getDashboards);
+
 router.get("/stats", ctrl.getStats);
 router.get("/activity-logs", ctrl.getActivityLogs);
 router.get("/users/:userId/stats", ctrl.getUserStats);

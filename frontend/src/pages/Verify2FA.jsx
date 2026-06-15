@@ -82,7 +82,7 @@ const Verify2FA = () => {
         setSuccess('Authentication approved! Redirecting...');
 
         setTimeout(() => {
-          navigate('/dashboard');
+          navigate('/dashboards');
         }, 1500);
       }
     } catch (err) {

@@ -9,9 +9,11 @@
       "twoFactorSecretEncrypted": "3fb86981c619521bc2dd1a82160e28d7:405b1d5f7c8033c1b8e0d20e1aab61f2f416c38e641c1599a10b1e646298014a08fec2cd8579ef5b7614c2d242f642fea79c2e0822c8f8ef7f8185df672bde5d",
       "failedAttempts": 0,
       "lockUntil": null,
+      "role": "Sales intern",
       "createdAt": "2026-06-08T05:25:16.883Z",
       "resetPasswordToken": "d8fb8935fad6a624f84103cfa4bd8a49b96d127e34862eb94db17ee5f4ef9339",
-      "resetPasswordExpires": "2026-06-12T09:22:26.384Z"
+      "resetPasswordExpires": "2026-06-12T09:22:26.384Z",
+      "roleId": "fd08a7d9-78ba-49c3-97e2-550773ace333"
     },
     {
       "id": "12660e0e-15ed-43a6-9ff4-56baff2b77e1",
@@ -24,6 +26,20 @@
       "failedAttempts": 0,
       "lockUntil": null,
       "createdAt": "2026-06-15T08:17:41.564Z",
+      "resetPasswordToken": null,
+      "resetPasswordExpires": null
+    },
+    {
+      "id": "8d5e5e06-64e6-4b56-b59c-96cb8f6694f8",
+      "name": "abc",
+      "email": "abc@gmail.com",
+      "passwordHash": "$2b$12$CTfGb.bjy4HjB0dJjbjEN.KO5psEkUbGtJxBduRI5SdCF4K968HM.",
+      "role": "user",
+      "status": "VERIFIED",
+      "twoFactorSecretEncrypted": null,
+      "failedAttempts": 0,
+      "lockUntil": null,
+      "createdAt": "2026-06-15T09:52:29.944Z",
       "resetPasswordToken": null,
       "resetPasswordExpires": null
     }
@@ -56,7 +72,15 @@
       "createdAt": "2026-06-15T08:36:27.615Z"
     }
   ],
-  "userAssignments": [],
+  "userAssignments": [
+    {
+      "id": "71436cbf-e018-47f7-b8ae-2fc8195ac018",
+      "userId": "5d335914-d80b-4edc-b6ea-b2317854539d",
+      "departmentId": "4af13661-09ff-4fad-8a26-36340abcb3f8",
+      "roleId": "fd08a7d9-78ba-49c3-97e2-550773ace333",
+      "createdAt": "2026-06-15T10:46:47.649Z"
+    }
+  ],
   "widgets": [
     {
       "id": "e8e2d15f-9b20-42bb-89ad-e2aed5e3d1df",
@@ -99,7 +123,69 @@
       "targetId": "e8e2d15f-9b20-42bb-89ad-e2aed5e3d1df",
       "granted": true,
       "updatedAt": "2026-06-15T08:37:42.340Z"
+    },
+    {
+      "id": "b547679c-49a7-466c-a452-ade8967662b4",
+      "userId": "5d335914-d80b-4edc-b6ea-b2317854539d",
+      "targetType": "dashboard",
+      "targetId": "0fadd6ea-5461-4b3c-8ba2-e638d468bdf6",
+      "granted": true,
+      "updatedAt": "2026-06-15T11:13:06.821Z"
+    },
+    {
+      "id": "1e0d3566-4a99-43d8-b37d-01425cea7915",
+      "userId": "5d335914-d80b-4edc-b6ea-b2317854539d",
+      "targetType": "dashboard",
+      "targetId": "4af7eb1f-5438-4452-9a55-d9299b28434f",
+      "granted": true,
+      "updatedAt": "2026-06-15T11:13:46.934Z"
+    },
+    {
+      "id": "a409110c-ce9b-4577-afaf-2c82905656bf",
+      "userId": "5d335914-d80b-4edc-b6ea-b2317854539d",
+      "targetType": "dashboard",
+      "targetId": "aa4fa9c8-f45e-4f6f-b382-e2dca593b206",
+      "granted": true,
+      "updatedAt": "2026-06-15T11:14:00.332Z"
+    },
+    {
+      "id": "af6bf678-3533-4b54-a358-b08b0f0fe856",
+      "userId": "5d335914-d80b-4edc-b6ea-b2317854539d",
+      "targetType": "dashboard",
+      "targetId": "10c37e33-e368-4477-9677-572a11a85435",
+      "granted": true,
+      "updatedAt": "2026-06-15T11:14:09.931Z"
     }
   ],
-  "activityLogs": []
+  "activityLogs": [],
+  "dashboards": [
+    {
+      "id": "0fadd6ea-5461-4b3c-8ba2-e638d468bdf6",
+      "name": "Revenue Operations Pulse",
+      "path": "revenue-ops-pulse",
+      "description": "Real-time revenue metrics and operational KPIs",
+      "createdAt": "2026-06-15T11:05:45.512Z"
+    },
+    {
+      "id": "4af7eb1f-5438-4452-9a55-d9299b28434f",
+      "name": "Leadership Command Center",
+      "path": "leadership-command-center",
+      "description": "Executive overview of organizational performance",
+      "createdAt": "2026-06-15T11:05:45.513Z"
+    },
+    {
+      "id": "10c37e33-e368-4477-9677-572a11a85435",
+      "name": "Product Engagement Tracker",
+      "path": "product-engagement-tracker",
+      "description": "User engagement and product adoption analytics",
+      "createdAt": "2026-06-15T11:05:45.513Z"
+    },
+    {
+      "id": "aa4fa9c8-f45e-4f6f-b382-e2dca593b206",
+      "name": "Global Sales Cockpit",
+      "path": "global-sales-cockpit",
+      "description": "Worldwide sales pipeline and revenue forecasting",
+      "createdAt": "2026-06-15T11:05:45.513Z"
+    }
+  ]
 }

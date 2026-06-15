@@ -32,6 +32,7 @@ const validateCreateUser = [
   body("password")
     .isLength({ min: 8 })
     .withMessage("Password must be at least 8 characters"),
+  body("roleId").optional().isUUID().withMessage("Invalid role ID"),
   handleValidationErrors,
 ];
 
@@ -39,7 +40,8 @@ const validateUpdateUser = [
   param("id").isUUID().withMessage("Invalid user ID"),
   body("name").optional().trim().notEmpty(),
   body("email").optional().isEmail(),
-  body("role").optional().isIn(["user", "admin"]),
+  body("role").optional(),
+  body("roleId").optional({ nullable: true }).custom((v) => v === null || /^[0-9a-f-]{36}$/i.test(v)).withMessage("Invalid role ID"),
   handleValidationErrors,
 ];
 
@@ -60,8 +62,8 @@ const validateUpdateAssignment = [
 const validateCreatePermission = [
   body("userId").isUUID().withMessage("Invalid user ID"),
   body("targetType")
-    .isIn(["department", "widget"])
-    .withMessage("targetType must be 'department' or 'widget'"),
+    .isIn(["department", "widget", "dashboard"])
+    .withMessage("targetType must be 'department', 'widget', or 'dashboard'"),
   body("targetId").isUUID().withMessage("Invalid target ID"),
   body("granted").isBoolean().withMessage("granted must be boolean"),
   handleValidationErrors,

@@ -59,4 +59,20 @@ async function getDashboardData(req, res, next) {
   } catch (err) { next(err); }
 }
 
-module.exports = { getDashboardData };
+async function getAllowedDashboards(req, res, next) {
+  try {
+    const db = await readDB();
+    const userId = req.user.id;
+    const userPerms = (db.permissions || []).filter((p) => p.userId === userId && p.targetType === "dashboard");
+    const allDashboards = db.dashboards || [];
+
+    const allowed = allDashboards.filter((d) => {
+      const perm = userPerms.find((p) => p.targetId === d.id);
+      return perm ? perm.granted : false;
+    });
+
+    res.json({ success: true, dashboards: allowed });
+  } catch (err) { next(err); }
+}
+
+module.exports = { getDashboardData, getAllowedDashboards };

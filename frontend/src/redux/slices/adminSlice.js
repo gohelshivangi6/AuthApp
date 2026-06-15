@@ -46,6 +46,7 @@ export const deleteDepartment = createAsyncThunk("admin/deleteDepartment", async
 export const fetchRoles = createAsyncThunk("admin/fetchRoles", async (departmentId) => {
   const params = departmentId ? `?departmentId=${departmentId}` : "";
   const res = await axios.get(`${API}/roles${params}`, { withCredentials: true });
+  console.log("roles ", res.data);
   return res.data.roles;
 });
 
@@ -115,6 +116,11 @@ export const deleteWidget = createAsyncThunk("admin/deleteWidget", async (id) =>
   return id;
 });
 
+export const fetchDashboards = createAsyncThunk("admin/fetchDashboards", async () => {
+  const res = await axios.get(`${API}/dashboards`, { withCredentials: true });
+  return res.data.dashboards;
+});
+
 export const fetchStats = createAsyncThunk("admin/fetchStats", async () => {
   const res = await axios.get(`${API}/stats`, { withCredentials: true });
   return res.data.stats;
@@ -140,6 +146,7 @@ const adminSlice = createSlice({
     assignments: [],
     permissions: [],
     widgets: [],
+    dashboards: [],
     stats: null,
     activityLogs: [],
     activityLogsTotal: 0,
@@ -209,6 +216,7 @@ const adminSlice = createSlice({
       .addCase(deleteWidget.fulfilled, (state, action) => {
         state.widgets = state.widgets.filter((w) => w.id !== action.payload);
       })
+      .addCase(fetchDashboards.fulfilled, (state, action) => { state.dashboards = action.payload; })
       .addCase(fetchStats.fulfilled, (state, action) => { state.stats = action.payload; })
       .addCase(fetchActivityLogs.fulfilled, (state, action) => {
         state.activityLogs = action.payload.logs;

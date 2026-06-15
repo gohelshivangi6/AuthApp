@@ -85,6 +85,7 @@ const signup = async (req, res, next) => {
       name,
       email,
       passwordHash: hashedPassword,
+      role: "user",
       status: "PENDING_2FA",
       twoFactorSecretEncrypted: encrypt(secret.base32),
       failedAttempts: 0,

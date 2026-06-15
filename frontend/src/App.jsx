@@ -10,6 +10,11 @@ import Verify2FA from "./pages/Verify2FA";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import Dashboard from "./pages/Dashboard";
+import DashboardNav from "./pages/DashboardNav";
+import RevenueOpsPulse from "./pages/RevenueOpsPulse";
+import LeadershipCommandCenter from "./pages/LeadershipCommandCenter";
+import ProductEngagementTracker from "./pages/ProductEngagementTracker";
+import GlobalSalesCockpit from "./pages/GlobalSalesCockpit";
 
 // Import Components
 import DevMailbox from "./components/DevMailbox";
@@ -102,6 +107,11 @@ function App() {
 
             <Route element={<ProtectedRoute />}>
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/dashboards" element={<DashboardNav />} />
+              <Route path="/dashboards/revenue-ops-pulse" element={<RevenueOpsPulse />} />
+              <Route path="/dashboards/leadership-command-center" element={<LeadershipCommandCenter />} />
+              <Route path="/dashboards/product-engagement-tracker" element={<ProductEngagementTracker />} />
+              <Route path="/dashboards/global-sales-cockpit" element={<GlobalSalesCockpit />} />
               <Route
                 path="/hierarchy"
                 element={

@@ -79,7 +79,7 @@ const Setup2FA = () => {
         setSuccess('2FA Setup completed successfully! Redirecting...');
         setTimeout(() => {
           // Redirect to dashboard (full session exists via cookies)
-          navigate('/dashboard');
+          navigate('/dashboards');
         }, 1500);
       }
     } catch (err) {

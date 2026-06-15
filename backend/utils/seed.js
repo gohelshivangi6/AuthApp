@@ -13,6 +13,13 @@ const DEFAULT_WIDGETS = [
   { componentName: "ScatterPlot", name: "Scatter Plot", description: "D3 scatter plot visualization", defaultEnabled: true },
 ];
 
+const DEFAULT_DASHBOARDS = [
+  { name: "Revenue Operations Pulse", path: "revenue-ops-pulse", description: "Real-time revenue metrics and operational KPIs" },
+  { name: "Leadership Command Center", path: "leadership-command-center", description: "Executive overview of organizational performance" },
+  { name: "Product Engagement Tracker", path: "product-engagement-tracker", description: "User engagement and product adoption analytics" },
+  { name: "Global Sales Cockpit", path: "global-sales-cockpit", description: "Worldwide sales pipeline and revenue forecasting" },
+];
+
 async function seed() {
   const db = await readDB();
 
@@ -24,6 +31,7 @@ async function seed() {
   if (!db.widgets) { db.widgets = []; needsWrite = true; }
   if (!db.permissions) { db.permissions = []; needsWrite = true; }
   if (!db.activityLogs) { db.activityLogs = []; needsWrite = true; }
+  if (!db.dashboards) { db.dashboards = []; needsWrite = true; }
 
   const adminExists = db.users.some(
     (u) => u.email === ADMIN_EMAIL && u.role === "admin"
@@ -63,6 +71,18 @@ async function seed() {
       db.widgets.push({
         id: uuidv4(),
         ...w,
+        createdAt: new Date().toISOString(),
+      });
+      needsWrite = true;
+    }
+  }
+
+  const existingDashboards = db.dashboards || [];
+  for (const d of DEFAULT_DASHBOARDS) {
+    if (!existingDashboards.some((ed) => ed.path === d.path)) {
+      db.dashboards.push({
+        id: uuidv4(),
+        ...d,
         createdAt: new Date().toISOString(),
       });
       needsWrite = true;

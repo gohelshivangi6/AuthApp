@@ -1,4 +1,5 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   Typography,
@@ -6,21 +7,30 @@ import {
   Paper,
   CircularProgress,
   Chip,
+  Button,
 } from "@mui/material";
 import AccountTreeIcon from "@mui/icons-material/AccountTree";
 import BusinessIcon from "@mui/icons-material/Business";
+import DashboardIcon from "@mui/icons-material/Dashboard";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchDashboardData } from "../redux/slices/dashboardSlice";
 import WidgetRenderer from "./WidgetRenderer";
 import { getUserSocket } from "../utils/websocket";
+import axios from "axios";
 
 export default function UserDashboard() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { departments, widgets, loading } = useSelector((state) => state.dashboard);
   const user = useSelector((state) => state.auth.user);
+  const [hasDashboards, setHasDashboards] = useState(false);
 
   useEffect(() => {
     dispatch(fetchDashboardData());
+    axios
+      .get("http://localhost:5000/api/dashboard/allowed", { withCredentials: true })
+      .then((res) => setHasDashboards(res.data.dashboards.length > 0))
+      .catch(() => setHasDashboards(false));
   }, [dispatch]);
 
   useEffect(() => {
@@ -72,9 +82,21 @@ export default function UserDashboard() {
 
   return (
     <Box sx={{ py: 6, px: { xs: 2, md: 4 }, maxWidth: 1100, margin: "0 auto" }}>
-      <Typography variant="h4" sx={{ fontFamily: "Outfit", fontWeight: 800, mb: 1 }}>
-        My Dashboard
-      </Typography>
+      <Box display="flex" alignItems="center" justifyContent="space-between" mb={1}>
+        <Typography variant="h4" sx={{ fontFamily: "Outfit", fontWeight: 800 }}>
+          My Dashboard
+        </Typography>
+        {hasDashboards && (
+          <Button
+            variant="outlined"
+            startIcon={<DashboardIcon />}
+            onClick={() => navigate("/dashboards")}
+            sx={{ textTransform: "none", fontFamily: "Outfit", fontWeight: 600 }}
+          >
+            View Dashboards
+          </Button>
+        )}
+      </Box>
       <Typography variant="body2" color="textSecondary" mb={4}>
         Welcome, {user?.name || "User"}
       </Typography>

@@ -9,25 +9,31 @@ async function getUsers(req, res, next) {
   try {
     const db = await readDB();
     const assignments = db.userAssignments || [];
-    const users = db.users.map((u) => {
-      const userAssignments = assignments.filter((a) => a.userId === u.id);
-      return {
-        id: u.id,
-        name: u.name,
-        email: u.email,
-        role: u.role || "user",
-        status: u.status,
-        createdAt: u.createdAt,
-        assignments: userAssignments,
-      };
-    });
+    const roles = db.roles || [];
+    const users = db.users
+      .filter((u) => u.role !== "admin")
+      .map((u) => {
+        const userAssignments = assignments.filter((a) => a.userId === u.id);
+        const assignedRole = roles.find((r) => r.id === u.roleId);
+        return {
+          id: u.id,
+          name: u.name,
+          email: u.email,
+          role: u.role || "user",
+          roleId: u.roleId || null,
+          roleName: assignedRole?.name || null,
+          status: u.status,
+          createdAt: u.createdAt,
+          assignments: userAssignments,
+        };
+      });
     res.json({ success: true, users });
   } catch (err) { next(err); }
 }
 
 async function createUser(req, res, next) {
   try {
-    const { name, email, password, role } = req.body;
+    const { name, email, password, role, roleId } = req.body;
     const db = await readDB();
 
     if (db.users.find((u) => u.email === email)) {
@@ -41,6 +47,7 @@ async function createUser(req, res, next) {
       email,
       passwordHash,
       role: role || "user",
+      roleId: roleId || null,
       status: "VERIFIED",
       twoFactorSecretEncrypted: null,
       failedAttempts: 0,
@@ -56,7 +63,7 @@ async function createUser(req, res, next) {
     res.status(201).json({
       success: true,
       message: "User created successfully.",
-      user: { id: newUser.id, name, email, role: newUser.role },
+      user: { id: newUser.id, name, email, role: newUser.role, roleId: newUser.roleId },
     });
   } catch (err) { next(err); }
 }
@@ -64,7 +71,8 @@ async function createUser(req, res, next) {
 async function updateUser(req, res, next) {
   try {
     const { id } = req.params;
-    const { name, email, role } = req.body;
+    const { name, email, role, roleId } = req.body;
+    console.log("role ", role);
     const db = await readDB();
 
     const user = db.users.find((u) => u.id === id);
@@ -75,6 +83,7 @@ async function updateUser(req, res, next) {
     if (name !== undefined) user.name = name;
     if (email !== undefined) user.email = email;
     if (role !== undefined) user.role = role;
+    if (roleId !== undefined) user.roleId = roleId;
 
     await writeDB(db);
     res.json({ success: true, message: "User updated." });
@@ -443,6 +452,15 @@ async function deleteWidget(req, res, next) {
   } catch (err) { next(err); }
 }
 
+// ─── Dashboards ─────────────────────────────────────────────
+
+async function getDashboards(req, res, next) {
+  try {
+    const db = await readDB();
+    res.json({ success: true, dashboards: db.dashboards || [] });
+  } catch (err) { next(err); }
+}
+
 // ─── Stats & Activity Logs ──────────────────────────────────
 
 async function getStats(req, res, next) {
@@ -565,6 +583,7 @@ module.exports = {
   createWidget,
   updateWidget,
   deleteWidget,
+  getDashboards,
   getStats,
   getActivityLogs,
   getUserStats,
