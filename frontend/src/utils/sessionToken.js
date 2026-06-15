@@ -12,10 +12,6 @@ const initPromise = (async () => {
   console.log("token ", payload);
 })();
 
-export function getSessionToken() {
-  return TOKEN;
-}
-
 export function clearSessionToken() {
   TOKEN = null;
 }

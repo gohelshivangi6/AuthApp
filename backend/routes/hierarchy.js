@@ -4,7 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const { stringify } = require('csv-stringify/sync');
 const { encryptData } = require('../middleware/encryption');
-const { sessionToken, isTokenValid, registerToken } = require('../middleware/sessionToken');
+const { sessionToken } = require('../middleware/sessionToken');
 const DATA_DIR = path.join(__dirname, '..', 'data');
 
 function readJSON(filename) {
@@ -13,25 +13,11 @@ function readJSON(filename) {
 }
 
 router.get('/config', sessionToken, (req, res) => {
-  registerToken(req.sessionNonce);
-  isTokenValid(req.sessionNonce);
-  if (!isTokenValid(req.sessionNonce)) {
-    return res.status(401).json({
-      error: 'Unknown session token'
-    });
-  }
   const data = readJSON('hierarchyConfig.json');
   res.json(encryptData(data));
 });
 
 router.get('/data', sessionToken, (req, res) => {
-  registerToken(req.sessionNonce);
-  isTokenValid(req.sessionNonce);
-  if (!isTokenValid(req.sessionNonce)) {
-    return res.status(401).json({
-      error: 'Unknown session token'
-    });
-  }
   const data = readJSON('hierarchyData.json');
   res.json(encryptData(data));
 });

@@ -43,7 +43,7 @@ router.post('/logout', sessionToken, logout);
 router.get('/status', checkStatus);
 
 // --- Protected Dashboard Data Route ---
-router.get('/dashboard-data', requireAuth, (req, res) => {
+router.get('/dashboard-data', requireAuth, sessionToken, (req, res) => {
   res.status(200).json({
     success: true,
     secretMessage: 'Welcome to the inner sanctum. This data is cryptographically protected by double factors.',
