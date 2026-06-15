@@ -231,6 +231,7 @@ const verify2FASetup = async (req, res, next) => {
         id: user.id,
         name: user.name,
         email: user.email,
+        role: user.role || "user",
       },
     });
   } catch (error) {
@@ -314,7 +315,23 @@ const login = async (req, res, next) => {
       });
     }
 
-    // CASE B: User is fully verified, needs to input 2FA code to log in
+    // CASE B: User is VERIFIED but has no 2FA configured (e.g., admin account)
+    if (user.status === "VERIFIED" && !user.twoFactorSecretEncrypted) {
+      const authToken = signAuthToken(user.id);
+      res.cookie("token", authToken, COOKIE_OPTIONS);
+      return res.status(200).json({
+        success: true,
+        message: "Login successful.",
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role || "user",
+        },
+      });
+    }
+
+    // CASE C: User is fully verified, needs to input 2FA code to log in
     const tempToken = signTempToken(user.id, "pending_2fa_verification");
     return res.status(200).json({
       email: user.email,
@@ -424,6 +441,7 @@ const verify2FALogin = async (req, res, next) => {
         id: user.id,
         name: user.name,
         email: user.email,
+        role: user.role || "user",
       },
     });
   } catch (error) {
@@ -594,6 +612,7 @@ const checkStatus = async (req, res, next) => {
         id: user.id,
         name: user.name,
         email: user.email,
+        role: user.role || "user",
       },
     });
   } catch (error) {
@@ -642,6 +661,7 @@ const me = async (req, res, next) => {
         id: user.id,
         name: user.name,
         email: user.email,
+        role: user.role || "user",
       },
     });
   } catch (error) {

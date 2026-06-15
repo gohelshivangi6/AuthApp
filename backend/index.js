@@ -5,10 +5,14 @@ require('dotenv').config();
 
 const authRoutes = require('./routes/authRoutes');
 const hierarchyRoutes = require('./routes/hierarchy');
+const adminRoutes = require('./routes/adminRoutes');
+const dashboardRoutes = require('./routes/dashboardRoutes');
 const { globalLimiter } = require('./middleware/rateLimit');
 const { sessionToken } = require('./middleware/sessionToken');
 const errorHandler = require('./middleware/errorHandler');
 const { initCleanupTask } = require('./utils/cleanup');
+const { seed } = require('./utils/seed');
+const { initWebSocket } = require('./utils/websocket');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -36,6 +40,8 @@ app.use(sessionToken);
 // Mount API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/hierarchy', hierarchyRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 // Simple healthcheck route
 app.get('/health', (req, res) => {
@@ -57,6 +63,12 @@ initCleanupTask();
 const server = app.listen(PORT, () => {
   console.log(`[Server] Secure Auth backend listening on port ${PORT}...`);
 });
+
+// Initialize WebSocket
+initWebSocket(server);
+
+// Run seed data (admin account + default widgets)
+seed().catch((err) => console.error('[Seed] Error:', err));
 
 // Catch process-level crashes (unhandled rejections/exceptions)
 process.on('uncaughtException', (err) => {

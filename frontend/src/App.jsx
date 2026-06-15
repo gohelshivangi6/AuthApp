@@ -1,4 +1,4 @@
-import React from "react";
+
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider, createTheme, CssBaseline, Box } from "@mui/material";
 
@@ -16,6 +16,7 @@ import DevMailbox from "./components/DevMailbox";
 import HierarchyTable from "./components/HierarchyTable";
 import PublicRoute from "./routes/PublicRoute";
 import ProtectedRoute from "./routes/ProtectedRoute";
+import { WebSocketProvider } from "./components/WebSocketProvider";
 
 // Create a custom modern dark theme using Outfit and Inter typography
 const theme = createTheme({
@@ -87,16 +88,17 @@ function App() {
             pb: 8,
           }}
         >
+          <WebSocketProvider>
           <Routes>
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
-            <Route element={<PublicRoute />}>
+            {/* <Route element={<PublicRoute />}> */}
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/verify-2fa" element={<Verify2FA />} />
               <Route path="/setup-2fa" element={<Setup2FA />} />
-            </Route>
+            {/* </Route> */}
 
             <Route element={<ProtectedRoute />}>
               <Route path="/dashboard" element={<Dashboard />} />
@@ -113,6 +115,7 @@ function App() {
             {/* Catch-all redirects back to login */}
             <Route path="*" element={<Navigate to="/login" replace />} />
           </Routes>
+          </WebSocketProvider>
         </Box>
 
         {/* Developer Mailbox - simulated mailbox drawer overlay for local testing */}

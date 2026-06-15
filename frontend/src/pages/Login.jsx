@@ -15,13 +15,14 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import VpnKeyIcon from '@mui/icons-material/VpnKey';
 import axios from 'axios';
 import GlassCard from '../components/GlassCard';
-import { loginStart, loginSuccess } from '../redux/slices/authSlice';
+import { loginSuccess } from '../redux/slices/authSlice';
 
 const API_URL = 'http://localhost:5000/api/auth/login';
 
 const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
 
   const [formData, setFormData] = useState({
     email: '',
@@ -85,6 +86,10 @@ const Login = () => {
               email: formData.email
             }
           });
+        } else if (res.data.user) {
+          // Direct login (no 2FA required — e.g. admin account)
+          dispatch(loginSuccess(res.data.user));
+          navigate('/dashboard');
         }
       }
     } catch (err) {
