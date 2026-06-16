@@ -7,7 +7,7 @@ import {
   getUserSocket,
 } from "../utils/websocket";
 import { updateUser } from "../redux/slices/authSlice";
-import { fetchDashboardData } from "../redux/slices/dashboardSlice";
+import { fetchDashboardData, upsertSectionPermission, removeSectionPermission } from "../redux/slices/dashboardSlice";
 import axios from "axios";
 
 const WebSocketContext = createContext(null);
@@ -48,6 +48,19 @@ export function WebSocketProvider({ children }) {
     const handlePermUpdate = (data) => {
       if (data.type === "user" && data.user) {
         dispatch(updateUser(data.user));
+        return;
+      }
+
+      if (data.type === "permission" && data.targetType === "dashboard-section") {
+        if (data.action === "upsert") {
+          dispatch(upsertSectionPermission({
+            targetType: "dashboard-section",
+            targetId: data.targetId,
+            granted: data.granted,
+          }));
+        } else if (data.action === "delete") {
+          dispatch(removeSectionPermission(data.targetId));
+        }
         return;
       }
 

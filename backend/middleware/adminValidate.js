@@ -62,9 +62,20 @@ const validateUpdateAssignment = [
 const validateCreatePermission = [
   body("userId").isUUID().withMessage("Invalid user ID"),
   body("targetType")
-    .isIn(["department", "widget", "dashboard"])
-    .withMessage("targetType must be 'department', 'widget', or 'dashboard'"),
-  body("targetId").isUUID().withMessage("Invalid target ID"),
+    .isIn(["department", "widget", "dashboard", "dashboard-section"])
+    .withMessage("targetType must be 'department', 'widget', 'dashboard', or 'dashboard-section'"),
+  body("targetId").custom((value, { req }) => {
+    if (req.body.targetType === "dashboard-section") {
+      if (!/^[a-z0-9-]+::[a-zA-Z]+$/.test(value)) {
+        throw new Error("targetId must be 'slug::sectionName' for dashboard-section (e.g. 'revenue-ops-pulse::kpiCards')");
+      }
+      return true;
+    }
+    if (!/^[0-9a-f-]{36}$/i.test(value)) {
+      throw new Error("Invalid target ID, must be a UUID");
+    }
+    return true;
+  }),
   body("granted").isBoolean().withMessage("granted must be boolean"),
   handleValidationErrors,
 ];

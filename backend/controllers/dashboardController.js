@@ -75,4 +75,16 @@ async function getAllowedDashboards(req, res, next) {
   } catch (err) { next(err); }
 }
 
-module.exports = { getDashboardData, getAllowedDashboards };
+async function getSectionPermissions(req, res, next) {
+  try {
+    const db = await readDB();
+    const userId = req.user.id;
+    const sectionPerms = (db.permissions || []).filter(
+      (p) => p.userId === userId && p.targetType === "dashboard-section"
+    );
+    console.log("permisiions", sectionPerms);
+    res.json({ success: true, permissions: sectionPerms });
+  } catch (err) { next(err); }
+}
+
+module.exports = { getDashboardData, getAllowedDashboards, getSectionPermissions };

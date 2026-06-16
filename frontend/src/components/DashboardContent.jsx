@@ -37,7 +37,9 @@ function TrendChip({ change, changeType }) {
   );
 }
 
-export default function DashboardContent({ data }) {
+export default function DashboardContent({ data, hiddenSections = [] }) {
+  const isHidden = (section) => hiddenSections.includes(section);
+
   if (!data) {
     return (
       <Box sx={{ py: 6, textAlign: "center" }}>
@@ -67,7 +69,7 @@ export default function DashboardContent({ data }) {
         </Typography>
       </Paper>
 
-      {data.kpiCards && data.kpiCards.length > 0 && (
+      {!isHidden("kpiCards") && data.kpiCards && data.kpiCards.length > 0 && (
         <Grid container spacing={2} sx={{ mb: 4 }}>
           {data.kpiCards.map((kpi) => (
             <Grid size={{ xs: 12, sm: 6, md: 4 }} key={kpi.id}>
@@ -100,7 +102,7 @@ export default function DashboardContent({ data }) {
         </Grid>
       )}
 
-      {data.charts && data.charts.length > 0 && (
+      {!isHidden("charts") && data.charts && data.charts.length > 0 && (
         <Grid container spacing={3} sx={{ mb: 4 }}>
           {data.charts.map((chart) => {
             const ChartComponent = CHART_COMPONENTS[chart.type];
@@ -132,7 +134,7 @@ export default function DashboardContent({ data }) {
         </Grid>
       )}
 
-      {data.tables && data.tables.length > 0 && (
+      {!isHidden("tables") && data.tables && data.tables.length > 0 && (
         <Grid container spacing={3}>
           {data.tables.map((table) => (
             <Grid size={{ xs: 12, md: table.headers.length > 4 ? 12 : 6 }} key={table.id}>

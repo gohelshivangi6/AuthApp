@@ -1,12 +1,22 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import DashboardContent from "../components/DashboardContent";
 import { decryptData } from "../decrypt/decryption";
+import { fetchSectionPermissions } from "../redux/slices/dashboardSlice";
 import { Box, CircularProgress } from "@mui/material";
 
+const DASHBOARD_SLUG = "product-engagement-tracker";
+
 export default function ProductEngagementTracker() {
+  const dispatch = useDispatch();
+  const sectionPermissions = useSelector((s) => s.dashboard.sectionPermissions);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    dispatch(fetchSectionPermissions());
+  }, [dispatch]);
 
   useEffect(() => {
     let cancelled = false;
@@ -25,6 +35,12 @@ export default function ProductEngagementTracker() {
     return () => { cancelled = true; };
   }, []);
 
+  const hiddenSections = useMemo(() => {
+    return sectionPermissions
+      .filter((p) => p.targetId.startsWith(`${DASHBOARD_SLUG}::`) && !p.granted)
+      .map((p) => p.targetId.split("::")[1]);
+  }, [sectionPermissions]);
+
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', py: 10 }}>
@@ -33,5 +49,5 @@ export default function ProductEngagementTracker() {
     );
   }
 
-  return <DashboardContent data={data} />;
+  return <DashboardContent data={data} hiddenSections={hiddenSections} />;
 }
