@@ -1,10 +1,14 @@
 import { createContext, useContext, useEffect, useRef } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import {
   connectUserSocket,
   connectAdminSocket,
   disconnectSockets,
+  getUserSocket,
 } from "../utils/websocket";
+import { updateUser } from "../redux/slices/authSlice";
+import { fetchDashboardData } from "../redux/slices/dashboardSlice";
+import axios from "axios";
 
 const WebSocketContext = createContext(null);
 
@@ -13,13 +17,11 @@ export function useWebSocket() {
 }
 
 export function WebSocketProvider({ children }) {
+  const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const token = useSelector((state) => state.auth.token);
   const prevAuthRef = useRef(false);
-  console.log("..user", user);
-  console.log("..isAuthenticated", isAuthenticated);
-  console.log("..token", token);
 
   useEffect(() => {
     if (isAuthenticated && user && token) {
@@ -35,7 +37,39 @@ export function WebSocketProvider({ children }) {
       disconnectSockets();
       prevAuthRef.current = false;
     }
-  }, [isAuthenticated, user, token]);
+  }, [isAuthenticated, user, token, dispatch]);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    const socket = getUserSocket();
+    if (!socket) return;
+
+    const handlePermUpdate = (data) => {
+      if (data.type === "user" && data.user) {
+        dispatch(updateUser(data.user));
+        return;
+      }
+
+      if (data.type !== "permission" && data.type !== "assignment") {
+        dispatch(fetchDashboardData());
+        axios
+          .get("http://localhost:5000/api/auth/me", { withCredentials: true })
+          .then((res) => {
+            if (res.data.user) {
+              dispatch(updateUser(res.data.user));
+            }
+          })
+          .catch(() => {});
+      }
+    };
+
+    socket.on("permissions-updated", handlePermUpdate);
+
+    return () => {
+      socket.off("permissions-updated", handlePermUpdate);
+    };
+  }, [dispatch, isAuthenticated]);
 
   return (
     <WebSocketContext.Provider value={{}}>

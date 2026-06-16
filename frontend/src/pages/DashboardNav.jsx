@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import {
@@ -10,6 +10,7 @@ import GroupIcon from "@mui/icons-material/Group";
 import TouchAppIcon from "@mui/icons-material/TouchApp";
 import PublicIcon from "@mui/icons-material/Public";
 import axios from "axios";
+import { getUserSocket } from "../utils/websocket";
 
 const DASHBOARD_ICONS = {
   "revenue-ops-pulse": <ShowChartIcon sx={{ fontSize: 48, color: "#6366f1" }} />,
@@ -31,13 +32,31 @@ export default function DashboardNav() {
   const [dashboards, setDashboards] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const fetchAllowedDashboards = useCallback(() => {
     axios
       .get("http://localhost:5000/api/dashboard/allowed", { withCredentials: true })
       .then((res) => setDashboards(res.data.dashboards))
       .catch(() => setDashboards([]))
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    fetchAllowedDashboards();
+  }, [fetchAllowedDashboards]);
+
+  useEffect(() => {
+    const socket = getUserSocket();
+    if (!socket) return;
+
+    const handlePermUpdate = (data) => {
+      if (data.type === "permission" || data.type === "assignment") {
+        fetchAllowedDashboards();
+      }
+    };
+
+    socket.on("permissions-updated", handlePermUpdate);
+    return () => socket.off("permissions-updated", handlePermUpdate);
+  }, [fetchAllowedDashboards]);
 
   if (user?.role === "admin") {
     navigate("/dashboard", { replace: true });

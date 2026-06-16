@@ -86,6 +86,9 @@ async function updateUser(req, res, next) {
     if (roleId !== undefined) user.roleId = roleId;
 
     await writeDB(db);
+
+    try { emitPermissionUpdate(id, { type: "user", user: { name: user.name, email: user.email, role: user.role, roleId: user.roleId } }); } catch (_) {}
+
     res.json({ success: true, message: "User updated." });
   } catch (err) { next(err); }
 }
@@ -271,6 +274,8 @@ async function createAssignment(req, res, next) {
     db.userAssignments.push(assignment);
     await writeDB(db);
 
+    try { emitPermissionUpdate(userId, { type: "assignment", action: "created", departmentId, roleId }); } catch (_) {}
+
     res.status(201).json({ success: true, assignment });
   } catch (err) { next(err); }
 }
@@ -290,6 +295,9 @@ async function updateAssignment(req, res, next) {
     if (roleId !== undefined) assignment.roleId = roleId;
 
     await writeDB(db);
+
+    try { emitPermissionUpdate(assignment.userId, { type: "assignment", action: "updated", departmentId: assignment.departmentId, roleId: assignment.roleId }); } catch (_) {}
+
     res.json({ success: true, assignment });
   } catch (err) { next(err); }
 }
@@ -304,8 +312,12 @@ async function deleteAssignment(req, res, next) {
       return res.status(404).json({ success: false, message: "Assignment not found." });
     }
 
+    const assignment = db.userAssignments[idx];
     db.userAssignments.splice(idx, 1);
     await writeDB(db);
+
+    try { emitPermissionUpdate(assignment.userId, { type: "assignment", action: "deleted" }); } catch (_) {}
+
     res.json({ success: true, message: "Assignment removed." });
   } catch (err) { next(err); }
 }
@@ -352,7 +364,7 @@ async function createPermission(req, res, next) {
 
     await writeDB(db);
 
-    try { emitPermissionUpdate(userId); } catch (_) {}
+    try { emitPermissionUpdate(userId, { type: "permission", action: "upsert", targetType, targetId, granted }); } catch (_) {}
 
     res.status(201).json({ success: true, permission });
   } catch (err) { next(err); }
@@ -372,7 +384,7 @@ async function deletePermission(req, res, next) {
     db.permissions.splice(idx, 1);
     await writeDB(db);
 
-    try { emitPermissionUpdate(perm.userId); } catch (_) {}
+    try { emitPermissionUpdate(perm.userId, { type: "permission", action: "delete", targetType: perm.targetType, targetId: perm.targetId }); } catch (_) {}
 
     res.json({ success: true, message: "Permission removed." });
   } catch (err) { next(err); }

@@ -31,6 +31,10 @@ const authSlice = createSlice({
     loginFailure: (state) => {
       state.loading = false;
     },
+
+    updateUser: (state, action) => {
+      state.user = { ...state.user, ...action.payload };
+    },
   },
 });
 
@@ -39,6 +43,7 @@ export const {
   loginSuccess,
   loginFailure,
   logout,
+  updateUser,
 } = authSlice.actions;
 
 export default authSlice.reducer;

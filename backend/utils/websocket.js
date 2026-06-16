@@ -150,9 +150,9 @@ async function logActivity(userId, type, metadata = {}) {
   } catch (_) {}
 }
 
-function emitPermissionUpdate(userId) {
+function emitPermissionUpdate(userId, data = {}) {
   if (!io) return;
-  io.of("/user").to(`user:${userId}`).emit("permissions-updated", { userId });
+  io.of("/user").to(`user:${userId}`).emit("permissions-updated", { userId, ...data });
 }
 
 function getActiveUsersCount() {

@@ -9,11 +9,11 @@
       "twoFactorSecretEncrypted": "3fb86981c619521bc2dd1a82160e28d7:405b1d5f7c8033c1b8e0d20e1aab61f2f416c38e641c1599a10b1e646298014a08fec2cd8579ef5b7614c2d242f642fea79c2e0822c8f8ef7f8185df672bde5d",
       "failedAttempts": 0,
       "lockUntil": null,
-      "role": "Sales intern",
+      "role": "jr. sales manages",
       "createdAt": "2026-06-08T05:25:16.883Z",
       "resetPasswordToken": "d8fb8935fad6a624f84103cfa4bd8a49b96d127e34862eb94db17ee5f4ef9339",
       "resetPasswordExpires": "2026-06-12T09:22:26.384Z",
-      "roleId": "fd08a7d9-78ba-49c3-97e2-550773ace333"
+      "roleId": "84ca3406-5b6a-4fc9-8b97-472f29142c16"
     },
     {
       "id": "12660e0e-15ed-43a6-9ff4-56baff2b77e1",
@@ -74,11 +74,11 @@
   ],
   "userAssignments": [
     {
-      "id": "71436cbf-e018-47f7-b8ae-2fc8195ac018",
+      "id": "cf45d14a-7fd5-46ea-9e90-3f7a6314f7d5",
       "userId": "5d335914-d80b-4edc-b6ea-b2317854539d",
       "departmentId": "4af13661-09ff-4fad-8a26-36340abcb3f8",
-      "roleId": "fd08a7d9-78ba-49c3-97e2-550773ace333",
-      "createdAt": "2026-06-15T10:46:47.649Z"
+      "roleId": "84ca3406-5b6a-4fc9-8b97-472f29142c16",
+      "createdAt": "2026-06-16T05:42:05.985Z"
     }
   ],
   "widgets": [
@@ -125,22 +125,6 @@
       "updatedAt": "2026-06-15T08:37:42.340Z"
     },
     {
-      "id": "a409110c-ce9b-4577-afaf-2c82905656bf",
-      "userId": "5d335914-d80b-4edc-b6ea-b2317854539d",
-      "targetType": "dashboard",
-      "targetId": "aa4fa9c8-f45e-4f6f-b382-e2dca593b206",
-      "granted": true,
-      "updatedAt": "2026-06-15T11:14:00.332Z"
-    },
-    {
-      "id": "af6bf678-3533-4b54-a358-b08b0f0fe856",
-      "userId": "5d335914-d80b-4edc-b6ea-b2317854539d",
-      "targetType": "dashboard",
-      "targetId": "10c37e33-e368-4477-9677-572a11a85435",
-      "granted": true,
-      "updatedAt": "2026-06-15T11:14:09.931Z"
-    },
-    {
       "id": "87cdb0d3-473f-4bf2-849f-d149ba8b1fd4",
       "userId": "8d5e5e06-64e6-4b56-b59c-96cb8f6694f8",
       "targetType": "widget",
@@ -173,12 +157,28 @@
       "updatedAt": "2026-06-15T11:47:54.415Z"
     },
     {
-      "id": "41c6c983-5266-4c89-aa3d-2cbaae2e9460",
+      "id": "1bd8f8a8-3254-43fd-a681-ef53ca72dc8e",
+      "userId": "5d335914-d80b-4edc-b6ea-b2317854539d",
+      "targetType": "dashboard",
+      "targetId": "aa4fa9c8-f45e-4f6f-b382-e2dca593b206",
+      "granted": true,
+      "updatedAt": "2026-06-16T05:37:07.346Z"
+    },
+    {
+      "id": "75aef4ad-7a3d-4b74-af21-d7c08c8e8470",
+      "userId": "5d335914-d80b-4edc-b6ea-b2317854539d",
+      "targetType": "dashboard",
+      "targetId": "0fadd6ea-5461-4b3c-8ba2-e638d468bdf6",
+      "granted": true,
+      "updatedAt": "2026-06-16T05:52:12.443Z"
+    },
+    {
+      "id": "0ce31640-5771-4271-830c-858f5f963133",
       "userId": "5d335914-d80b-4edc-b6ea-b2317854539d",
       "targetType": "dashboard",
       "targetId": "4af7eb1f-5438-4452-9a55-d9299b28434f",
       "granted": true,
-      "updatedAt": "2026-06-15T12:21:05.007Z"
+      "updatedAt": "2026-06-16T05:52:14.397Z"
     }
   ],
   "activityLogs": [
@@ -310,6 +310,126 @@
       "metadata": {
         "sessionId": "b7b03e2d-02d2-4bac-b27e-de2a09c34463",
         "durationMs": 582302
+      }
+    },
+    {
+      "id": "a99d8815-759b-4694-8c6e-8aaedf6df381",
+      "userId": "12660e0e-15ed-43a6-9ff4-56baff2b77e1",
+      "type": "session_start",
+      "timestamp": "2026-06-16T05:36:10.928Z",
+      "metadata": {
+        "sessionId": "e884db6a-eea4-4d08-b0d4-f2c218535d30",
+        "ip": "::1"
+      }
+    },
+    {
+      "id": "ca84ae93-5b4d-49af-9c8c-a6aabf1a408b",
+      "userId": "5d335914-d80b-4edc-b6ea-b2317854539d",
+      "type": "session_start",
+      "timestamp": "2026-06-16T05:36:11.581Z",
+      "metadata": {
+        "sessionId": "e9902aaf-14df-4269-9f94-5886cc80f0cf",
+        "ip": "::1"
+      }
+    },
+    {
+      "id": "dff900be-a300-4112-badd-01c40b974751",
+      "userId": "5d335914-d80b-4edc-b6ea-b2317854539d",
+      "type": "session_start",
+      "timestamp": "2026-06-16T05:36:11.622Z",
+      "metadata": {
+        "sessionId": "3a534739-79ce-4acc-bb0d-0c779264a6c7",
+        "ip": "::1"
+      }
+    },
+    {
+      "id": "0fa85083-1cbf-45b6-a7cc-388813240497",
+      "userId": "5d335914-d80b-4edc-b6ea-b2317854539d",
+      "type": "session_end",
+      "timestamp": "2026-06-16T05:36:43.102Z",
+      "metadata": {
+        "sessionId": "3a534739-79ce-4acc-bb0d-0c779264a6c7",
+        "durationMs": 31479
+      }
+    },
+    {
+      "id": "31238547-2d10-4849-b8d4-9cbfa17eb0b1",
+      "userId": "5d335914-d80b-4edc-b6ea-b2317854539d",
+      "type": "session_start",
+      "timestamp": "2026-06-16T05:36:44.042Z",
+      "metadata": {
+        "sessionId": "3c95f23b-1065-40fb-8fee-3aa47ccb629c",
+        "ip": "::1"
+      }
+    },
+    {
+      "id": "3a4f6c57-8d69-4842-968d-c84b3856a872",
+      "userId": "5d335914-d80b-4edc-b6ea-b2317854539d",
+      "type": "session_end",
+      "timestamp": "2026-06-16T05:36:57.342Z",
+      "metadata": {
+        "sessionId": "3c95f23b-1065-40fb-8fee-3aa47ccb629c",
+        "durationMs": 13311
+      }
+    },
+    {
+      "id": "bb55d340-7d96-4743-a90f-7bc1f03d8e56",
+      "userId": "5d335914-d80b-4edc-b6ea-b2317854539d",
+      "type": "session_start",
+      "timestamp": "2026-06-16T05:36:58.416Z",
+      "metadata": {
+        "sessionId": "7b996c10-ec6e-4dae-8e88-86e7440fbcc3",
+        "ip": "::1"
+      }
+    },
+    {
+      "id": "c3c5b8d2-11d8-494b-8a4f-ae238be9698c",
+      "userId": "5d335914-d80b-4edc-b6ea-b2317854539d",
+      "type": "session_end",
+      "timestamp": "2026-06-16T05:41:51.507Z",
+      "metadata": {
+        "sessionId": "7b996c10-ec6e-4dae-8e88-86e7440fbcc3",
+        "durationMs": 293089
+      }
+    },
+    {
+      "id": "1655e024-830a-4289-96e9-6efdd7970294",
+      "userId": "5d335914-d80b-4edc-b6ea-b2317854539d",
+      "type": "session_start",
+      "timestamp": "2026-06-16T05:41:52.827Z",
+      "metadata": {
+        "sessionId": "d65e13d8-dcb0-4ff4-afe7-e84f7e326e2f",
+        "ip": "::1"
+      }
+    },
+    {
+      "id": "95556dc9-4c8c-4184-b1d7-3489aaa3413d",
+      "userId": "12660e0e-15ed-43a6-9ff4-56baff2b77e1",
+      "type": "session_end",
+      "timestamp": "2026-06-16T05:51:36.175Z",
+      "metadata": {
+        "sessionId": "e884db6a-eea4-4d08-b0d4-f2c218535d30",
+        "durationMs": 925226
+      }
+    },
+    {
+      "id": "9168203e-7b04-432b-baef-21b4910c27ba",
+      "userId": "12660e0e-15ed-43a6-9ff4-56baff2b77e1",
+      "type": "session_start",
+      "timestamp": "2026-06-16T05:51:42.269Z",
+      "metadata": {
+        "sessionId": "a60104af-680b-452c-ad93-e3296e34bc73",
+        "ip": "::1"
+      }
+    },
+    {
+      "id": "c8eed9f5-efb8-4599-a22f-41a27f386be6",
+      "userId": "5d335914-d80b-4edc-b6ea-b2317854539d",
+      "type": "session_start",
+      "timestamp": "2026-06-16T05:51:43.518Z",
+      "metadata": {
+        "sessionId": "ae5bd173-8167-4ef1-8daf-78296be86c5c",
+        "ip": "::1"
       }
     }
   ],
