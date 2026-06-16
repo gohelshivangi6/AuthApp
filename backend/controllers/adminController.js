@@ -364,7 +364,8 @@ async function createPermission(req, res, next) {
 
     await writeDB(db);
 
-    try { emitPermissionUpdate(userId, { type: "permission", action: "upsert", targetType, targetId, granted }); } catch (_) {}
+    const path = targetType === "dashboard" ? (db.dashboards || []).find(d => d.id === targetId)?.path : undefined;
+    try { emitPermissionUpdate(userId, { type: "permission", action: "upsert", targetType, targetId, granted, ...(path && { path }) }); } catch (_) {}
 
     res.status(201).json({ success: true, permission });
   } catch (err) { next(err); }
@@ -384,7 +385,8 @@ async function deletePermission(req, res, next) {
     db.permissions.splice(idx, 1);
     await writeDB(db);
 
-    try { emitPermissionUpdate(perm.userId, { type: "permission", action: "delete", targetType: perm.targetType, targetId: perm.targetId }); } catch (_) {}
+    const path = perm.targetType === "dashboard" ? (db.dashboards || []).find(d => d.id === perm.targetId)?.path : undefined;
+    try { emitPermissionUpdate(perm.userId, { type: "permission", action: "delete", targetType: perm.targetType, targetId: perm.targetId, ...(path && { path }) }); } catch (_) {}
 
     res.json({ success: true, message: "Permission removed." });
   } catch (err) { next(err); }

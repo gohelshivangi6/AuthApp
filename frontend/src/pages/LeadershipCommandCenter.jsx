@@ -4,11 +4,13 @@ import axios from 'axios';
 import DashboardContent from "../components/DashboardContent";
 import { decryptData } from "../decrypt/decryption";
 import { fetchSectionPermissions } from "../redux/slices/dashboardSlice";
+import useDashboardAccess from "../hooks/useDashboardAccess";
 import { Box, CircularProgress } from "@mui/material";
 
 const DASHBOARD_SLUG = "leadership-command-center";
 
 export default function LeadershipCommandCenter() {
+  useDashboardAccess(DASHBOARD_SLUG);
   const dispatch = useDispatch();
   const sectionPermissions = useSelector((s) => s.dashboard.sectionPermissions);
   const [data, setData] = useState(null);
