@@ -490,17 +490,48 @@ async function getStats(req, res, next) {
     const logs = (db.activityLogs || []).filter((l) => !adminIds.has(l.userId));
 
     const totalUsers = db.users.filter((u) => !adminIds.has(u.id)).length;
-    const activeSessions = logs.filter(
-      (l) => l.type === "session_start" && !logs.some(
-        (l2) => l2.userId === l.userId && l2.type === "session_end" && new Date(l2.timestamp) > new Date(l.timestamp)
-      )
-    );
-    const activeUsers = new Set(activeSessions.map((l) => l.userId)).size;
     const totalSessions = logs.filter((l) => l.type === "session_start").length;
     const totalEvents = logs.filter((l) => l.type === "event").length;
-    const totalTimeSpent = logs
-      .filter((l) => l.type === "session_end" && l.metadata?.durationMs)
-      .reduce((sum, l) => sum + l.metadata.durationMs, 0);
+
+    // Group session events by user to build accurate pairings
+    const sessionLogs = logs
+      .filter((l) => l.type === "session_start" || l.type === "session_end")
+      .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+    const userSessionMap = new Map();
+    for (const l of sessionLogs) {
+      if (!userSessionMap.has(l.userId)) userSessionMap.set(l.userId, []);
+      userSessionMap.get(l.userId).push(l);
+    }
+
+    let totalTimeSpentMs = 0;
+    const activeUserSet = new Set();
+
+    for (const [uid, sessions] of userSessionMap) {
+      let hasActive = false;
+      for (let i = 0; i < sessions.length; i++) {
+        if (sessions[i].type === "session_start") {
+          const start = sessions[i];
+          const end = sessions.slice(i + 1).find(
+            (s) => s.type === "session_end" && s.metadata?.sessionId === start.metadata?.sessionId
+          );
+
+          if (end) {
+            totalTimeSpentMs += new Date(end.timestamp) - new Date(start.timestamp);
+          } else {
+            const nextStart = sessions.slice(i + 1).find((s) => s.type === "session_start");
+            if (nextStart) {
+              totalTimeSpentMs += new Date(nextStart.timestamp) - new Date(start.timestamp);
+            } else {
+              hasActive = true;
+            }
+          }
+        }
+      }
+      if (hasActive) activeUserSet.add(uid);
+    }
+
+    const activeUsers = activeUserSet.size;
 
     res.json({
       success: true,
@@ -509,7 +540,7 @@ async function getStats(req, res, next) {
         activeUsers,
         totalSessions,
         totalEvents,
-        totalTimeSpentMs: totalTimeSpent,
+        totalTimeSpentMs,
       },
     });
   } catch (err) { next(err); }
@@ -549,9 +580,6 @@ async function getUserStats(req, res, next) {
 
     const totalSessions = logs.filter((l) => l.type === "session_start").length;
     const totalEvents = logs.filter((l) => l.type === "event").length;
-    const totalTimeSpent = logs
-      .filter((l) => l.type === "session_end" && l.metadata?.durationMs)
-      .reduce((sum, l) => sum + l.metadata.durationMs, 0);
 
     const sessions = logs
       .filter((l) => l.type === "session_start" || l.type === "session_end")
@@ -561,10 +589,27 @@ async function getUserStats(req, res, next) {
     for (let i = 0; i < sessions.length; i++) {
       if (sessions[i].type === "session_start") {
         const start = sessions[i];
-        const end = sessions.slice(i + 1).find((s) => s.type === "session_end" && s.metadata?.sessionId === start.metadata?.sessionId) || null;
-        sessionPairs.push({ start: start.timestamp, end: end?.timestamp || null });
+        const end = sessions.slice(i + 1).find(
+          (s) => s.type === "session_end" && s.metadata?.sessionId === start.metadata?.sessionId
+        );
+
+        if (!end) {
+          const nextStart = sessions.slice(i + 1).find((s) => s.type === "session_start");
+          if (nextStart) {
+            sessionPairs.push({ start: start.timestamp, end: nextStart.timestamp });
+          } else {
+            sessionPairs.push({ start: start.timestamp, end: null });
+          }
+        } else {
+          sessionPairs.push({ start: start.timestamp, end: end.timestamp });
+        }
       }
     }
+
+    const totalTimeSpentMs = sessionPairs.reduce((sum, s) => {
+      if (s.end) return sum + (new Date(s.end) - new Date(s.start));
+      return sum;
+    }, 0);
 
     res.json({
       success: true,
@@ -573,7 +618,7 @@ async function getUserStats(req, res, next) {
         email: user.email,
         totalSessions,
         totalEvents,
-        totalTimeSpentMs: totalTimeSpent,
+        totalTimeSpentMs,
         sessions: sessionPairs,
       },
     });
