@@ -10,7 +10,6 @@ const TOKEN_TTL_MS = 24 * 60 * 60 * 1000;
 
 function sessionToken(req, res, next) {
   const header = req.headers['x-session-token'];
-  console.log("header", header);
   
   if (!header) {
     return res.status(401).json({ error: 'Missing session token' });
@@ -43,32 +42,7 @@ function sessionToken(req, res, next) {
     return res.status(401).json({ error: 'Session token expired' });
   }
 
-  // req.sessionNonce = payload.nonce;
-  // currentToken = payload.nonce;
-  console.log("session ", req.sessionNonce);
   next();
 }
-
-// function registerToken(nonce) {
-//   if (nonce) {
-//     validTokens.add(nonce);
-//     currentToken = nonce;
-//   }
-// }
-
-// function removeToken(nonce) {
-//   validTokens.delete(nonce);
-//   if (nonce) blacklistedNonces.add(nonce);
-// }
-
-// function isTokenValid(nonce) {
-//   console.log("none", nonce);
-//   console.log("valid tokens ", validTokens);
-//   console.log("blacklist", blacklistedNonces);
-//   console.log("current token ", currentToken);
-//   // return validTokens.has(nonce);
-//   console.log("true or false ", currentToken == nonce)
-//   return currentToken == nonce;
-// }
 
 module.exports = { sessionToken };

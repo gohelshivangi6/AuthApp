@@ -10,11 +10,16 @@ async function getUsers(req, res, next) {
     const db = await readDB();
     const assignments = db.userAssignments || [];
     const roles = db.roles || [];
+    const departments = db.departments || [];
     const users = db.users
       .filter((u) => u.role !== "admin")
       .map((u) => {
         const userAssignments = assignments.filter((a) => a.userId === u.id);
         const assignedRole = roles.find((r) => r.id === u.roleId);
+        const assignment = userAssignments[0];
+        const assignedDept = assignment
+          ? departments.find((d) => d.id === assignment.departmentId)
+          : null;
         return {
           id: u.id,
           name: u.name,
@@ -22,6 +27,8 @@ async function getUsers(req, res, next) {
           role: u.role || "user",
           roleId: u.roleId || null,
           roleName: assignedRole?.name || null,
+          departmentId: assignedDept?.id || null,
+          departmentName: assignedDept?.name || null,
           status: u.status,
           createdAt: u.createdAt,
           assignments: userAssignments,
@@ -72,7 +79,6 @@ async function updateUser(req, res, next) {
   try {
     const { id } = req.params;
     const { name, email, role, roleId } = req.body;
-    console.log("role ", role);
     const db = await readDB();
 
     const user = db.users.find((u) => u.id === id);

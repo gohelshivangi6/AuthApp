@@ -161,6 +161,9 @@ export default function UserManager() {
   const handleAssignRemove = async (userId) => {
     const existing = assignments.find((a) => a.userId === userId);
     if (existing && window.confirm("Remove this user's assignment?")) {
+      await dispatch(
+        updateUser({ id: userId, roleId: null, role: null }),
+      );
       await dispatch(deleteAssignment(existing.id));
       dispatch(fetchAssignments());
       dispatch(fetchUsers());
@@ -200,10 +203,9 @@ export default function UserManager() {
           <TableRow>
             <TableCell>Name</TableCell>
             <TableCell>Email</TableCell>
-            <TableCell>Role</TableCell>
             <TableCell>Status</TableCell>
             <TableCell>Department</TableCell>
-            <TableCell>Role in Dept</TableCell>
+            <TableCell>Role</TableCell>
             <TableCell align="right">Actions</TableCell>
           </TableRow>
         </TableHead>
@@ -212,19 +214,12 @@ export default function UserManager() {
             const dept = u.departmentId
               ? departments.find((d) => d.id === u.departmentId)
               : null;
+              console.log("DEPT", dept);
             const role = u.roleId ? roles.find((r) => r.id === u.roleId) : null;
             return (
               <TableRow key={u.id}>
                 <TableCell>{u.name}</TableCell>
                 <TableCell>{u.email}</TableCell>
-                <TableCell>
-                  <Chip
-                    label={u.role}
-                    size="small"
-                    color={u.role === "admin" ? "error" : "primary"}
-                    variant="outlined"
-                  />
-                </TableCell>
                 <TableCell>{u.status}</TableCell>
                 <TableCell>{dept?.name || "—"}</TableCell>
                 <TableCell>

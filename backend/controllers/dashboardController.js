@@ -82,7 +82,6 @@ async function getSectionPermissions(req, res, next) {
     const sectionPerms = (db.permissions || []).filter(
       (p) => p.userId === userId && p.targetType === "dashboard-section"
     );
-    console.log("permisiions", sectionPerms);
     res.json({ success: true, permissions: sectionPerms });
   } catch (err) { next(err); }
 }

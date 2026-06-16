@@ -53,7 +53,7 @@ export default function AdminDashboard() {
           variant="scrollable"
           scrollButtons="auto"
           sx={{
-            "& .MuiTab-root": { textTransform: "none", fontFamily: "Outfit", fontWeight: 600 },
+            "& .MuiTab-root": { textTransform: "none", fontFamily: "Outfit", fontWeight: 600, mx: 3 },
           }}
         >
           {TABS.map((t, i) => (
@@ -69,7 +69,12 @@ export default function AdminDashboard() {
           backdropFilter: "blur(16px)",
           border: "1px solid rgba(255,255,255,0.08)",
           borderRadius: "16px",
-          minHeight: 400,
+          // minHeight: 400,
+          height: "400px",
+          width: "1040px",
+          overflow: "auto",
+          scrollbarWidth: "thin",
+          scrollbarColor: "#0A192F #020617",
         }}
       >
         {TABS[tab]?.component}

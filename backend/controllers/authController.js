@@ -172,15 +172,12 @@ const verify2FASetup = async (req, res, next) => {
 
     // Decrypt the secret key
     const secret = decrypt(user.twoFactorSecretEncrypted);
-    console.log("Secret:", secret);
 
     const expected = speakeasy.totp({
       secret,
       encoding: "base32",
     });
 
-    console.log("Expected:", expected);
-    console.log("Received:", code);
     if (!secret) {
       return res
         .status(500)
@@ -247,7 +244,6 @@ const verify2FASetup = async (req, res, next) => {
 const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
-    console.log(email, password);
     const db = await readDB();
 
     const user = db.users.find((u) => u.email === email);
@@ -257,8 +253,6 @@ const login = async (req, res, next) => {
         .status(401)
         .json({ success: false, message: "Invalid email or password." });
     }
-
-    console.log("User found:", user);
 
     // Check if locked
     if (isLocked(user)) {
@@ -571,10 +565,7 @@ const resetPassword = async (req, res, next) => {
  * Logs out the user (clears cookies).
  */
 const logout = (req, res) => {
-  // res.clearCookie("token");
   res.clearCookie("token", COOKIE_OPTIONS);
-  console.log(req.sessionNonce);
-  // removeToken(req.sessionNonce);
   res.status(200).json({
     success: true,
     message: "Logged out successfully.",
