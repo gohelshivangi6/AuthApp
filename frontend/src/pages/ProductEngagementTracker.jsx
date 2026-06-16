@@ -1,27 +1,37 @@
-import { Box, Typography, Paper } from "@mui/material";
-import TouchAppIcon from "@mui/icons-material/TouchApp";
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import DashboardContent from "../components/DashboardContent";
+import { decryptData } from "../decrypt/decryption";
+import { Box, CircularProgress } from "@mui/material";
 
 export default function ProductEngagementTracker() {
-  return (
-    <Box sx={{ py: 6, px: { xs: 2, md: 4 }, maxWidth: 1200, margin: "0 auto" }}>
-      <Paper
-        sx={{
-          p: 4,
-          background: "rgba(18,18,38,0.6)",
-          backdropFilter: "blur(16px)",
-          border: "1px solid rgba(255,255,255,0.08)",
-          borderRadius: "16px",
-          textAlign: "center",
-        }}
-      >
-        <TouchAppIcon sx={{ fontSize: 64, color: "#10b981", mb: 2 }} />
-        <Typography variant="h3" sx={{ fontFamily: "Outfit", fontWeight: 800, mb: 1 }}>
-          Product Engagement Tracker
-        </Typography>
-        <Typography variant="body1" color="textSecondary">
-          User engagement and product adoption analytics
-        </Typography>
-      </Paper>
-    </Box>
-  );
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    axios.get('http://localhost:5000/api/dashboard-data/product-engagement-tracker')
+      .then(async (res) => {
+        if (cancelled) return;
+        const decrypted = await decryptData(res.data);
+        setData(decrypted);
+      })
+      .catch(() => {
+        if (!cancelled) setData(null);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => { cancelled = true; };
+  }, []);
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', py: 10 }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  return <DashboardContent data={data} />;
 }

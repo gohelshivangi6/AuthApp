@@ -1,17 +1,21 @@
 import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
 
-const LineChart = () => {
+const LineChart = ({ data }) => {
   const svgRef = useRef();
 
   useEffect(() => {
-    const data = [
-      { day: 1, value: 20 },
-      { day: 2, value: 40 },
-      { day: 3, value: 35 },
-      { day: 4, value: 70 },
-      { day: 5, value: 60 },
+    const defaultData = [
+      { label: "1", value: 20 },
+      { label: "2", value: 40 },
+      { label: "3", value: 35 },
+      { label: "4", value: 70 },
+      { label: "5", value: 60 },
     ];
+
+    const chartData = data || defaultData;
+    const labels = chartData.map((d) => d.label);
+    const values = chartData.map((d) => d.value);
 
     const width = 500;
     const height = 300;
@@ -36,18 +40,18 @@ const LineChart = () => {
       .style("height", "auto");
 
     const x = d3
-      .scaleLinear()
-      .domain([1, 5])
+      .scalePoint()
+      .domain(labels)
       .range([50, width - 20]);
 
     const y = d3
       .scaleLinear()
-      .domain([0, 100])
+      .domain([0, d3.max(values) * 1.1])
       .range([height - 40, 20]);
 
     const line = d3
       .line()
-      .x((d) => x(d.day))
+      .x((d) => x(d.label))
       .y((d) => y(d.value))
       .curve(d3.curveMonotoneX);
 
@@ -69,13 +73,13 @@ const LineChart = () => {
 
     svg
       .selectAll(".point")
-      .data(data)
+      .data(chartData)
       .enter()
       .append("circle")
       .on("mouseover", (event, d) => {
         tooltip
           .style("visibility", "visible")
-          .html(`Day ${d.day}<br/>Value ${d.value}`);
+          .html(`${d.label}<br/>Value: ${d.value}`);
       })
       .on("mousemove", (event) => {
         tooltip
@@ -85,17 +89,17 @@ const LineChart = () => {
       .on("mouseout", () => {
         tooltip.style("visibility", "hidden");
       })
-      .attr("cx", (d) => x(d.day))
+      .attr("cx", (d) => x(d.label))
       .attr("cy", (d) => y(d.value))
       .attr("r", 6)
       .attr("fill", "#10b981");
 
     svg
       .selectAll(".label")
-      .data(data)
+      .data(chartData)
       .enter()
       .append("text")
-      .attr("x", (d) => x(d.day))
+      .attr("x", (d) => x(d.label))
       .attr("y", (d) => y(d.value) - 12)
       .attr("text-anchor", "middle")
       .attr("fill", "white")
@@ -103,9 +107,8 @@ const LineChart = () => {
 
     const path = svg
       .append("path")
-      .datum(data)
+      .datum(chartData)
       .attr("fill", "none")
-      //   .attr("fill", "#6366f1")
       .attr("stroke", "white")
       .attr("stroke-width", 3)
       .attr("d", line);
@@ -118,7 +121,11 @@ const LineChart = () => {
       .transition()
       .duration(2000)
       .attr("stroke-dashoffset", 0);
-  }, []);
+
+    return () => {
+      tooltip.remove();
+    };
+  }, [data]);
 
   return <svg ref={svgRef}></svg>;
 };

@@ -1,4 +1,3 @@
-
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider, createTheme, CssBaseline, Box } from "@mui/material";
 
@@ -94,37 +93,56 @@ function App() {
           }}
         >
           <WebSocketProvider>
-          <Routes>
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
-            {/* <Route element={<PublicRoute />}> */}
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
-              <Route path="/forgot-password" element={<ForgotPassword />} />
-              <Route path="/reset-password" element={<ResetPassword />} />
-              <Route path="/verify-2fa" element={<Verify2FA />} />
-              <Route path="/setup-2fa" element={<Setup2FA />} />
-            {/* </Route> */}
+            <Routes>
+              <Route path="/" element={<Navigate to="/dashboards" replace />} />
+              {/* <Route element={<PublicRoute />}> */}
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<Signup />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
+                <Route path="/verify-2fa" element={<Verify2FA />} />
+                <Route path="/setup-2fa" element={<Setup2FA />} />
+              {/* </Route> */}
 
-            <Route element={<ProtectedRoute />}>
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/dashboards" element={<DashboardNav />} />
-              <Route path="/dashboards/revenue-ops-pulse" element={<RevenueOpsPulse />} />
-              <Route path="/dashboards/leadership-command-center" element={<LeadershipCommandCenter />} />
-              <Route path="/dashboards/product-engagement-tracker" element={<ProductEngagementTracker />} />
-              <Route path="/dashboards/global-sales-cockpit" element={<GlobalSalesCockpit />} />
-              <Route
-                path="/hierarchy"
-                element={
-                  <Box sx={{ py: 6, px: { xs: 2, md: 4 }, maxWidth: 1100, margin: "0 auto" }}>
-                    <HierarchyTable />
-                  </Box>
-                }
-              />
-            </Route>
+              <Route element={<ProtectedRoute />}>
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/dashboards" element={<DashboardNav />} />
+                <Route
+                  path="/dashboards/revenue-ops-pulse"
+                  element={<RevenueOpsPulse />}
+                />
+                <Route
+                  path="/dashboards/leadership-command-center"
+                  element={<LeadershipCommandCenter />}
+                />
+                <Route
+                  path="/dashboards/product-engagement-tracker"
+                  element={<ProductEngagementTracker />}
+                />
+                <Route
+                  path="/dashboards/global-sales-cockpit"
+                  element={<GlobalSalesCockpit />}
+                />
+                <Route
+                  path="/hierarchy"
+                  element={
+                    <Box
+                      sx={{
+                        py: 6,
+                        px: { xs: 2, md: 4 },
+                        maxWidth: 1100,
+                        margin: "0 auto",
+                      }}
+                    >
+                      <HierarchyTable />
+                    </Box>
+                  }
+                />
+              </Route>
 
-            {/* Catch-all redirects back to login */}
-            <Route path="*" element={<Navigate to="/login" replace />} />
-          </Routes>
+              {/* Catch-all redirects back to login */}
+              <Route path="*" element={<Navigate to="/login" replace />} />
+            </Routes>
           </WebSocketProvider>
         </Box>
 

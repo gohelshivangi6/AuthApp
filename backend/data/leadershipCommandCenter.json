@@ -1,0 +1,97 @@
+{
+  "title": "Leadership Command Center",
+  "description": "Executive overview of organizational performance",
+  "color": "#a855f7",
+  "kpiCards": [
+    { "id": "total-headcount", "title": "Total Headcount", "value": "1,284", "change": "+12.5%", "changeType": "up" },
+    { "id": "revenue-per-employee", "title": "Revenue per Employee", "value": "$187K", "change": "+6.8%", "changeType": "up" },
+    { "id": "departments", "title": "Departments", "value": "12", "change": "0%", "changeType": "neutral" },
+    { "id": "project-completion", "title": "Project Completion", "value": "87%", "change": "+4.2%", "changeType": "up" },
+    { "id": "budget-utilization", "title": "Budget Utilization", "value": "76%", "change": "+2.1%", "changeType": "up" },
+    { "id": "growth-rate", "title": "YoY Growth Rate", "value": "23.4%", "change": "+5.6%", "changeType": "up" }
+  ],
+  "charts": [
+    {
+      "id": "dept-performance",
+      "type": "bar",
+      "title": "Department Performance Score",
+      "data": [
+        { "label": "Engineering", "value": 92 },
+        { "label": "Sales", "value": 88 },
+        { "label": "Marketing", "value": 85 },
+        { "label": "Product", "value": 90 },
+        { "label": "HR", "value": 78 },
+        { "label": "Finance", "value": 82 }
+      ]
+    },
+    {
+      "id": "quarterly-growth",
+      "type": "line",
+      "title": "Quarterly Revenue Growth",
+      "data": [
+        { "label": "Q1", "value": 42 },
+        { "label": "Q2", "value": 48 },
+        { "label": "Q3", "value": 55 },
+        { "label": "Q4", "value": 63 },
+        { "label": "Q1", "value": 58 },
+        { "label": "Q2", "value": 71 }
+      ]
+    },
+    {
+      "id": "headcount-distribution",
+      "type": "donut",
+      "title": "Headcount by Department",
+      "data": [
+        { "label": "Engineering", "value": 35 },
+        { "label": "Sales", "value": 25 },
+        { "label": "Marketing", "value": 15 },
+        { "label": "Operations", "value": 12 },
+        { "label": "Other", "value": 13 }
+      ]
+    },
+    {
+      "id": "employee-satisfaction",
+      "type": "scatter",
+      "title": "Employee Satisfaction vs Tenure",
+      "data": [
+        { "x": 1, "y": 65 },
+        { "x": 2, "y": 72 },
+        { "x": 3, "y": 78 },
+        { "x": 4, "y": 82 },
+        { "x": 5, "y": 85 },
+        { "x": 6, "y": 80 },
+        { "x": 7, "y": 88 },
+        { "x": 8, "y": 75 },
+        { "x": 9, "y": 90 },
+        { "x": 10, "y": 86 }
+      ]
+    }
+  ],
+  "tables": [
+    {
+      "id": "dept-summary",
+      "title": "Department Performance Summary",
+      "headers": ["Department", "Headcount", "Budget", "Performance", "Status"],
+      "rows": [
+        ["Engineering", "342", "$8.2M", "92%", "Exceeding"],
+        ["Sales", "218", "$6.5M", "88%", "On Track"],
+        ["Marketing", "156", "$4.1M", "85%", "On Track"],
+        ["Product", "89", "$3.8M", "90%", "Exceeding"],
+        ["Human Resources", "34", "$1.2M", "78%", "Needs Focus"],
+        ["Finance", "42", "$1.5M", "82%", "On Track"]
+      ]
+    },
+    {
+      "id": "key-initiatives",
+      "title": "Key Initiatives",
+      "headers": ["Initiative", "Owner", "Progress", "Deadline", "Priority"],
+      "rows": [
+        ["AI Platform Launch", "CTO Office", "75%", "2026-Q3", "High"],
+        ["Market Expansion APAC", "VP Sales", "60%", "2026-Q4", "High"],
+        ["Employee Wellness Program", "CHRO", "90%", "2026-Q2", "Medium"],
+        ["Cloud Infrastructure Migration", "CIO", "45%", "2026-Q4", "High"],
+        ["Brand Refresh", "CMO", "80%", "2026-Q3", "Medium"]
+      ]
+    }
+  ]
+}

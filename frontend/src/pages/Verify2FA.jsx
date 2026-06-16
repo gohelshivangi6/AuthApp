@@ -77,7 +77,7 @@ const Verify2FA = () => {
       console.log('2FA verification response:', res.data);
       if (res.data.success) {
         // setUser(res.data.user);
-        dispatch(loginSuccess(res.data.user));
+        dispatch(loginSuccess({ user: res.data.user, token: res.data.token }));
         setError('');
         setSuccess('Authentication approved! Redirecting...');
 

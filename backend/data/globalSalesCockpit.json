@@ -1,0 +1,94 @@
+{
+  "title": "Global Sales Cockpit",
+  "description": "Worldwide sales pipeline and revenue forecasting",
+  "color": "#f59e0b",
+  "kpiCards": [
+    { "id": "total-revenue", "title": "Total Revenue", "value": "$12.4M", "change": "+14.2%", "changeType": "up" },
+    { "id": "active-deals", "title": "Active Deals", "value": "847", "change": "+8.3%", "changeType": "up" },
+    { "id": "pipeline-value", "title": "Pipeline Value", "value": "$48.2M", "change": "+21.5%", "changeType": "up" },
+    { "id": "win-rate", "title": "Win Rate", "value": "68%", "change": "+3.1%", "changeType": "up" },
+    { "id": "avg-deal-size", "title": "Avg Deal Size", "value": "$14.6K", "change": "-2.4%", "changeType": "down" },
+    { "id": "sales-target", "title": "Sales Target", "value": "92%", "change": "+5.7%", "changeType": "up" }
+  ],
+  "charts": [
+    {
+      "id": "regional-sales",
+      "type": "bar",
+      "title": "Regional Sales Breakdown",
+      "data": [
+        { "label": "North America", "value": 45 },
+        { "label": "Europe", "value": 28 },
+        { "label": "Asia Pacific", "value": 15 },
+        { "label": "Latin America", "value": 8 },
+        { "label": "Middle East", "value": 4 }
+      ]
+    },
+    {
+      "id": "monthly-revenue",
+      "type": "line",
+      "title": "Monthly Revenue Trend",
+      "data": [
+        { "label": "Jan", "value": 30 },
+        { "label": "Feb", "value": 45 },
+        { "label": "Mar", "value": 38 },
+        { "label": "Apr", "value": 52 },
+        { "label": "May", "value": 48 },
+        { "label": "Jun", "value": 65 }
+      ]
+    },
+    {
+      "id": "deal-stage",
+      "type": "donut",
+      "title": "Deal Stage Distribution",
+      "data": [
+        { "label": "Prospecting", "value": 30 },
+        { "label": "Qualification", "value": 25 },
+        { "label": "Proposal", "value": 20 },
+        { "label": "Negotiation", "value": 15 },
+        { "label": "Closed Won", "value": 10 }
+      ]
+    },
+    {
+      "id": "territory-coverage",
+      "type": "scatter",
+      "title": "Territory Coverage vs Revenue",
+      "data": [
+        { "x": 15, "y": 25 },
+        { "x": 28, "y": 42 },
+        { "x": 45, "y": 38 },
+        { "x": 52, "y": 58 },
+        { "x": 38, "y": 48 },
+        { "x": 65, "y": 62 },
+        { "x": 72, "y": 70 },
+        { "x": 85, "y": 78 },
+        { "x": 42, "y": 55 },
+        { "x": 60, "y": 45 }
+      ]
+    }
+  ],
+  "tables": [
+    {
+      "id": "top-deals",
+      "title": "Top Deals This Quarter",
+      "headers": ["Deal Name", "Value", "Stage", "Owner", "Probability"],
+      "rows": [
+        ["Enterprise Suite Pro", "$450K", "Negotiation", "Sarah M.", "85%"],
+        ["Cloud Migration Package", "$320K", "Proposal", "John D.", "70%"],
+        ["Data Analytics Platform", "$280K", "Qualification", "Lisa R.", "45%"],
+        ["Security Bundle Enterprise", "$195K", "Negotiation", "Mike T.", "90%"],
+        ["AI Solutions Framework", "$175K", "Proposal", "Emma W.", "65%"]
+      ]
+    },
+    {
+      "id": "recent-activities",
+      "title": "Recent Activities",
+      "headers": ["Activity", "Lead", "Value", "Date", "Status"],
+      "rows": [
+        ["Product Demo", "TechCorp Inc.", "$150K", "2026-06-14", "Completed"],
+        ["Contract Sent", "DataFlow Ltd", "$85K", "2026-06-13", "Pending"],
+        ["Initial Meeting", "CloudBase SA", "$220K", "2026-06-12", "Scheduled"],
+        ["Proposal Review", "NetSecure GmbH", "$175K", "2026-06-11", "In Review"]
+      ]
+    }
+  ]
+}

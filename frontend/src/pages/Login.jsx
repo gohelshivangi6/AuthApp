@@ -88,7 +88,7 @@ const Login = () => {
           });
         } else if (res.data.user) {
           // Direct login (no 2FA required — e.g. admin account)
-          dispatch(loginSuccess(res.data.user));
+          dispatch(loginSuccess({ user: res.data.user, token: res.data.token }));
           navigate('/dashboard');
         }
       }

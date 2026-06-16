@@ -11,6 +11,7 @@ export function connectUserSocket(token) {
   socket = io(`${WS_URL}/user`, {
     auth: { token },
     transports: ["websocket", "polling"],
+    withCredentials: true,
   });
 
   socket.on("connect", () => {
@@ -34,6 +35,7 @@ export function connectAdminSocket(token) {
   adminSocket = io(`${WS_URL}/admin`, {
     auth: { token },
     transports: ["websocket", "polling"],
+    withCredentials: true,
   });
 
   adminSocket.on("connect", () => {

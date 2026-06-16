@@ -1,0 +1,94 @@
+{
+  "title": "Revenue Operations Pulse",
+  "description": "Real-time revenue metrics and operational KPIs",
+  "color": "#6366f1",
+  "kpiCards": [
+    { "id": "mrr", "title": "Monthly Recurring Revenue", "value": "$1.42M", "change": "+8.7%", "changeType": "up" },
+    { "id": "arr", "title": "Annual Recurring Revenue", "value": "$17.1M", "change": "+22.4%", "changeType": "up" },
+    { "id": "churn-rate", "title": "Churn Rate", "value": "3.2%", "change": "-0.8%", "changeType": "down" },
+    { "id": "cac", "title": "Customer Acquisition Cost", "value": "$4,280", "change": "-12.5%", "changeType": "down" },
+    { "id": "ltv", "title": "Customer LTV", "value": "$38,500", "change": "+15.3%", "changeType": "up" },
+    { "id": "gross-margin", "title": "Gross Margin", "value": "72%", "change": "+1.8%", "changeType": "up" }
+  ],
+  "charts": [
+    {
+      "id": "mrr-trend",
+      "type": "line",
+      "title": "Monthly Recurring Revenue Trend",
+      "data": [
+        { "label": "Jan", "value": 1.05 },
+        { "label": "Feb", "value": 1.10 },
+        { "label": "Mar", "value": 1.15 },
+        { "label": "Apr", "value": 1.22 },
+        { "label": "May", "value": 1.30 },
+        { "label": "Jun", "value": 1.42 }
+      ]
+    },
+    {
+      "id": "revenue-source",
+      "type": "donut",
+      "title": "Revenue by Source",
+      "data": [
+        { "label": "Subscriptions", "value": 55 },
+        { "label": "Professional Services", "value": 20 },
+        { "label": "Support & Maintenance", "value": 15 },
+        { "label": "Licensing", "value": 10 }
+      ]
+    },
+    {
+      "id": "cost-breakdown",
+      "type": "bar",
+      "title": "Operational Cost Breakdown",
+      "data": [
+        { "label": "Engineering", "value": 35 },
+        { "label": "Sales & Marketing", "value": 28 },
+        { "label": "Operations", "value": 18 },
+        { "label": "G&A", "value": 12 },
+        { "label": "R&D", "value": 7 }
+      ]
+    },
+    {
+      "id": "customer-segments",
+      "type": "scatter",
+      "title": "Customer Segment Profitability",
+      "data": [
+        { "x": 50, "y": 35 },
+        { "x": 75, "y": 55 },
+        { "x": 100, "y": 80 },
+        { "x": 30, "y": 25 },
+        { "x": 60, "y": 45 },
+        { "x": 85, "y": 65 },
+        { "x": 40, "y": 30 },
+        { "x": 95, "y": 75 },
+        { "x": 55, "y": 50 },
+        { "x": 70, "y": 60 }
+      ]
+    }
+  ],
+  "tables": [
+    {
+      "id": "revenue-breakdown",
+      "title": "Revenue Breakdown by Category",
+      "headers": ["Category", "MRR", "ARR", "Growth", "Share"],
+      "rows": [
+        ["Subscriptions", "$780K", "$9.36M", "+12.4%", "55%"],
+        ["Professional Services", "$284K", "$3.41M", "+8.2%", "20%"],
+        ["Support & Maintenance", "$213K", "$2.56M", "+5.1%", "15%"],
+        ["Licensing", "$142K", "$1.70M", "+3.8%", "10%"]
+      ]
+    },
+    {
+      "id": "top-customers",
+      "title": "Top Customers by Revenue",
+      "headers": ["Company", "Plan", "MRR", "Since", "Health"],
+      "rows": [
+        ["MegaCorp International", "Enterprise", "$85,000", "2022-03", "Healthy"],
+        ["TechFlow Solutions", "Enterprise", "$62,500", "2023-01", "Healthy"],
+        ["DataSphere Inc.", "Business", "$48,200", "2023-06", "At Risk"],
+        ["CloudBase Technologies", "Business", "$41,800", "2024-02", "Healthy"],
+        ["InnovateLab Corp", "Enterprise", "$38,000", "2024-09", "Expanding"],
+        ["SecureNet Systems", "Startup", "$22,500", "2025-01", "Healthy"]
+      ]
+    }
+  ]
+}

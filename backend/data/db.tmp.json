@@ -311,6 +311,16 @@
         "sessionId": "b7b03e2d-02d2-4bac-b27e-de2a09c34463",
         "durationMs": 582302
       }
+    },
+    {
+      "id": "16989feb-2662-43d5-a5ee-6dd6428bfae8",
+      "userId": "12660e0e-15ed-43a6-9ff4-56baff2b77e1",
+      "type": "session_start",
+      "timestamp": "2026-06-16T05:12:01.447Z",
+      "metadata": {
+        "sessionId": "297100f0-b742-485d-84b9-66ca6b759e28",
+        "ip": "::1"
+      }
     }
   ],
   "dashboards": [

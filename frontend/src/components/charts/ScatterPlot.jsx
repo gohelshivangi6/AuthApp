@@ -1,14 +1,16 @@
 import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
 
-const ScatterPlot = () => {
+const ScatterPlot = ({ data }) => {
   const svgRef = useRef();
 
   useEffect(() => {
-    const data = Array.from({ length: 20 }, () => ({
+    const defaultData = Array.from({ length: 10 }, () => ({
       x: Math.random() * 100,
       y: Math.random() * 100,
     }));
+
+    const chartData = data || defaultData;
 
     const width = 500;
     const height = 300;
@@ -32,12 +34,12 @@ const ScatterPlot = () => {
 
     const x = d3
       .scaleLinear()
-      .domain([0, 100])
+      .domain([0, d3.max(chartData, (d) => d.x) * 1.1])
       .range([50, width - 20]);
 
     const y = d3
       .scaleLinear()
-      .domain([0, 100])
+      .domain([0, d3.max(chartData, (d) => d.y) * 1.1])
       .range([height - 40, 20]);
 
     svg
@@ -49,10 +51,9 @@ const ScatterPlot = () => {
 
     svg
       .selectAll("circle")
-      .data(data)
+      .data(chartData)
       .enter()
       .append("circle")
-      //   .attr("fill", "#6366f1")
       .attr("fill", "#06b6d4")
       .attr("stroke", "#67e8f9")
       .attr("stroke-width", 2)
@@ -72,7 +73,11 @@ const ScatterPlot = () => {
       .on("mouseout", () => {
         tooltip.style("visibility", "hidden");
       });
-  }, []);
+
+    return () => {
+      tooltip.remove();
+    };
+  }, [data]);
 
   return <svg ref={svgRef}></svg>;
 };

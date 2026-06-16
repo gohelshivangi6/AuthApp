@@ -7,6 +7,7 @@ const authRoutes = require('./routes/authRoutes');
 const hierarchyRoutes = require('./routes/hierarchy');
 const adminRoutes = require('./routes/adminRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
+const dashboardDataRoutes = require('./routes/dashboardDataRoutes');
 const { globalLimiter } = require('./middleware/rateLimit');
 const { sessionToken } = require('./middleware/sessionToken');
 const errorHandler = require('./middleware/errorHandler');
@@ -42,6 +43,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/hierarchy', hierarchyRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/dashboard-data', dashboardDataRoutes);
 
 // Simple healthcheck route
 app.get('/health', (req, res) => {

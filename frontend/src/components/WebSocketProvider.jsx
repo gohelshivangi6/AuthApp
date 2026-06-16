@@ -15,20 +15,17 @@ export function useWebSocket() {
 export function WebSocketProvider({ children }) {
   const user = useSelector((state) => state.auth.user);
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const token = useSelector((state) => state.auth.token);
   const prevAuthRef = useRef(false);
+  console.log("..user", user);
+  console.log("..isAuthenticated", isAuthenticated);
+  console.log("..token", token);
 
   useEffect(() => {
-    if (isAuthenticated && user) {
-      const cookieToken = document.cookie
-        .split("; ")
-        .find((row) => row.startsWith("token="))
-        ?.split("=")[1];
-
-      if (cookieToken) {
-        connectUserSocket(cookieToken);
-        if (user.role === "admin") {
-          connectAdminSocket(cookieToken);
-        }
+    if (isAuthenticated && user && token) {
+      connectUserSocket(token);
+      if (user.role === "admin") {
+        connectAdminSocket(token);
       }
 
       prevAuthRef.current = true;
@@ -38,7 +35,7 @@ export function WebSocketProvider({ children }) {
       disconnectSockets();
       prevAuthRef.current = false;
     }
-  }, [isAuthenticated, user]);
+  }, [isAuthenticated, user, token]);
 
   return (
     <WebSocketContext.Provider value={{}}>

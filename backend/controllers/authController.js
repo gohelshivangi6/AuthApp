@@ -228,6 +228,7 @@ const verify2FASetup = async (req, res, next) => {
     res.status(200).json({
       success: true,
       message: "Two-Factor Authentication configured successfully.",
+      token: authToken,
       user: {
         id: user.id,
         name: user.name,
@@ -323,6 +324,7 @@ const login = async (req, res, next) => {
       return res.status(200).json({
         success: true,
         message: "Login successful.",
+        token: authToken,
         user: {
           id: user.id,
           name: user.name,
@@ -438,6 +440,7 @@ const verify2FALogin = async (req, res, next) => {
     res.status(200).json({
       success: true,
       message: "Login successful.",
+      token: authToken,
       user: {
         id: user.id,
         name: user.name,

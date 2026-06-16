@@ -1,11 +1,19 @@
 import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
 
-const DonutChart = () => {
+const DonutChart = ({ data }) => {
   const svgRef = useRef();
 
   useEffect(() => {
-    const data = [25, 35, 20, 40];
+    const defaultData = [
+      { label: "A", value: 25 },
+      { label: "B", value: 35 },
+      { label: "C", value: 20 },
+      { label: "D", value: 40 },
+    ];
+
+    const chartData = data || defaultData;
+    const values = chartData.map((d) => d.value);
 
     const width = 500;
     const height = 300;
@@ -35,20 +43,26 @@ const DonutChart = () => {
       .append("g")
       .attr("transform", `translate(${width / 2},${height / 2})`);
 
-    const pie = d3.pie();
+    const pie = d3.pie().value((d) => d.value);
 
     const arc = d3.arc().innerRadius(60).outerRadius(radius);
     const outerArc = d3.arc().innerRadius(130).outerRadius(130);
 
+    const colorScale = d3
+      .scaleOrdinal(d3.schemeSet2)
+      .domain(chartData.map((d) => d.label));
+
     group
       .selectAll("path")
-      .data(pie(data))
+      .data(pie(chartData))
       .enter()
       .append("path")
-      .attr("fill", "#6366f1")
+      .attr("fill", (d) => colorScale(d.data.label))
       .attr("d", arc)
       .on("mouseover", (event, d) => {
-        tooltip.style("visibility", "visible").text(`Value: ${d.value}`);
+        tooltip
+          .style("visibility", "visible")
+          .html(`${d.data.label}: ${d.data.value}`);
       })
       .on("mousemove", (event) => {
         tooltip
@@ -61,14 +75,14 @@ const DonutChart = () => {
 
     group
       .selectAll("polyline")
-      .data(pie(data))
+      .data(pie(chartData))
       .join("polyline")
       .attr("points", function (d) {
-        const posA = arc.centroid(d); // Line starts inside the slice
-        const posB = outerArc.centroid(d); // Line bends at the outer boundary
-        const posC = outerArc.centroid(d); // Line ends left or right
+        const posA = arc.centroid(d);
+        const posB = outerArc.centroid(d);
+        const posC = outerArc.centroid(d);
         const midangle = d.startAngle + (d.endAngle - d.startAngle) / 2;
-        posC[0] = 140 * (midangle < Math.PI ? 1 : -1); // Push line edge left or right
+        posC[0] = 140 * (midangle < Math.PI ? 1 : -1);
         return [posA, posB, posC];
       })
       .style("stroke", "white")
@@ -77,16 +91,19 @@ const DonutChart = () => {
 
     group
       .selectAll("text")
-      .data(pie(data)) // Use the exact same data mapping
+      .data(pie(chartData))
       .enter()
       .append("text")
-      // Use arc.centroid to calculate the center coordinates of each slice
       .attr("transform", (d) => `translate(${arc.centroid(d)})`)
       .attr("text-anchor", "middle")
       .style("fill", "#fff")
       .style("font-size", "12px")
-      .text((d) => d.value);
-  }, []);
+      .text((d) => d.data.value);
+
+    return () => {
+      tooltip.remove();
+    };
+  }, [data]);
 
   return <svg ref={svgRef}></svg>;
 };

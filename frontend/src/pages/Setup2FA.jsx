@@ -74,7 +74,7 @@ const Setup2FA = () => {
       console.log('2FA verification response:', res.data);
       if (res.data.success) {
         setError('');
-        dispatch(loginSuccess(res.data.user));
+        dispatch(loginSuccess({ user: res.data.user, token: res.data.token }));
         // setUser(res.data.user);
         setSuccess('2FA Setup completed successfully! Redirecting...');
         setTimeout(() => {

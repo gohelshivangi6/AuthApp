@@ -1,0 +1,96 @@
+{
+  "title": "Product Engagement Tracker",
+  "description": "User engagement and product adoption analytics",
+  "color": "#10b981",
+  "kpiCards": [
+    { "id": "active-users", "title": "Active Users", "value": "24,580", "change": "+18.3%", "changeType": "up" },
+    { "id": "feature-adoption", "title": "Feature Adoption Rate", "value": "72%", "change": "+5.2%", "changeType": "up" },
+    { "id": "session-duration", "title": "Avg Session Duration", "value": "8m 42s", "change": "+12.1%", "changeType": "up" },
+    { "id": "retention-rate", "title": "Retention Rate", "value": "84%", "change": "+3.7%", "changeType": "up" },
+    { "id": "nps-score", "title": "NPS Score", "value": "62", "change": "+8", "changeType": "up" },
+    { "id": "daily-active", "title": "Daily Active Users", "value": "8,340", "change": "+22.6%", "changeType": "up" }
+  ],
+  "charts": [
+    {
+      "id": "feature-usage",
+      "type": "bar",
+      "title": "Feature Usage by Category",
+      "data": [
+        { "label": "Analytics", "value": 85 },
+        { "label": "Reporting", "value": 72 },
+        { "label": "Collaboration", "value": 68 },
+        { "label": "Automation", "value": 55 },
+        { "label": "Integrations", "value": 48 },
+        { "label": "Mobile", "value": 42 }
+      ]
+    },
+    {
+      "id": "user-growth",
+      "type": "line",
+      "title": "Monthly Active User Growth",
+      "data": [
+        { "label": "Jan", "value": 12 },
+        { "label": "Feb", "value": 15 },
+        { "label": "Mar", "value": 18 },
+        { "label": "Apr", "value": 22 },
+        { "label": "May", "value": 20 },
+        { "label": "Jun", "value": 26 }
+      ]
+    },
+    {
+      "id": "engagement-cohort",
+      "type": "donut",
+      "title": "Engagement by User Segment",
+      "data": [
+        { "label": "Power Users", "value": 25 },
+        { "label": "Regular Users", "value": 40 },
+        { "label": "Casual Users", "value": 20 },
+        { "label": "Inactive", "value": 15 }
+      ]
+    },
+    {
+      "id": "user-activity",
+      "type": "scatter",
+      "title": "User Activity Distribution",
+      "data": [
+        { "x": 5, "y": 42 },
+        { "x": 12, "y": 58 },
+        { "x": 20, "y": 65 },
+        { "x": 8, "y": 38 },
+        { "x": 15, "y": 72 },
+        { "x": 25, "y": 80 },
+        { "x": 18, "y": 55 },
+        { "x": 30, "y": 88 },
+        { "x": 10, "y": 45 },
+        { "x": 22, "y": 75 }
+      ]
+    }
+  ],
+  "tables": [
+    {
+      "id": "top-features",
+      "title": "Top Features by Usage",
+      "headers": ["Feature", "Category", "Users", "Engagement", "Trend"],
+      "rows": [
+        ["Dashboard Overview", "Analytics", "18,420", "92%", "Growing"],
+        ["Custom Reports", "Reporting", "14,250", "78%", "Growing"],
+        ["Team Workspaces", "Collaboration", "11,800", "65%", "Stable"],
+        ["Workflow Builder", "Automation", "8,940", "55%", "Growing"],
+        ["API Integrations", "Integrations", "7,250", "48%", "Declining"],
+        ["Mobile Dashboard", "Mobile", "6,100", "42%", "Growing"]
+      ]
+    },
+    {
+      "id": "user-segments",
+      "title": "User Segment Analysis",
+      "headers": ["Segment", "Users", "Avg Sessions", "Retention", "NPS"],
+      "rows": [
+        ["Enterprise", "8,200", "24/week", "94%", "72"],
+        ["Mid-Market", "7,400", "18/week", "88%", "65"],
+        ["SMB", "5,600", "12/week", "76%", "55"],
+        ["Startup", "3,380", "8/week", "62%", "48"],
+        ["Free Tier", "12,000", "4/week", "45%", "35"]
+      ]
+    }
+  ]
+}
