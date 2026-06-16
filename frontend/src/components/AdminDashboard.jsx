@@ -11,16 +11,12 @@ import PeopleIcon from "@mui/icons-material/People";
 import BusinessIcon from "@mui/icons-material/Business";
 import BadgeIcon from "@mui/icons-material/Badge";
 import SecurityIcon from "@mui/icons-material/Security";
-import WidgetsIcon from "@mui/icons-material/Widgets";
 import TimelineIcon from "@mui/icons-material/Timeline";
-import ListAltIcon from "@mui/icons-material/ListAlt";
 import UserManager from "./admin/UserManager";
 import DepartmentManager from "./admin/DepartmentManager";
 import RoleManager from "./admin/RoleManager";
 import PermissionManager from "./admin/PermissionManager";
-import WidgetManager from "./admin/WidgetManager";
 import AnalyticsPanel from "./admin/AnalyticsPanel";
-import ActivityLogTable from "./admin/ActivityLogTable";
 import UserStatsPanel from "./admin/UserStatsPanel";
 
 const TABS = [
@@ -29,9 +25,7 @@ const TABS = [
   { label: "Departments", icon: <BusinessIcon />, component: <DepartmentManager /> },
   { label: "Roles", icon: <BadgeIcon />, component: <RoleManager /> },
   { label: "Permissions", icon: <SecurityIcon />, component: <PermissionManager /> },
-  { label: "Widgets", icon: <WidgetsIcon />, component: <WidgetManager /> },
   { label: "User Stats", icon: <TimelineIcon />, component: <UserStatsPanel /> },
-  { label: "Activity Logs", icon: <ListAltIcon />, component: <ActivityLogTable /> },
 ];
 
 export default function AdminDashboard() {

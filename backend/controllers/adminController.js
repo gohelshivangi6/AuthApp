@@ -480,9 +480,10 @@ async function getDashboards(req, res, next) {
 async function getStats(req, res, next) {
   try {
     const db = await readDB();
-    const logs = db.activityLogs || [];
+    const adminIds = new Set(db.users.filter((u) => u.role === "admin").map((u) => u.id));
+    const logs = (db.activityLogs || []).filter((l) => !adminIds.has(l.userId));
 
-    const totalUsers = db.users.length;
+    const totalUsers = db.users.filter((u) => !adminIds.has(u.id)).length;
     const activeSessions = logs.filter(
       (l) => l.type === "session_start" && !logs.some(
         (l2) => l2.userId === l.userId && l2.type === "session_end" && new Date(l2.timestamp) > new Date(l.timestamp)
