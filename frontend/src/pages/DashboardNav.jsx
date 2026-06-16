@@ -10,7 +10,7 @@ import GroupIcon from "@mui/icons-material/Group";
 import TouchAppIcon from "@mui/icons-material/TouchApp";
 import PublicIcon from "@mui/icons-material/Public";
 import axios from "axios";
-import { getUserSocket } from "../utils/websocket";
+import { getUserSocket, emitEvent } from "../utils/websocket";
 
 const DASHBOARD_ICONS = {
   "revenue-ops-pulse": <ShowChartIcon sx={{ fontSize: 48, color: "#6366f1" }} />,
@@ -57,6 +57,10 @@ export default function DashboardNav() {
     socket.on("permissions-updated", handlePermUpdate);
     return () => socket.off("permissions-updated", handlePermUpdate);
   }, [fetchAllowedDashboards]);
+
+  useEffect(() => {
+    emitEvent("dashboard_list_view");
+  }, []);
 
   if (user?.role === "admin") {
     navigate("/dashboard", { replace: true });
@@ -110,7 +114,10 @@ export default function DashboardNav() {
           {dashboards.map((db) => (
             <Grid size={{ xs: 12, sm: 6 }} key={db.id}>
               <Paper
-                onClick={() => navigate(`/dashboards/${db.path}`)}
+                onClick={() => {
+                  emitEvent("dashboard_click", { dashboard: db.name, path: db.path });
+                  navigate(`/dashboards/${db.path}`);
+                }}
                 sx={{
                   p: 3,
                   cursor: "pointer",

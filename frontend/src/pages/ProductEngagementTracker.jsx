@@ -4,6 +4,7 @@ import axios from 'axios';
 import DashboardContent from "../components/DashboardContent";
 import { decryptData } from "../decrypt/decryption";
 import { fetchSectionPermissions } from "../redux/slices/dashboardSlice";
+import { emitEvent } from "../utils/websocket";
 import useDashboardAccess from "../hooks/useDashboardAccess";
 import { Box, CircularProgress } from "@mui/material";
 
@@ -27,6 +28,7 @@ export default function ProductEngagementTracker() {
         if (cancelled) return;
         const decrypted = await decryptData(res.data);
         setData(decrypted);
+        emitEvent("dashboard_view", { dashboard: "product-engagement-tracker" });
       })
       .catch(() => {
         if (!cancelled) setData(null);

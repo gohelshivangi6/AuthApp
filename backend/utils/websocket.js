@@ -147,6 +147,9 @@ async function logActivity(userId, type, metadata = {}) {
       db.activityLogs = db.activityLogs.slice(-5000);
     }
     await writeDB(db);
+    if (io) {
+      io.of("/user").emit("stats-updated");
+    }
   } catch (_) {}
 }
 

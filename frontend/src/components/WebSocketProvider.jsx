@@ -8,6 +8,7 @@ import {
 } from "../utils/websocket";
 import { updateUser } from "../redux/slices/authSlice";
 import { fetchDashboardData, upsertSectionPermission, removeSectionPermission } from "../redux/slices/dashboardSlice";
+import { fetchStats } from "../redux/slices/adminSlice";
 import axios from "axios";
 
 const WebSocketContext = createContext(null);
@@ -79,10 +80,19 @@ export function WebSocketProvider({ children }) {
 
     socket.on("permissions-updated", handlePermUpdate);
 
+    const handleStatsUpdate = () => {
+      if (user?.role === "admin") {
+        dispatch(fetchStats());
+      }
+    };
+
+    socket.on("stats-updated", handleStatsUpdate);
+
     return () => {
       socket.off("permissions-updated", handlePermUpdate);
+      socket.off("stats-updated", handleStatsUpdate);
     };
-  }, [dispatch, isAuthenticated]);
+  }, [dispatch, isAuthenticated, user?.role]);
 
   return (
     <WebSocketContext.Provider value={{}}>
