@@ -754,59 +754,6 @@ const changePassword = async (req, res, next) => {
   }
 };
 
-/**
- * Accepts an invitation and completes registration.
- */
-const acceptInvite = async (req, res, next) => {
-  try {
-    const { token, email, name, password } = req.body;
-    const db = await readDB();
-
-    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
-
-    const userIndex = db.users.findIndex(
-      (u) =>
-        u.email === email &&
-        u.status === "INVITED" &&
-        u.inviteToken === hashedToken &&
-        new Date(u.inviteExpires).getTime() > Date.now(),
-    );
-
-    if (userIndex === -1) {
-      return res.status(400).json({
-        success: false,
-        message: "Invitation link is invalid or has expired.",
-      });
-    }
-
-    const user = db.users[userIndex];
-
-    user.name = name || user.name;
-    user.passwordHash = await hashPassword(password);
-    user.status = "VERIFIED";
-    user.inviteToken = null;
-    user.inviteExpires = null;
-    user.failedAttempts = 0;
-    user.lockUntil = null;
-
-    await writeDB(db);
-
-    await sendEmail({
-      to: email,
-      subject: "Welcome to SecureAuthApp — Account Activated",
-      text: `Hello ${user.name},\n\nYour account has been activated successfully. You can now log in with your email and the password you set.`,
-      html: `<p>Hello ${user.name},</p><p>Your account has been activated successfully. You can now log in with your email and the password you set.</p>`,
-    });
-
-    res.status(200).json({
-      success: true,
-      message: "Account activated successfully. You can now log in.",
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
 module.exports = {
   signup,
   verify2FASetup,
@@ -820,5 +767,4 @@ module.exports = {
   me,
   updateProfile,
   changePassword,
-  acceptInvite,
 };

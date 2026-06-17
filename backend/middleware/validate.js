@@ -126,21 +126,6 @@ const validateChangePassword = [
     .matches(/[!@#$%^&*(),.?":{}|<>]/).withMessage('Password must contain at least one special character.'),
 ];
 
-const validateAcceptInvite = [
-  body('token').notEmpty().withMessage('Invitation token is required.'),
-  body('email').isEmail().withMessage('Valid email is required.').normalizeEmail(),
-  body('name')
-    .trim()
-    .notEmpty().withMessage('Name is required.')
-    .isLength({ max: 50 }).withMessage('Name cannot exceed 50 characters.'),
-  body('password')
-    .isLength({ min: 8 }).withMessage('Password must be at least 8 characters long.')
-    .matches(/[A-Z]/).withMessage('Password must contain at least one uppercase letter.')
-    .matches(/[a-z]/).withMessage('Password must contain at least one lowercase letter.')
-    .matches(/[0-9]/).withMessage('Password must contain at least one number.')
-    .matches(/[!@#$%^&*(),.?":{}|<>]/).withMessage('Password must contain at least one special character.'),
-];
-
 module.exports = {
   validateSignup,
   validateLogin,
@@ -150,5 +135,4 @@ module.exports = {
   handleValidationErrors,
   validateUpdateProfile,
   validateChangePassword,
-  validateAcceptInvite,
 };

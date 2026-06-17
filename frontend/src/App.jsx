@@ -8,7 +8,6 @@ import Setup2FA from "./pages/Setup2FA";
 import Verify2FA from "./pages/Verify2FA";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
-import AcceptInvite from "./pages/AcceptInvite";
 import Profile from "./pages/Profile";
 import Dashboard from "./pages/Dashboard";
 import DashboardNav from "./pages/DashboardNav";
@@ -104,7 +103,6 @@ function App() {
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/verify-2fa" element={<Verify2FA />} />
                 <Route path="/setup-2fa" element={<Setup2FA />} />
-                <Route path="/accept-invite" element={<AcceptInvite />} />
               {/* </Route> */}
 
               <Route element={<ProtectedRoute />}>

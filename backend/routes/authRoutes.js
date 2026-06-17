@@ -14,7 +14,6 @@ const {
   me,
   updateProfile,
   changePassword,
-  acceptInvite
 } = require('../controllers/authController');
 
 const {
@@ -26,7 +25,6 @@ const {
   handleValidationErrors,
   validateUpdateProfile,
   validateChangePassword,
-  validateAcceptInvite
 } = require('../middleware/validate');
 
 const {
@@ -65,9 +63,6 @@ router.get('/dashboard-data', requireAuth, sessionToken, (req, res) => {
 // --- Profile & Account Management ---
 router.put('/profile', requireAuth, validateUpdateProfile, handleValidationErrors, updateProfile);
 router.post('/change-password', requireAuth, validateChangePassword, handleValidationErrors, changePassword);
-
-// --- Invitation Acceptance ---
-router.post('/accept-invite', validateAcceptInvite, handleValidationErrors, acceptInvite);
 
 // --- Dev Utilities (Simulated Email Sandbox) ---
 router.get('/dev/emails', async (req, res, next) => {
