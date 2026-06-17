@@ -1,43 +1,50 @@
 const { readDB } = require("../utils/dbHelper");
 
+function resolveGranted(db, userId, userRoleId, userDeptIds, targetType, targetId, defaultVal) {
+  const userPerms = (db.permissions || []).filter((p) => p.userId === userId && p.targetType === targetType && p.targetId === targetId);
+  if (userPerms.length > 0) return { source: "user", granted: userPerms[0].granted };
+
+  const roleTemplates = (db.permissionTemplates || []).filter(
+    (t) => t.assigneeType === "role" && t.assigneeId === userRoleId && t.targetType === targetType && t.targetId === targetId
+  );
+  if (roleTemplates.length > 0) return { source: "role", granted: roleTemplates[0].granted };
+
+  for (const deptId of userDeptIds) {
+    const deptTemplates = (db.permissionTemplates || []).filter(
+      (t) => t.assigneeType === "department" && t.assigneeId === deptId && t.targetType === targetType && t.targetId === targetId
+    );
+    if (deptTemplates.length > 0) return { source: "department", granted: deptTemplates[0].granted };
+  }
+
+  return { source: "default", granted: defaultVal };
+}
+
 async function getDashboardData(req, res, next) {
   try {
     const db = await readDB();
     const userId = req.user.id;
+    const user = db.users.find((u) => u.id === userId);
+    const userRoleId = user ? user.roleId : null;
     const userAssignments = (db.userAssignments || []).filter((a) => a.userId === userId);
-    const permissions = (db.permissions || []).filter((p) => p.userId === userId);
+    const userDeptIds = userAssignments.map((a) => a.departmentId);
 
+    const allDepts = db.departments || [];
     const allowedDeptIds = new Set();
 
-    const userDeptPerms = permissions.filter((p) => p.targetType === "department");
-    for (const a of userAssignments) {
-      const explicitPerm = userDeptPerms.find((p) => p.targetId === a.departmentId);
-      if (explicitPerm) {
-        if (explicitPerm.granted) allowedDeptIds.add(a.departmentId);
-      } else {
-        allowedDeptIds.add(a.departmentId);
-      }
+    for (const d of allDepts) {
+      const isAssigned = userDeptIds.includes(d.id);
+      const result = resolveGranted(db, userId, userRoleId, userDeptIds, "department", d.id, isAssigned);
+      if (result.granted) allowedDeptIds.add(d.id);
     }
 
-    for (const p of userDeptPerms) {
-      if (p.granted) allowedDeptIds.add(p.targetId);
-      else allowedDeptIds.delete(p.targetId);
-    }
-
-    const departments = (db.departments || []).filter((d) => allowedDeptIds.has(d.id));
+    const departments = allDepts.filter((d) => allowedDeptIds.has(d.id));
     const roles = db.roles || [];
     const allWidgets = db.widgets || [];
 
-    const widgetPerms = permissions.filter((p) => p.targetType === "widget");
     const allowedWidgetIds = new Set();
-
     for (const w of allWidgets) {
-      const explicitPerm = widgetPerms.find((p) => p.targetId === w.id);
-      if (explicitPerm) {
-        if (explicitPerm.granted) allowedWidgetIds.add(w.id);
-      } else if (w.defaultEnabled) {
-        allowedWidgetIds.add(w.id);
-      }
+      const result = resolveGranted(db, userId, userRoleId, userDeptIds, "widget", w.id, w.defaultEnabled);
+      if (result.granted) allowedWidgetIds.add(w.id);
     }
 
     const widgets = allWidgets.filter((w) => allowedWidgetIds.has(w.id));
@@ -63,12 +70,15 @@ async function getAllowedDashboards(req, res, next) {
   try {
     const db = await readDB();
     const userId = req.user.id;
-    const userPerms = (db.permissions || []).filter((p) => p.userId === userId && p.targetType === "dashboard");
+    const user = db.users.find((u) => u.id === userId);
+    const userRoleId = user ? user.roleId : null;
+    const userAssignments = (db.userAssignments || []).filter((a) => a.userId === userId);
+    const userDeptIds = userAssignments.map((a) => a.departmentId);
     const allDashboards = db.dashboards || [];
 
     const allowed = allDashboards.filter((d) => {
-      const perm = userPerms.find((p) => p.targetId === d.id);
-      return perm ? perm.granted : false;
+      const result = resolveGranted(db, userId, userRoleId, userDeptIds, "dashboard", d.id, false);
+      return result.granted;
     });
 
     res.json({ success: true, dashboards: allowed });
@@ -79,10 +89,41 @@ async function getSectionPermissions(req, res, next) {
   try {
     const db = await readDB();
     const userId = req.user.id;
+    const user = db.users.find((u) => u.id === userId);
+    const userRoleId = user ? user.roleId : null;
+    const userAssignments = (db.userAssignments || []).filter((a) => a.userId === userId);
+    const userDeptIds = userAssignments.map((a) => a.departmentId);
+
     const sectionPerms = (db.permissions || []).filter(
       (p) => p.userId === userId && p.targetType === "dashboard-section"
     );
-    res.json({ success: true, permissions: sectionPerms });
+
+    const roleSectionTemplates = (db.permissionTemplates || []).filter(
+      (t) => t.assigneeType === "role" && t.assigneeId === userRoleId && t.targetType === "dashboard-section"
+    );
+
+    const deptSectionTemplates = (db.permissionTemplates || []).filter(
+      (t) => t.assigneeType === "department" && userDeptIds.includes(t.assigneeId) && t.targetType === "dashboard-section"
+    );
+
+    const aggregated = {};
+    for (const p of sectionPerms) {
+      aggregated[p.targetId] = p.granted;
+    }
+    for (const t of roleSectionTemplates) {
+      if (!(t.targetId in aggregated)) aggregated[t.targetId] = t.granted;
+    }
+    for (const t of deptSectionTemplates) {
+      if (!(t.targetId in aggregated)) aggregated[t.targetId] = t.granted;
+    }
+
+    const permissions = Object.entries(aggregated).map(([targetId, granted]) => ({
+      targetType: "dashboard-section",
+      targetId,
+      granted,
+    }));
+
+    res.json({ success: true, permissions });
   } catch (err) { next(err); }
 }
 

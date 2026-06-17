@@ -98,6 +98,94 @@ const validateUpdateWidget = [
   handleValidationErrors,
 ];
 
+const validateBulkPermission = [
+  body("userIds").isArray({ min: 1 }).withMessage("userIds must be a non-empty array"),
+  body("userIds.*").isUUID().withMessage("Each userId must be a valid UUID"),
+  body("targetType")
+    .isIn(["department", "widget", "dashboard", "dashboard-section"])
+    .withMessage("targetType must be 'department', 'widget', 'dashboard', or 'dashboard-section'"),
+  body("targetId").custom((value, { req }) => {
+    if (req.body.targetType === "dashboard-section") {
+      if (!/^[a-z0-9-]+::[a-zA-Z]+$/.test(value)) {
+        throw new Error("targetId must be 'slug::sectionName' for dashboard-section (e.g. 'revenue-ops-pulse::kpiCards')");
+      }
+      return true;
+    }
+    if (!/^[0-9a-f-]{36}$/i.test(value)) {
+      throw new Error("Invalid target ID, must be a UUID");
+    }
+    return true;
+  }),
+  body("granted").isBoolean().withMessage("granted must be boolean"),
+  handleValidationErrors,
+];
+
+const validateCreatePermissionTemplate = [
+  body("assigneeType").isIn(["role", "department"]).withMessage("assigneeType must be 'role' or 'department'"),
+  body("assigneeId").isUUID().withMessage("Invalid assignee ID"),
+  body("targetType")
+    .isIn(["department", "widget", "dashboard", "dashboard-section"])
+    .withMessage("targetType must be 'department', 'widget', 'dashboard', or 'dashboard-section'"),
+  body("targetId").custom((value, { req }) => {
+    if (req.body.targetType === "dashboard-section") {
+      if (!/^[a-z0-9-]+::[a-zA-Z]+$/.test(value)) {
+        throw new Error("targetId must be 'slug::sectionName' for dashboard-section (e.g. 'revenue-ops-pulse::kpiCards')");
+      }
+      return true;
+    }
+    if (!/^[0-9a-f-]{36}$/i.test(value)) {
+      throw new Error("Invalid target ID, must be a UUID");
+    }
+    return true;
+  }),
+  body("granted").isBoolean().withMessage("granted must be boolean"),
+  handleValidationErrors,
+];
+
+const validateApplyDepartmentPermission = [
+  body("departmentId").isUUID().withMessage("Invalid department ID"),
+  body("targetType")
+    .isIn(["department", "widget", "dashboard", "dashboard-section"])
+    .withMessage("targetType must be 'department', 'widget', 'dashboard', or 'dashboard-section'"),
+  body("targetId").custom((value, { req }) => {
+    if (req.body.targetType === "dashboard-section") {
+      if (!/^[a-z0-9-]+::[a-zA-Z]+$/.test(value)) {
+        throw new Error("targetId must be 'slug::sectionName' for dashboard-section (e.g. 'revenue-ops-pulse::kpiCards')");
+      }
+      return true;
+    }
+    if (!/^[0-9a-f-]{36}$/i.test(value)) {
+      throw new Error("Invalid target ID, must be a UUID");
+    }
+    return true;
+  }),
+  body("granted").isBoolean().withMessage("granted must be boolean"),
+  body("applyTo").isIn(["all", "future"]).withMessage("applyTo must be 'all' or 'future'"),
+  handleValidationErrors,
+];
+
+const validateApplyRolePermission = [
+  body("roleId").isUUID().withMessage("Invalid role ID"),
+  body("targetType")
+    .isIn(["department", "widget", "dashboard", "dashboard-section"])
+    .withMessage("targetType must be 'department', 'widget', 'dashboard', or 'dashboard-section'"),
+  body("targetId").custom((value, { req }) => {
+    if (req.body.targetType === "dashboard-section") {
+      if (!/^[a-z0-9-]+::[a-zA-Z]+$/.test(value)) {
+        throw new Error("targetId must be 'slug::sectionName' for dashboard-section (e.g. 'revenue-ops-pulse::kpiCards')");
+      }
+      return true;
+    }
+    if (!/^[0-9a-f-]{36}$/i.test(value)) {
+      throw new Error("Invalid target ID, must be a UUID");
+    }
+    return true;
+  }),
+  body("granted").isBoolean().withMessage("granted must be boolean"),
+  body("applyTo").isIn(["all", "future"]).withMessage("applyTo must be 'all' or 'future'"),
+  handleValidationErrors,
+];
+
 module.exports = {
   validateCreateDepartment,
   validateUpdateDepartment,
@@ -108,6 +196,10 @@ module.exports = {
   validateCreateAssignment,
   validateUpdateAssignment,
   validateCreatePermission,
+  validateBulkPermission,
+  validateCreatePermissionTemplate,
+  validateApplyDepartmentPermission,
+  validateApplyRolePermission,
   validateCreateWidget,
   validateUpdateWidget,
 };

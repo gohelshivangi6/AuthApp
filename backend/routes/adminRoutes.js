@@ -8,6 +8,10 @@ const {
   validateCreateUser, validateUpdateUser,
   validateCreateAssignment, validateUpdateAssignment,
   validateCreatePermission,
+  validateBulkPermission,
+  validateCreatePermissionTemplate,
+  validateApplyDepartmentPermission,
+  validateApplyRolePermission,
   validateCreateWidget, validateUpdateWidget,
 } = require("../middleware/adminValidate");
 const ctrl = require("../controllers/adminController");
@@ -38,6 +42,14 @@ router.delete("/assignments/:id", ctrl.deleteAssignment);
 router.get("/permissions", ctrl.getPermissions);
 router.post("/permissions", validateCreatePermission, ctrl.createPermission);
 router.delete("/permissions/:id", ctrl.deletePermission);
+router.post("/permissions/bulk", validateBulkPermission, ctrl.bulkCreatePermissions);
+
+router.get("/permission-templates", ctrl.getPermissionTemplates);
+router.post("/permission-templates", validateCreatePermissionTemplate, ctrl.upsertPermissionTemplate);
+router.delete("/permission-templates/:id", ctrl.deletePermissionTemplate);
+
+router.post("/permissions/apply-department", validateApplyDepartmentPermission, ctrl.applyDepartmentPermission);
+router.post("/permissions/apply-role", validateApplyRolePermission, ctrl.applyRolePermission);
 
 router.get("/widgets", ctrl.getWidgets);
 router.post("/widgets", validateCreateWidget, ctrl.createWidget);

@@ -158,6 +158,13 @@ function emitPermissionUpdate(userId, data = {}) {
   io.of("/user").to(`user:${userId}`).emit("permissions-updated", { userId, ...data });
 }
 
+function emitBulkPermissionUpdate(userIds, data = {}) {
+  if (!io) return;
+  for (const userId of userIds) {
+    io.of("/user").to(`user:${userId}`).emit("permissions-updated", { userId, ...data });
+  }
+}
+
 function getActiveUsersCount() {
   return userSockets.size;
 }
@@ -169,6 +176,7 @@ function getActiveUserIds() {
 module.exports = {
   initWebSocket,
   emitPermissionUpdate,
+  emitBulkPermissionUpdate,
   getActiveUsersCount,
   getActiveUserIds,
 };

@@ -101,6 +101,37 @@ export const deletePermission = createAsyncThunk("admin/deletePermission", async
   return id;
 });
 
+export const bulkCreatePermissions = createAsyncThunk("admin/bulkCreatePermissions", async (data) => {
+  const res = await axios.post(`${API}/permissions/bulk`, data, { withCredentials: true });
+  return res.data;
+});
+
+export const fetchPermissionTemplates = createAsyncThunk("admin/fetchPermissionTemplates", async (params = {}) => {
+  const query = new URLSearchParams(params).toString();
+  const res = await axios.get(`${API}/permission-templates${query ? `?${query}` : ""}`, { withCredentials: true });
+  return res.data.permissionTemplates;
+});
+
+export const upsertPermissionTemplate = createAsyncThunk("admin/upsertPermissionTemplate", async (data) => {
+  const res = await axios.post(`${API}/permission-templates`, data, { withCredentials: true });
+  return res.data.permissionTemplate;
+});
+
+export const deletePermissionTemplate = createAsyncThunk("admin/deletePermissionTemplate", async (id) => {
+  await axios.delete(`${API}/permission-templates/${id}`, { withCredentials: true });
+  return id;
+});
+
+export const applyDepartmentPermission = createAsyncThunk("admin/applyDepartmentPermission", async (data) => {
+  const res = await axios.post(`${API}/permissions/apply-department`, data, { withCredentials: true });
+  return res.data;
+});
+
+export const applyRolePermission = createAsyncThunk("admin/applyRolePermission", async (data) => {
+  const res = await axios.post(`${API}/permissions/apply-role`, data, { withCredentials: true });
+  return res.data;
+});
+
 export const fetchWidgets = createAsyncThunk("admin/fetchWidgets", async () => {
   const res = await axios.get(`${API}/widgets`, { withCredentials: true });
   return res.data.widgets;
@@ -150,6 +181,7 @@ const adminSlice = createSlice({
     roles: [],
     assignments: [],
     permissions: [],
+    permissionTemplates: [],
     widgets: [],
     dashboards: [],
     stats: null,
@@ -211,6 +243,23 @@ const adminSlice = createSlice({
       })
       .addCase(deletePermission.fulfilled, (state, action) => {
         state.permissions = state.permissions.filter((p) => p.id !== action.payload);
+      })
+      .addCase(bulkCreatePermissions.fulfilled, (state, action) => {
+        // re-fetch permissions is handled by the component
+      })
+      .addCase(fetchPermissionTemplates.fulfilled, (state, action) => { state.permissionTemplates = action.payload; })
+      .addCase(upsertPermissionTemplate.fulfilled, (state, action) => {
+        const idx = state.permissionTemplates.findIndex(
+          (t) => t.assigneeType === action.payload.assigneeType
+            && t.assigneeId === action.payload.assigneeId
+            && t.targetType === action.payload.targetType
+            && t.targetId === action.payload.targetId
+        );
+        if (idx >= 0) state.permissionTemplates[idx] = action.payload;
+        else state.permissionTemplates.push(action.payload);
+      })
+      .addCase(deletePermissionTemplate.fulfilled, (state, action) => {
+        state.permissionTemplates = state.permissionTemplates.filter((t) => t.id !== action.payload);
       })
       .addCase(fetchWidgets.fulfilled, (state, action) => { state.widgets = action.payload; })
       .addCase(createWidget.fulfilled, (state, action) => { state.widgets.push(action.payload); })

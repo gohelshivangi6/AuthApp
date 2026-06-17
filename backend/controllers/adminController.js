@@ -1,7 +1,7 @@
 const { v4: uuidv4 } = require("uuid");
 const { readDB, writeDB } = require("../utils/dbHelper");
 const { hashPassword } = require("../utils/cryptoHelper");
-const { emitPermissionUpdate } = require("../utils/websocket");
+const { emitPermissionUpdate, emitBulkPermissionUpdate } = require("../utils/websocket");
 
 // ─── Users ─────────────────────────────────────────────────
 
@@ -398,6 +398,292 @@ async function deletePermission(req, res, next) {
   } catch (err) { next(err); }
 }
 
+// ─── Bulk Permissions ─────────────────────────────────────────
+
+async function bulkCreatePermissions(req, res, next) {
+  try {
+    const { userIds, targetType, targetId, granted } = req.body;
+    const db = await readDB();
+
+    const results = [];
+    for (const userId of userIds) {
+      const existingIdx = (db.permissions || []).findIndex(
+        (p) => p.userId === userId && p.targetType === targetType && p.targetId === targetId
+      );
+
+      let permission;
+      if (existingIdx >= 0) {
+        db.permissions[existingIdx].granted = granted;
+        db.permissions[existingIdx].updatedAt = new Date().toISOString();
+        permission = db.permissions[existingIdx];
+      } else {
+        permission = {
+          id: uuidv4(),
+          userId,
+          targetType,
+          targetId,
+          granted,
+          updatedAt: new Date().toISOString(),
+        };
+        db.permissions.push(permission);
+      }
+      results.push(permission);
+    }
+
+    await writeDB(db);
+
+    const path = targetType === "dashboard" ? (db.dashboards || []).find(d => d.id === targetId)?.path : undefined;
+    try { emitBulkPermissionUpdate(userIds, { type: "permission", action: "upsert", targetType, targetId, granted, ...(path && { path }) }); } catch (_) {}
+
+    res.status(201).json({ success: true, count: results.length });
+  } catch (err) { next(err); }
+}
+
+// ─── Permission Templates ─────────────────────────────────────
+
+async function getPermissionTemplates(req, res, next) {
+  try {
+    const db = await readDB();
+    const { assigneeType, assigneeId } = req.query;
+    let templates = db.permissionTemplates || [];
+    if (assigneeType) {
+      templates = templates.filter((t) => t.assigneeType === assigneeType);
+    }
+    if (assigneeId) {
+      templates = templates.filter((t) => t.assigneeId === assigneeId);
+    }
+    res.json({ success: true, permissionTemplates: templates });
+  } catch (err) { next(err); }
+}
+
+async function upsertPermissionTemplate(req, res, next) {
+  try {
+    const { assigneeType, assigneeId, targetType, targetId, granted } = req.body;
+    const db = await readDB();
+
+    const existingIdx = (db.permissionTemplates || []).findIndex(
+      (t) => t.assigneeType === assigneeType && t.assigneeId === assigneeId && t.targetType === targetType && t.targetId === targetId
+    );
+
+    let template;
+    if (existingIdx >= 0) {
+      db.permissionTemplates[existingIdx].granted = granted;
+      db.permissionTemplates[existingIdx].updatedAt = new Date().toISOString();
+      template = db.permissionTemplates[existingIdx];
+    } else {
+      template = {
+        id: uuidv4(),
+        assigneeType,
+        assigneeId,
+        targetType,
+        targetId,
+        granted,
+        updatedAt: new Date().toISOString(),
+      };
+      if (!db.permissionTemplates) db.permissionTemplates = [];
+      db.permissionTemplates.push(template);
+    }
+
+    await writeDB(db);
+
+    // Notify affected users via WebSocket
+    let affectedIds = [];
+    if (assigneeType === "role") {
+      affectedIds = (db.userAssignments || []).filter((a) => a.roleId === assigneeId).map((a) => a.userId);
+    } else if (assigneeType === "department") {
+      affectedIds = (db.userAssignments || []).filter((a) => a.departmentId === assigneeId).map((a) => a.userId);
+    }
+    if (affectedIds.length > 0) {
+      const path = targetType === "dashboard" ? (db.dashboards || []).find(d => d.id === targetId)?.path : undefined;
+      try { emitBulkPermissionUpdate([...new Set(affectedIds)], { type: "template", action: "upsert", assigneeType, assigneeId, targetType, targetId, granted, ...(path && { path }) }); } catch (_) {}
+    }
+
+    res.status(201).json({ success: true, permissionTemplate: template });
+  } catch (err) { next(err); }
+}
+
+async function deletePermissionTemplate(req, res, next) {
+  try {
+    const { id } = req.params;
+    const db = await readDB();
+
+    const idx = (db.permissionTemplates || []).findIndex((t) => t.id === id);
+    if (idx === -1) {
+      return res.status(404).json({ success: false, message: "Permission template not found." });
+    }
+
+    db.permissionTemplates.splice(idx, 1);
+    await writeDB(db);
+
+    res.json({ success: true, message: "Permission template removed." });
+  } catch (err) { next(err); }
+}
+
+// ─── Apply Permissions ──────────────────────────────────────
+
+async function applyDepartmentPermission(req, res, next) {
+  try {
+    const { departmentId, targetType, targetId, granted, applyTo } = req.body;
+    const db = await readDB();
+
+    // 1. Upsert department template
+    const deptExisting = (db.permissionTemplates || []).findIndex(
+      (t) => t.assigneeType === "department" && t.assigneeId === departmentId && t.targetType === targetType && t.targetId === targetId
+    );
+    if (deptExisting >= 0) {
+      db.permissionTemplates[deptExisting].granted = granted;
+      db.permissionTemplates[deptExisting].updatedAt = new Date().toISOString();
+    } else {
+      if (!db.permissionTemplates) db.permissionTemplates = [];
+      db.permissionTemplates.push({
+        id: uuidv4(),
+        assigneeType: "department",
+        assigneeId: departmentId,
+        targetType,
+        targetId,
+        granted,
+        updatedAt: new Date().toISOString(),
+      });
+    }
+
+    const allAffected = new Set();
+
+    if (applyTo === "all") {
+      // 2. Upsert role templates for all roles in this department
+      const deptRoles = (db.roles || []).filter((r) => r.departmentId === departmentId);
+      for (const role of deptRoles) {
+        const roleExisting = (db.permissionTemplates || []).findIndex(
+          (t) => t.assigneeType === "role" && t.assigneeId === role.id && t.targetType === targetType && t.targetId === targetId
+        );
+        if (roleExisting >= 0) {
+          db.permissionTemplates[roleExisting].granted = granted;
+          db.permissionTemplates[roleExisting].updatedAt = new Date().toISOString();
+        } else {
+          if (!db.permissionTemplates) db.permissionTemplates = [];
+          db.permissionTemplates.push({
+            id: uuidv4(),
+            assigneeType: "role",
+            assigneeId: role.id,
+            targetType,
+            targetId,
+            granted,
+            updatedAt: new Date().toISOString(),
+          });
+        }
+      }
+
+      // 3. Upsert user permissions for all users assigned to this department
+      const deptUsers = (db.userAssignments || []).filter((a) => a.departmentId === departmentId);
+      for (const assgn of deptUsers) {
+        allAffected.add(assgn.userId);
+        const userExisting = (db.permissions || []).findIndex(
+          (p) => p.userId === assgn.userId && p.targetType === targetType && p.targetId === targetId
+        );
+        if (userExisting >= 0) {
+          db.permissions[userExisting].granted = granted;
+          db.permissions[userExisting].updatedAt = new Date().toISOString();
+        } else {
+          if (!db.permissions) db.permissions = [];
+          db.permissions.push({
+            id: uuidv4(),
+            userId: assgn.userId,
+            targetType,
+            targetId,
+            granted,
+            updatedAt: new Date().toISOString(),
+          });
+        }
+      }
+    } else {
+      // future only — just notify current dept members
+      const deptUsers = (db.userAssignments || []).filter((a) => a.departmentId === departmentId);
+      for (const assgn of deptUsers) {
+        allAffected.add(assgn.userId);
+      }
+    }
+
+    await writeDB(db);
+
+    // WebSocket notification
+    if (allAffected.size > 0) {
+      const path = targetType === "dashboard" ? (db.dashboards || []).find(d => d.id === targetId)?.path : undefined;
+      try { emitBulkPermissionUpdate([...allAffected], { type: "template", action: applyTo === "all" ? "applied-all" : "applied-future", assigneeType: "department", assigneeId: departmentId, targetType, targetId, granted, ...(path && { path }) }); } catch (_) {}
+    }
+
+    res.json({ success: true, message: `Department permission ${applyTo === "all" ? "applied to all" : "set for future"}.` });
+  } catch (err) { next(err); }
+}
+
+async function applyRolePermission(req, res, next) {
+  try {
+    const { roleId, targetType, targetId, granted, applyTo } = req.body;
+    const db = await readDB();
+
+    // 1. Upsert role template
+    const roleExisting = (db.permissionTemplates || []).findIndex(
+      (t) => t.assigneeType === "role" && t.assigneeId === roleId && t.targetType === targetType && t.targetId === targetId
+    );
+    if (roleExisting >= 0) {
+      db.permissionTemplates[roleExisting].granted = granted;
+      db.permissionTemplates[roleExisting].updatedAt = new Date().toISOString();
+    } else {
+      if (!db.permissionTemplates) db.permissionTemplates = [];
+      db.permissionTemplates.push({
+        id: uuidv4(),
+        assigneeType: "role",
+        assigneeId: roleId,
+        targetType,
+        targetId,
+        granted,
+        updatedAt: new Date().toISOString(),
+      });
+    }
+
+    const allAffected = new Set();
+
+    if (applyTo === "all") {
+      // 2. Upsert user permissions for all users with this role
+      const roleUsers = (db.userAssignments || []).filter((a) => a.roleId === roleId);
+      for (const assgn of roleUsers) {
+        allAffected.add(assgn.userId);
+        const userExisting = (db.permissions || []).findIndex(
+          (p) => p.userId === assgn.userId && p.targetType === targetType && p.targetId === targetId
+        );
+        if (userExisting >= 0) {
+          db.permissions[userExisting].granted = granted;
+          db.permissions[userExisting].updatedAt = new Date().toISOString();
+        } else {
+          if (!db.permissions) db.permissions = [];
+          db.permissions.push({
+            id: uuidv4(),
+            userId: assgn.userId,
+            targetType,
+            targetId,
+            granted,
+            updatedAt: new Date().toISOString(),
+          });
+        }
+      }
+    } else {
+      // future only — notify current users with this role
+      const roleUsers = (db.userAssignments || []).filter((a) => a.roleId === roleId);
+      for (const assgn of roleUsers) {
+        allAffected.add(assgn.userId);
+      }
+    }
+
+    await writeDB(db);
+
+    // WebSocket notification
+    if (allAffected.size > 0) {
+      const path = targetType === "dashboard" ? (db.dashboards || []).find(d => d.id === targetId)?.path : undefined;
+      try { emitBulkPermissionUpdate([...allAffected], { type: "template", action: applyTo === "all" ? "applied-all" : "applied-future", assigneeType: "role", assigneeId: roleId, targetType, targetId, granted, ...(path && { path }) }); } catch (_) {}
+    }
+
+    res.json({ success: true, message: `Role permission ${applyTo === "all" ? "applied to all" : "set for future"}.` });
+  } catch (err) { next(err); }
+}
+
 // ─── Widgets ────────────────────────────────────────────────
 
 async function getWidgets(req, res, next) {
@@ -760,6 +1046,12 @@ module.exports = {
   getPermissions,
   createPermission,
   deletePermission,
+  bulkCreatePermissions,
+  getPermissionTemplates,
+  upsertPermissionTemplate,
+  deletePermissionTemplate,
+  applyDepartmentPermission,
+  applyRolePermission,
   getWidgets,
   createWidget,
   updateWidget,
