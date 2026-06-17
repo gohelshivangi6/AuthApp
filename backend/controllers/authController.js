@@ -231,6 +231,7 @@ const verify2FASetup = async (req, res, next) => {
         name: user.name,
         email: user.email,
         role: user.role || "user",
+        hasTwoFactor: !!user.twoFactorSecretEncrypted,
       },
     });
   } catch (error) {
@@ -324,6 +325,7 @@ const login = async (req, res, next) => {
           name: user.name,
           email: user.email,
           role: user.role || "user",
+          hasTwoFactor: !!user.twoFactorSecretEncrypted,
         },
       });
     }
@@ -440,6 +442,7 @@ const verify2FALogin = async (req, res, next) => {
         name: user.name,
         email: user.email,
         role: user.role || "user",
+        hasTwoFactor: !!user.twoFactorSecretEncrypted,
       },
     });
   } catch (error) {
@@ -657,6 +660,7 @@ const me = async (req, res, next) => {
         name: user.name,
         email: user.email,
         role: user.role || "user",
+        hasTwoFactor: !!user.twoFactorSecretEncrypted,
       },
     });
   } catch (error) {
@@ -666,6 +670,140 @@ const me = async (req, res, next) => {
         success: false,
         message: "Failed to retrieve user information.",
       });
+  }
+};
+
+/**
+ * Updates the authenticated user's profile (name).
+ */
+const updateProfile = async (req, res, next) => {
+  try {
+    const { name } = req.body;
+    const user = req.user;
+    const db = await readDB();
+
+    const userIndex = db.users.findIndex((u) => u.id === user.id);
+    if (userIndex === -1) {
+      return res.status(404).json({ success: false, message: "User not found." });
+    }
+
+    if (name !== undefined) {
+      db.users[userIndex].name = name;
+    }
+
+    await writeDB(db);
+
+    res.status(200).json({
+      success: true,
+      message: "Profile updated successfully.",
+      user: {
+        id: db.users[userIndex].id,
+        name: db.users[userIndex].name,
+        email: db.users[userIndex].email,
+        role: db.users[userIndex].role || "user",
+        hasTwoFactor: !!db.users[userIndex].twoFactorSecretEncrypted,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Changes the authenticated user's password.
+ */
+const changePassword = async (req, res, next) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const user = req.user;
+
+    // Verify current password
+    const isMatch = await comparePassword(currentPassword, user.passwordHash);
+    if (!isMatch) {
+      return res.status(400).json({
+        success: false,
+        message: "Current password is incorrect.",
+      });
+    }
+
+    // Check new password is different
+    const isSame = await comparePassword(newPassword, user.passwordHash);
+    if (isSame) {
+      return res.status(400).json({
+        success: false,
+        message: "New password cannot be the same as your current password.",
+      });
+    }
+
+    // Hash and update
+    const db = await readDB();
+    const userIndex = db.users.findIndex((u) => u.id === user.id);
+    if (userIndex === -1) {
+      return res.status(404).json({ success: false, message: "User not found." });
+    }
+
+    db.users[userIndex].passwordHash = await hashPassword(newPassword);
+    await writeDB(db);
+
+    res.status(200).json({
+      success: true,
+      message: "Password changed successfully.",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Accepts an invitation and completes registration.
+ */
+const acceptInvite = async (req, res, next) => {
+  try {
+    const { token, email, name, password } = req.body;
+    const db = await readDB();
+
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
+    const userIndex = db.users.findIndex(
+      (u) =>
+        u.email === email &&
+        u.status === "INVITED" &&
+        u.inviteToken === hashedToken &&
+        new Date(u.inviteExpires).getTime() > Date.now(),
+    );
+
+    if (userIndex === -1) {
+      return res.status(400).json({
+        success: false,
+        message: "Invitation link is invalid or has expired.",
+      });
+    }
+
+    const user = db.users[userIndex];
+
+    user.name = name || user.name;
+    user.passwordHash = await hashPassword(password);
+    user.status = "VERIFIED";
+    user.inviteToken = null;
+    user.inviteExpires = null;
+    user.failedAttempts = 0;
+    user.lockUntil = null;
+
+    await writeDB(db);
+
+    await sendEmail({
+      to: email,
+      subject: "Welcome to SecureAuthApp — Account Activated",
+      text: `Hello ${user.name},\n\nYour account has been activated successfully. You can now log in with your email and the password you set.`,
+      html: `<p>Hello ${user.name},</p><p>Your account has been activated successfully. You can now log in with your email and the password you set.</p>`,
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Account activated successfully. You can now log in.",
+    });
+  } catch (error) {
+    next(error);
   }
 };
 
@@ -680,4 +818,7 @@ module.exports = {
   checkStatus,
   requireAuth,
   me,
+  updateProfile,
+  changePassword,
+  acceptInvite,
 };

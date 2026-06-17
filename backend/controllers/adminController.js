@@ -1,7 +1,9 @@
+const crypto = require("crypto");
 const { v4: uuidv4 } = require("uuid");
 const { readDB, writeDB } = require("../utils/dbHelper");
 const { hashPassword } = require("../utils/cryptoHelper");
 const { emitPermissionUpdate, emitBulkPermissionUpdate } = require("../utils/websocket");
+const { sendEmail } = require("../utils/mailer");
 
 // ─── Users ─────────────────────────────────────────────────
 
@@ -71,6 +73,55 @@ async function createUser(req, res, next) {
       success: true,
       message: "User created successfully.",
       user: { id: newUser.id, name, email, role: newUser.role, roleId: newUser.roleId },
+    });
+  } catch (err) { next(err); }
+}
+
+async function inviteUser(req, res, next) {
+  try {
+    const { name, email } = req.body;
+    const db = await readDB();
+
+    if (db.users.find((u) => u.email === email)) {
+      return res.status(400).json({ success: false, message: "Email already in use." });
+    }
+
+    const inviteToken = crypto.randomBytes(32).toString("hex");
+    const hashedToken = crypto.createHash("sha256").update(inviteToken).digest("hex");
+
+    const newUser = {
+      id: uuidv4(),
+      name,
+      email,
+      passwordHash: null,
+      role: "user",
+      roleId: null,
+      status: "INVITED",
+      twoFactorSecretEncrypted: null,
+      failedAttempts: 0,
+      lockUntil: null,
+      createdAt: new Date().toISOString(),
+      resetPasswordToken: null,
+      resetPasswordExpires: null,
+      inviteToken: hashedToken,
+      inviteExpires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days
+    };
+
+    db.users.push(newUser);
+    await writeDB(db);
+
+    const inviteLink = `http://localhost:5173/accept-invite?token=${inviteToken}&email=${encodeURIComponent(email)}`;
+
+    await sendEmail({
+      to: email,
+      subject: "You're Invited to SecureAuthApp",
+      text: `Hello ${name},\n\nYou have been invited to join SecureAuthApp. Click the link below to set up your account:\n${inviteLink}\n\nThis invitation will expire in 7 days.`,
+      html: `<p>Hello ${name},</p><p>You have been invited to join SecureAuthApp. Click the link below to set up your account:</p><p><a href="${inviteLink}">${inviteLink}</a></p><p>This invitation will expire in 7 days.</p>`,
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Invitation sent successfully.",
     });
   } catch (err) { next(err); }
 }
@@ -1069,6 +1120,7 @@ async function bulkCreateUsers(req, res, next) {
 module.exports = {
   getUsers,
   createUser,
+  inviteUser,
   updateUser,
   deleteUser,
   bulkCreateUsers,

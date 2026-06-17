@@ -6163,6 +6163,17 @@
         "sessionId": "7d621294-a31a-4dd0-aec7-74ff62f64847",
         "eventType": "dashboard_click"
       }
+    },
+    {
+      "id": "25a949c5-152d-46a8-b445-3c8d9161b22b",
+      "userId": "5d335914-d80b-4edc-b6ea-b2317854539d",
+      "type": "event",
+      "timestamp": "2026-06-17T10:34:29.471Z",
+      "metadata": {
+        "dashboard": "revenue-ops-pulse",
+        "sessionId": "7d621294-a31a-4dd0-aec7-74ff62f64847",
+        "eventType": "dashboard_view"
+      }
     }
   ],
   "dashboards": [

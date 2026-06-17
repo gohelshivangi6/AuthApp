@@ -21,6 +21,7 @@ router.use(requireAuth, requireAdmin);
 
 router.get("/users", ctrl.getUsers);
 router.post("/users", validateCreateUser, ctrl.createUser);
+router.post("/invite", ctrl.inviteUser);
 router.post("/users/bulk", ctrl.bulkCreateUsers);
 router.put("/users/:id", validateUpdateUser, ctrl.updateUser);
 router.delete("/users/:id", ctrl.deleteUser);

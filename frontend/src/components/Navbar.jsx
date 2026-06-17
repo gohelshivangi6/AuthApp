@@ -1,16 +1,20 @@
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import {
   AppBar,
   Toolbar,
   Typography,
-  Button,
   Box,
   Avatar,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  Divider,
 } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
 import DashboardIcon from "@mui/icons-material/Dashboard";
+import PersonIcon from "@mui/icons-material/Person";
 import { logout } from "../redux/slices/authSlice";
 import { disconnectSockets } from "../utils/websocket";
 import { clearSessionToken } from "../utils/sessionToken";
@@ -29,6 +33,7 @@ const Navbar = () => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
   const token = useSelector((state) => state.auth.token);
+  const [menuAnchor, setMenuAnchor] = useState(null);
 
   const handleLogout = useCallback(async () => {
     try {
@@ -99,7 +104,10 @@ const Navbar = () => {
 
         <Box sx={{ flexGrow: 1 }} />
 
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+        <Box
+          sx={{ display: "flex", alignItems: "center", gap: 1.5, cursor: "pointer" }}
+          onClick={(e) => setMenuAnchor(e.currentTarget)}
+        >
           <Avatar
             sx={{
               width: 32,
@@ -119,23 +127,47 @@ const Navbar = () => {
           </Typography>
         </Box>
 
-        <Button
-          variant="text"
-          startIcon={<LogoutIcon />}
-          onClick={handleLogout}
-          sx={{
-            color: "#94a3b8",
-            textTransform: "none",
-            fontFamily: "'Inter', sans-serif",
-            fontWeight: 500,
-            "&:hover": {
-              color: "#ef4444",
-              background: "rgba(239, 68, 68, 0.08)",
+        <Menu
+          anchorEl={menuAnchor}
+          open={!!menuAnchor}
+          onClose={() => setMenuAnchor(null)}
+          slotProps={{
+            paper: {
+              sx: {
+                mt: 1,
+                background: "rgba(18, 18, 43, 0.95)",
+                backdropFilter: "blur(16px)",
+                border: "1px solid rgba(255, 255, 255, 0.08)",
+                borderRadius: 2,
+                minWidth: 180,
+              },
             },
           }}
         >
-          Logout
-        </Button>
+          <MenuItem
+            onClick={() => {
+              setMenuAnchor(null);
+              navigate("/profile");
+            }}
+          >
+            <ListItemIcon>
+              <PersonIcon fontSize="small" sx={{ color: "#94a3b8" }} />
+            </ListItemIcon>
+            Profile
+          </MenuItem>
+          <Divider sx={{ borderColor: "rgba(255, 255, 255, 0.06)" }} />
+          <MenuItem
+            onClick={() => {
+              setMenuAnchor(null);
+              handleLogout();
+            }}
+          >
+            <ListItemIcon>
+              <LogoutIcon fontSize="small" sx={{ color: "#ef4444" }} />
+            </ListItemIcon>
+            <Typography sx={{ color: "#ef4444" }}>Logout</Typography>
+          </MenuItem>
+        </Menu>
       </Toolbar>
     </AppBar>
   );

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import axios from "axios";
 import {
   Box,
   Typography,
@@ -30,6 +31,7 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
+import SendIcon from "@mui/icons-material/Send";
 import Papa from "papaparse";
 import {
   fetchUsers,
@@ -64,6 +66,10 @@ export default function UserManager() {
     departmentId: "",
     roleId: "",
   });
+
+  const [inviteOpen, setInviteOpen] = useState(false);
+  const [inviteForm, setInviteForm] = useState({ name: "", email: "" });
+  const [inviting, setInviting] = useState(false);
 
   const [importOpen, setImportOpen] = useState(false);
   const [csvData, setCsvData] = useState([]);
@@ -228,6 +234,29 @@ export default function UserManager() {
     }
   };
 
+  const handleInvite = async () => {
+    if (!inviteForm.name.trim() || !inviteForm.email.trim()) {
+      setSnackbar({ open: true, message: "Name and email are required.", severity: "error" });
+      return;
+    }
+    setInviting(true);
+    try {
+      await axios.post("http://localhost:5000/api/admin/invite", inviteForm, {
+        withCredentials: true,
+      });
+      setInviteOpen(false);
+      setSnackbar({ open: true, message: "Invitation sent successfully.", severity: "success" });
+    } catch (err) {
+      setSnackbar({
+        open: true,
+        message: err.response?.data?.message || "Failed to send invitation.",
+        severity: "error",
+      });
+    } finally {
+      setInviting(false);
+    }
+  };
+
   const handleImportClose = () => {
     setImportOpen(false);
     setCsvData([]);
@@ -256,6 +285,16 @@ export default function UserManager() {
             onClick={() => handleUserOpen(null)}
           >
             Create User
+          </Button>
+          <Button
+            variant="outlined"
+            startIcon={<SendIcon />}
+            onClick={() => {
+              setInviteForm({ name: "", email: "" });
+              setInviteOpen(true);
+            }}
+          >
+            Invite User
           </Button>
           <Button
             variant="outlined"
@@ -455,6 +494,51 @@ export default function UserManager() {
             disabled={!assignForm.departmentId || !assignForm.roleId}
           >
             Save
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Invite User Dialog */}
+      <Dialog
+        open={inviteOpen}
+        onClose={() => setInviteOpen(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>Invite User</DialogTitle>
+        <DialogContent>
+          <Box display="flex" flexDirection="column" gap={2} mt={1}>
+            <Typography variant="body2" color="textSecondary">
+              An invitation email will be sent to the user with a link to set up their account.
+            </Typography>
+            <TextField
+              label="Name"
+              value={inviteForm.name}
+              onChange={(e) =>
+                setInviteForm({ ...inviteForm, name: e.target.value })
+              }
+              fullWidth
+            />
+            <TextField
+              label="Email"
+              type="email"
+              value={inviteForm.email}
+              onChange={(e) =>
+                setInviteForm({ ...inviteForm, email: e.target.value })
+              }
+              fullWidth
+            />
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setInviteOpen(false)}>Cancel</Button>
+          <Button
+            onClick={handleInvite}
+            variant="contained"
+            disabled={inviting}
+            startIcon={inviting ? <CircularProgress size={16} /> : <SendIcon />}
+          >
+            {inviting ? "Sending..." : "Send Invitation"}
           </Button>
         </DialogActions>
       </Dialog>

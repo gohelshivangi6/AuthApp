@@ -4,7 +4,7 @@
       "id": "5d335914-d80b-4edc-b6ea-b2317854539d",
       "name": "Shivangi Gohel",
       "email": "shivangigohel18@gmail.com",
-      "passwordHash": "$2b$12$9DcPM0tXiIlUU9hlbcuzjuLZ5RuI0xl93fwOKzMtoDVqqM9XdoY9S",
+      "passwordHash": "$2b$12$aITOnF14J4D193o82SUwM.A2bNhYnHEpE4e5nJjcwo/LCNXSAPOR6",
       "status": "VERIFIED",
       "twoFactorSecretEncrypted": "3fb86981c619521bc2dd1a82160e28d7:405b1d5f7c8033c1b8e0d20e1aab61f2f416c38e641c1599a10b1e646298014a08fec2cd8579ef5b7614c2d242f642fea79c2e0822c8f8ef7f8185df672bde5d",
       "failedAttempts": 0,
@@ -562,16 +562,16 @@
       "userId": "5d335914-d80b-4edc-b6ea-b2317854539d",
       "targetType": "dashboard-section",
       "targetId": "revenue-ops-pulse::kpiCards",
-      "granted": false,
-      "updatedAt": "2026-06-17T08:58:48.676Z"
+      "granted": true,
+      "updatedAt": "2026-06-17T10:34:15.296Z"
     },
     {
       "id": "a421f188-5fc8-4005-8df8-5910285320d9",
       "userId": "5d335914-d80b-4edc-b6ea-b2317854539d",
       "targetType": "dashboard-section",
       "targetId": "revenue-ops-pulse::charts",
-      "granted": false,
-      "updatedAt": "2026-06-17T08:59:02.226Z"
+      "granted": true,
+      "updatedAt": "2026-06-17T10:34:16.635Z"
     },
     {
       "id": "066acdd5-3496-4d6d-882b-6ce4fc26c157",
@@ -834,8 +834,8 @@
       "userId": "5d335914-d80b-4edc-b6ea-b2317854539d",
       "targetType": "dashboard-section",
       "targetId": "revenue-ops-pulse::tables",
-      "granted": false,
-      "updatedAt": "2026-06-17T07:24:57.190Z"
+      "granted": true,
+      "updatedAt": "2026-06-17T10:34:18.350Z"
     },
     {
       "id": "2565a782-4315-419d-b849-2df1d167872b",
@@ -1108,6 +1108,14 @@
       "targetId": "revenue-ops-pulse::charts",
       "granted": false,
       "updatedAt": "2026-06-17T08:59:02.226Z"
+    },
+    {
+      "id": "ee4307f6-eaaa-4634-9b40-4c53b797baf2",
+      "userId": "5d335914-d80b-4edc-b6ea-b2317854539d",
+      "targetType": "dashboard",
+      "targetId": "0fadd6ea-5461-4b3c-8ba2-e638d468bdf6",
+      "granted": true,
+      "updatedAt": "2026-06-17T10:34:12.973Z"
     }
   ],
   "activityLogs": [
@@ -5946,6 +5954,214 @@
       "metadata": {
         "sessionId": "d2a0e814-268a-481d-9cfb-a05c09fba69f",
         "ip": "::1"
+      }
+    },
+    {
+      "id": "cb0c3e4b-492d-4b81-ae0f-cb8bdb6c8c5a",
+      "userId": "5d335914-d80b-4edc-b6ea-b2317854539d",
+      "type": "session_start",
+      "timestamp": "2026-06-17T10:13:53.224Z",
+      "metadata": {
+        "sessionId": "3f8d70e0-395a-45d3-89a6-086b37b4d055",
+        "ip": "::ffff:127.0.0.1"
+      }
+    },
+    {
+      "id": "f0ee491d-7a68-40a3-bb67-09dc0b6f7683",
+      "userId": "5d335914-d80b-4edc-b6ea-b2317854539d",
+      "type": "session_end",
+      "timestamp": "2026-06-17T10:16:53.443Z",
+      "metadata": {
+        "sessionId": "3f8d70e0-395a-45d3-89a6-086b37b4d055",
+        "durationMs": 180203
+      }
+    },
+    {
+      "id": "32679830-aa46-43d8-b687-4dc99e9d54ba",
+      "userId": "5d335914-d80b-4edc-b6ea-b2317854539d",
+      "type": "session_start",
+      "timestamp": "2026-06-17T10:16:59.415Z",
+      "metadata": {
+        "sessionId": "e9381fd9-09d8-460d-8fdc-12f67db69bf8",
+        "ip": "::1"
+      }
+    },
+    {
+      "id": "4ce20e76-0d52-4109-8f5a-c62fc689210d",
+      "userId": "5d335914-d80b-4edc-b6ea-b2317854539d",
+      "type": "session_end",
+      "timestamp": "2026-06-17T10:17:48.722Z",
+      "metadata": {
+        "sessionId": "e9381fd9-09d8-460d-8fdc-12f67db69bf8",
+        "durationMs": 49313
+      }
+    },
+    {
+      "id": "996dbdfb-c49e-4cb6-a41d-bae50c94fc4b",
+      "userId": "5d335914-d80b-4edc-b6ea-b2317854539d",
+      "type": "session_start",
+      "timestamp": "2026-06-17T10:19:31.253Z",
+      "metadata": {
+        "sessionId": "ca092f46-882b-49cc-8fd6-72c22a0e8d86",
+        "ip": "::1"
+      }
+    },
+    {
+      "id": "4c4504a9-13ca-41f0-8d1f-b8889cc4b53a",
+      "userId": "5d335914-d80b-4edc-b6ea-b2317854539d",
+      "type": "event",
+      "timestamp": "2026-06-17T10:19:32.796Z",
+      "metadata": {
+        "sessionId": "ca092f46-882b-49cc-8fd6-72c22a0e8d86",
+        "eventType": "dashboard_list_view"
+      }
+    },
+    {
+      "id": "ab1c774e-acf3-413e-8a69-d0840180afa6",
+      "userId": "12660e0e-15ed-43a6-9ff4-56baff2b77e1",
+      "type": "session_end",
+      "timestamp": "2026-06-17T10:20:06.239Z",
+      "metadata": {
+        "sessionId": "2f87f2d7-0ade-4812-bec4-c1ed8c6a240d",
+        "durationMs": 373007
+      }
+    },
+    {
+      "id": "146e9c70-2b97-415d-8501-8278223eeb8e",
+      "userId": "12660e0e-15ed-43a6-9ff4-56baff2b77e1",
+      "type": "session_start",
+      "timestamp": "2026-06-17T10:20:08.409Z",
+      "metadata": {
+        "sessionId": "f1975967-009a-444c-9fd2-7b2226c8a552",
+        "ip": "::1"
+      }
+    },
+    {
+      "id": "2010c785-bf12-4786-8181-f396aad3973f",
+      "userId": "5d335914-d80b-4edc-b6ea-b2317854539d",
+      "type": "session_end",
+      "timestamp": "2026-06-17T10:22:33.704Z",
+      "metadata": {
+        "sessionId": "ca092f46-882b-49cc-8fd6-72c22a0e8d86",
+        "durationMs": 182448
+      }
+    },
+    {
+      "id": "22dd6bb8-5acc-4e50-bf07-e56267e6618d",
+      "userId": "5d335914-d80b-4edc-b6ea-b2317854539d",
+      "type": "session_start",
+      "timestamp": "2026-06-17T10:23:27.056Z",
+      "metadata": {
+        "sessionId": "dec6dac6-1370-42c5-885d-517b7e58e600",
+        "ip": "::1"
+      }
+    },
+    {
+      "id": "06702466-cdf2-42bc-891b-f78fb416d057",
+      "userId": "5d335914-d80b-4edc-b6ea-b2317854539d",
+      "type": "event",
+      "timestamp": "2026-06-17T10:23:28.579Z",
+      "metadata": {
+        "sessionId": "dec6dac6-1370-42c5-885d-517b7e58e600",
+        "eventType": "dashboard_list_view"
+      }
+    },
+    {
+      "id": "01adb9b7-8aa6-4747-a767-39b3aac407e1",
+      "userId": "5d335914-d80b-4edc-b6ea-b2317854539d",
+      "type": "event",
+      "timestamp": "2026-06-17T10:23:45.120Z",
+      "metadata": {
+        "dashboard": "Global Sales Cockpit",
+        "path": "global-sales-cockpit",
+        "sessionId": "dec6dac6-1370-42c5-885d-517b7e58e600",
+        "eventType": "dashboard_click"
+      }
+    },
+    {
+      "id": "0a8c3647-7d7e-4106-9a77-897d3f06e5a5",
+      "userId": "5d335914-d80b-4edc-b6ea-b2317854539d",
+      "type": "event",
+      "timestamp": "2026-06-17T10:23:45.235Z",
+      "metadata": {
+        "dashboard": "global-sales-cockpit",
+        "sessionId": "dec6dac6-1370-42c5-885d-517b7e58e600",
+        "eventType": "dashboard_view"
+      }
+    },
+    {
+      "id": "9bfe2717-dfbf-4597-8ac0-ecd38b26f24c",
+      "userId": "5d335914-d80b-4edc-b6ea-b2317854539d",
+      "type": "session_start",
+      "timestamp": "2026-06-17T10:30:53.262Z",
+      "metadata": {
+        "sessionId": "7d621294-a31a-4dd0-aec7-74ff62f64847",
+        "ip": "::1"
+      }
+    },
+    {
+      "id": "84d2d850-1b82-4ec8-8993-c4e63c1f5739",
+      "userId": "12660e0e-15ed-43a6-9ff4-56baff2b77e1",
+      "type": "session_start",
+      "timestamp": "2026-06-17T10:33:35.162Z",
+      "metadata": {
+        "sessionId": "804e8083-a7e4-4437-888b-f74b566dfc70",
+        "ip": "::1"
+      }
+    },
+    {
+      "id": "e687a4de-5be5-4b06-bc24-fe4c10bfae46",
+      "userId": "5d335914-d80b-4edc-b6ea-b2317854539d",
+      "type": "event",
+      "timestamp": "2026-06-17T10:33:55.447Z",
+      "metadata": {
+        "sessionId": "7d621294-a31a-4dd0-aec7-74ff62f64847",
+        "eventType": "dashboard_list_view"
+      }
+    },
+    {
+      "id": "0043d4ce-7595-4d1e-b26a-bcb24b3f231d",
+      "userId": "5d335914-d80b-4edc-b6ea-b2317854539d",
+      "type": "event",
+      "timestamp": "2026-06-17T10:33:57.551Z",
+      "metadata": {
+        "dashboard": "Product Engagement Tracker",
+        "path": "product-engagement-tracker",
+        "sessionId": "7d621294-a31a-4dd0-aec7-74ff62f64847",
+        "eventType": "dashboard_click"
+      }
+    },
+    {
+      "id": "1ae6918d-36d2-4fe5-8d4e-c9978d6aef88",
+      "userId": "5d335914-d80b-4edc-b6ea-b2317854539d",
+      "type": "event",
+      "timestamp": "2026-06-17T10:33:57.775Z",
+      "metadata": {
+        "dashboard": "product-engagement-tracker",
+        "sessionId": "7d621294-a31a-4dd0-aec7-74ff62f64847",
+        "eventType": "dashboard_view"
+      }
+    },
+    {
+      "id": "d21df3ec-2909-4b3d-9b72-23641e9a61b8",
+      "userId": "5d335914-d80b-4edc-b6ea-b2317854539d",
+      "type": "event",
+      "timestamp": "2026-06-17T10:34:24.943Z",
+      "metadata": {
+        "sessionId": "7d621294-a31a-4dd0-aec7-74ff62f64847",
+        "eventType": "dashboard_list_view"
+      }
+    },
+    {
+      "id": "91e44f2f-c999-477c-b82c-445a35995b61",
+      "userId": "5d335914-d80b-4edc-b6ea-b2317854539d",
+      "type": "event",
+      "timestamp": "2026-06-17T10:34:29.339Z",
+      "metadata": {
+        "dashboard": "Revenue Operations Pulse",
+        "path": "revenue-ops-pulse",
+        "sessionId": "7d621294-a31a-4dd0-aec7-74ff62f64847",
+        "eventType": "dashboard_click"
       }
     }
   ],
