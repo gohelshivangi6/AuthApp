@@ -7,7 +7,7 @@ import {
   getUserSocket,
 } from "../utils/websocket";
 import { updateUser } from "../redux/slices/authSlice";
-import { fetchDashboardData, upsertSectionPermission, removeSectionPermission } from "../redux/slices/dashboardSlice";
+import { fetchDashboardData, fetchSectionPermissions } from "../redux/slices/dashboardSlice";
 import { fetchStats } from "../redux/slices/adminSlice";
 import axios from "axios";
 
@@ -52,30 +52,21 @@ export function WebSocketProvider({ children }) {
         return;
       }
 
-      if (data.type === "permission" && data.targetType === "dashboard-section") {
-        if (data.action === "upsert") {
-          dispatch(upsertSectionPermission({
-            targetType: "dashboard-section",
-            targetId: data.targetId,
-            granted: data.granted,
-          }));
-        } else if (data.action === "delete") {
-          dispatch(removeSectionPermission(data.targetId));
-        }
+      dispatch(fetchSectionPermissions());
+
+      if (data.type === "permission" || data.type === "template" || data.type === "assignment") {
         return;
       }
 
-      if (data.type !== "permission" && data.type !== "assignment") {
-        dispatch(fetchDashboardData());
-        axios
-          .get("http://localhost:5000/api/auth/me", { withCredentials: true })
-          .then((res) => {
-            if (res.data.user) {
-              dispatch(updateUser(res.data.user));
-            }
-          })
-          .catch(() => {});
-      }
+      dispatch(fetchDashboardData());
+      axios
+        .get("http://localhost:5000/api/auth/me", { withCredentials: true })
+        .then((res) => {
+          if (res.data.user) {
+            dispatch(updateUser(res.data.user));
+          }
+        })
+        .catch(() => {});
     };
 
     socket.on("permissions-updated", handlePermUpdate);

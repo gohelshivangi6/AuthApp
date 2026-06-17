@@ -4,7 +4,7 @@ import axios from 'axios';
 import DashboardContent from "../components/DashboardContent";
 import { decryptData } from "../decrypt/decryption";
 import { fetchSectionPermissions } from "../redux/slices/dashboardSlice";
-import { emitEvent } from "../utils/websocket";
+import { emitEvent, getUserSocket } from "../utils/websocket";
 import useDashboardAccess from "../hooks/useDashboardAccess";
 import { Box, CircularProgress } from "@mui/material";
 
@@ -19,6 +19,16 @@ export default function GlobalSalesCockpit() {
 
   useEffect(() => {
     dispatch(fetchSectionPermissions());
+  }, [dispatch]);
+
+  useEffect(() => {
+    const socket = getUserSocket();
+    if (!socket) return;
+    const handlePermUpdate = () => {
+      dispatch(fetchSectionPermissions());
+    };
+    socket.on("permissions-updated", handlePermUpdate);
+    return () => socket.off("permissions-updated", handlePermUpdate);
   }, [dispatch]);
 
   useEffect(() => {
