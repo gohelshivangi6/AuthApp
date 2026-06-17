@@ -625,11 +625,126 @@ async function getUserStats(req, res, next) {
   } catch (err) { next(err); }
 }
 
+async function bulkCreateUsers(req, res, next) {
+  try {
+    const { users } = req.body;
+    if (!Array.isArray(users) || users.length === 0) {
+      return res.status(400).json({ success: false, message: "No users provided." });
+    }
+
+    const db = await readDB();
+    const departments = db.departments || [];
+    const roles = db.roles || [];
+    const created = [];
+    const errors = [];
+
+    for (let i = 0; i < users.length; i++) {
+      const u = users[i];
+      const row = i + 2;
+
+      if (!u.name || !u.email || !u.password) {
+        errors.push({ row, email: u.email || "", message: "Missing required fields (name, email, password)" });
+        continue;
+      }
+
+      if (db.users.find((x) => x.email === u.email)) {
+        errors.push({ row, email: u.email, message: "Email already exists" });
+        continue;
+      }
+
+      const passwordHash = await hashPassword(u.password);
+      const newUser = {
+        id: uuidv4(),
+        name: u.name,
+        email: u.email,
+        passwordHash,
+        role: u.role || null,
+        roleId: null,
+        status: "VERIFIED",
+        twoFactorSecretEncrypted: null,
+        failedAttempts: 0,
+        lockUntil: null,
+        createdAt: new Date().toISOString(),
+        resetPasswordToken: null,
+        resetPasswordExpires: null,
+      };
+
+      db.users.push(newUser);
+      created.push({ row, email: u.email, name: u.name });
+
+      if (u.department) {
+        let dept = departments.find((d) => d.name.toLowerCase() === u.department.toLowerCase().trim());
+        if (!dept) {
+          dept = {
+            id: uuidv4(),
+            name: u.department.trim(),
+            description: "",
+            createdAt: new Date().toISOString(),
+          };
+          departments.push(dept);
+          db.departments = departments;
+        }
+
+        let matchedRole = null;
+        if (u.role) {
+          matchedRole = roles.find((r) => r.name.toLowerCase() === u.role.toLowerCase().trim() && r.departmentId === dept.id);
+          if (!matchedRole) {
+            matchedRole = {
+              id: uuidv4(),
+              name: u.role.trim(),
+              departmentId: dept.id,
+              createdAt: new Date().toISOString(),
+            };
+            roles.push(matchedRole);
+            db.roles = roles;
+          }
+        }
+
+        if (matchedRole) {
+          newUser.roleId = matchedRole.id;
+          newUser.role = matchedRole.name;
+        }
+        db.userAssignments.push({
+          id: uuidv4(),
+          userId: newUser.id,
+          departmentId: dept.id,
+          roleId: matchedRole ? matchedRole.id : null,
+          createdAt: new Date().toISOString(),
+        });
+      } else if (u.role) {
+        let role = roles.find((r) => r.name.toLowerCase() === u.role.toLowerCase().trim());
+        if (!role) {
+          role = {
+            id: uuidv4(),
+            name: u.role.trim(),
+            departmentId: null,
+            createdAt: new Date().toISOString(),
+          };
+          roles.push(role);
+          db.roles = roles;
+        }
+        newUser.roleId = role.id;
+        newUser.role = role.name;
+      }
+    }
+
+    await writeDB(db);
+
+    res.status(created.length > 0 ? 201 : 400).json({
+      success: created.length > 0,
+      created: created.length,
+      failed: errors.length,
+      errors,
+    });
+  } catch (err) { next(err); }
+}
+
 module.exports = {
   getUsers,
   createUser,
   updateUser,
   deleteUser,
+  bulkCreateUsers,
   getDepartments,
   createDepartment,
   updateDepartment,

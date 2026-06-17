@@ -13,6 +13,11 @@ export const createUser = createAsyncThunk("admin/createUser", async (data) => {
   return res.data.user;
 });
 
+export const bulkCreateUsers = createAsyncThunk("admin/bulkCreateUsers", async (users) => {
+  const res = await axios.post(`${API}/users/bulk`, { users }, { withCredentials: true });
+  return res.data;
+});
+
 export const updateUser = createAsyncThunk("admin/updateUser", async ({ id, ...data }) => {
   await axios.put(`${API}/users/${id}`, data, { withCredentials: true });
   return { id, ...data };
