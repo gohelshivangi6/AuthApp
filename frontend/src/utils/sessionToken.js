@@ -27,8 +27,10 @@ axios.interceptors.request.use(async (config) => {
 axios.interceptors.response.use(
   (res) => res,
   (err) => {
-    if (err.response?.status === 401 && !TOKEN) {
-      window.location.href = '/login';
+    if (err.response?.status === 401) {
+      clearSessionToken();
+      localStorage.removeItem("persist:root");
+      window.location.href = "/login";
     }
     return Promise.reject(err);
   }

@@ -1,9 +1,8 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { useAuth } from "./AuthContext";
 import { useSelector } from "react-redux";
+import Navbar from "../components/Navbar";
 
 const ProtectedRoute = () => {
-  // const { user, loading } = useAuth();
   const user = useSelector((state) => state.auth.user);
   const loading = useSelector((state) => state.auth.loading);
 
@@ -11,7 +10,14 @@ const ProtectedRoute = () => {
     return <div>Loading...</div>;
   }
 
-  return user ? <Outlet /> : <Navigate to="/login" replace />;
+  return user ? (
+    <>
+      <Navbar />
+      <Outlet />
+    </>
+  ) : (
+    <Navigate to="/login" replace />
+  );
 };
 
 export default ProtectedRoute;
