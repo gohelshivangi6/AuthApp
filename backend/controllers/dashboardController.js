@@ -70,16 +70,15 @@ async function getAllowedDashboards(req, res, next) {
   try {
     const db = await readDB();
     const userId = req.user.id;
-    const user = db.users.find((u) => u.id === userId);
-    const userRoleId = user ? user.roleId : null;
-    const userAssignments = (db.userAssignments || []).filter((a) => a.userId === userId);
-    const userDeptIds = userAssignments.map((a) => a.departmentId);
     const allDashboards = db.dashboards || [];
 
-    const allowed = allDashboards.filter((d) => {
-      const result = resolveGranted(db, userId, userRoleId, userDeptIds, "dashboard", d.id, false);
-      return result.granted;
-    });
+    const userDashboardPerms = (db.permissions || []).filter(
+      (p) => p.userId === userId && p.targetType === "dashboard"
+    );
+    const allowedDashboardIds = new Set(
+      userDashboardPerms.filter((p) => p.granted).map((p) => p.targetId)
+    );
+    const allowed = allDashboards.filter((d) => allowedDashboardIds.has(d.id));
 
     res.json({ success: true, dashboards: allowed });
   } catch (err) { next(err); }
