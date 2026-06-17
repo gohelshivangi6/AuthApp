@@ -106,6 +106,11 @@ export const bulkCreatePermissions = createAsyncThunk("admin/bulkCreatePermissio
   return res.data;
 });
 
+export const bulkSavePermissions = createAsyncThunk("admin/bulkSavePermissions", async (data) => {
+  const res = await axios.post(`${API}/permissions/bulk-save`, data, { withCredentials: true });
+  return res.data;
+});
+
 export const fetchPermissionTemplates = createAsyncThunk("admin/fetchPermissionTemplates", async (params = {}) => {
   const query = new URLSearchParams(params).toString();
   const res = await axios.get(`${API}/permission-templates${query ? `?${query}` : ""}`, { withCredentials: true });

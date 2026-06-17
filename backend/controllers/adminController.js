@@ -439,6 +439,47 @@ async function bulkCreatePermissions(req, res, next) {
   } catch (err) { next(err); }
 }
 
+// ─── Bulk Save Permissions ─────────────────────────────────────
+
+async function bulkSavePermissions(req, res, next) {
+  try {
+    const { userIds, permissions } = req.body;
+    const db = await readDB();
+
+    const results = [];
+    for (const perm of permissions) {
+      for (const userId of userIds) {
+        const existingIdx = (db.permissions || []).findIndex(
+          (p) => p.userId === userId && p.targetType === perm.targetType && p.targetId === perm.targetId
+        );
+        let permission;
+        if (existingIdx >= 0) {
+          db.permissions[existingIdx].granted = perm.granted;
+          db.permissions[existingIdx].updatedAt = new Date().toISOString();
+          permission = db.permissions[existingIdx];
+        } else {
+          permission = {
+            id: uuidv4(),
+            userId,
+            targetType: perm.targetType,
+            targetId: perm.targetId,
+            granted: perm.granted,
+            updatedAt: new Date().toISOString(),
+          };
+          db.permissions.push(permission);
+        }
+        results.push(permission);
+      }
+    }
+
+    await writeDB(db);
+
+    try { emitBulkPermissionUpdate(userIds, { type: "permission", action: "bulk-save" }); } catch (_) {}
+
+    res.status(201).json({ success: true, count: results.length });
+  } catch (err) { next(err); }
+}
+
 // ─── Permission Templates ─────────────────────────────────────
 
 async function getPermissionTemplates(req, res, next) {
@@ -1047,6 +1088,7 @@ module.exports = {
   createPermission,
   deletePermission,
   bulkCreatePermissions,
+  bulkSavePermissions,
   getPermissionTemplates,
   upsertPermissionTemplate,
   deletePermissionTemplate,

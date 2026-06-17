@@ -164,6 +164,16 @@ const validateApplyDepartmentPermission = [
   handleValidationErrors,
 ];
 
+const validateBulkSavePermission = [
+  body("userIds").isArray({ min: 1 }).withMessage("userIds must be a non-empty array"),
+  body("userIds.*").isUUID().withMessage("Each userId must be a valid UUID"),
+  body("permissions").isArray({ min: 1 }).withMessage("permissions must be a non-empty array"),
+  body("permissions.*.targetType").isIn(["dashboard", "dashboard-section"]).withMessage("targetType must be 'dashboard' or 'dashboard-section'"),
+  body("permissions.*.targetId").notEmpty().withMessage("targetId is required"),
+  body("permissions.*.granted").isBoolean().withMessage("granted must be boolean"),
+  handleValidationErrors,
+];
+
 const validateApplyRolePermission = [
   body("roleId").isUUID().withMessage("Invalid role ID"),
   body("targetType")
@@ -197,6 +207,7 @@ module.exports = {
   validateUpdateAssignment,
   validateCreatePermission,
   validateBulkPermission,
+  validateBulkSavePermission,
   validateCreatePermissionTemplate,
   validateApplyDepartmentPermission,
   validateApplyRolePermission,

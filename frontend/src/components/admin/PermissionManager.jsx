@@ -10,7 +10,7 @@ import {
 import {
   fetchUsers, fetchDashboards,
   fetchPermissions, createPermission, deletePermission,
-  bulkCreatePermissions,
+  bulkSavePermissions,
   fetchPermissionTemplates,
   applyDepartmentPermission, applyRolePermission,
   fetchDepartments, fetchRoles,
@@ -229,26 +229,80 @@ function BulkUsersTab() {
   const { users, dashboards } = useSelector((state) => state.admin);
   const [selectedIds, setSelectedIds] = useState([]);
   const [snackbar, setSnackbar] = useState({ open: false, message: "" });
+  const [grantedPerms, setGrantedPerms] = useState([]);
 
   const nonAdminUsers = useMemo(() => users.filter((u) => u.role !== "admin"), [users]);
 
-  const handleToggleDashboard = async (dashboardId) => {
-    if (selectedIds.length === 0) {
-      setSnackbar({ open: true, message: "Select at least one user first." });
-      return;
-    }
-    await dispatch(bulkCreatePermissions({ userIds: selectedIds, targetType: "dashboard", targetId: dashboardId, granted: true }));
-    setSnackbar({ open: true, message: `Granted dashboard access for ${selectedIds.length} user(s).` });
+  const handleToggleDashboard = (dashboardId, currentlyGranted) => {
+    const newGranted = !currentlyGranted;
+    setGrantedPerms((prev) => {
+      const idx = prev.findIndex((p) => p.targetType === "dashboard" && p.targetId === dashboardId);
+      let updated;
+      if (idx >= 0) {
+        updated = [...prev];
+        updated[idx] = { ...updated[idx], granted: newGranted };
+      } else {
+        updated = [...prev, { targetType: "dashboard", targetId: dashboardId, granted: newGranted }];
+      }
+
+      const d = dashboards.find((db) => db.id === dashboardId);
+      if (d) {
+        if (newGranted) {
+          for (const section of SECTIONS) {
+            const sectionTargetId = `${d.path}::${section}`;
+            if (!updated.find((p) => p.targetType === "dashboard-section" && p.targetId === sectionTargetId)) {
+              updated.push({ targetType: "dashboard-section", targetId: sectionTargetId, granted: true });
+            }
+          }
+        } else {
+          updated = updated.filter(
+            (p) => !(p.targetType === "dashboard-section" && p.targetId.startsWith(`${d.path}::`))
+          );
+        }
+      }
+
+      return updated;
+    });
   };
 
-  const handleToggleSection = async (dashboardPath, section) => {
+  const handleToggleSection = (dashboardPath, section, currentlyGranted) => {
+    const newGranted = !currentlyGranted;
+    const targetId = `${dashboardPath}::${section}`;
+    setGrantedPerms((prev) => {
+      const idx = prev.findIndex((p) => p.targetType === "dashboard-section" && p.targetId === targetId);
+      if (idx >= 0) {
+        const updated = [...prev];
+        updated[idx] = { ...updated[idx], granted: newGranted };
+        return updated;
+      }
+      return [...prev, { targetType: "dashboard-section", targetId, granted: newGranted }];
+    });
+  };
+
+  const handleSave = async () => {
     if (selectedIds.length === 0) {
       setSnackbar({ open: true, message: "Select at least one user first." });
       return;
     }
-    const targetId = `${dashboardPath}::${section}`;
-    await dispatch(bulkCreatePermissions({ userIds: selectedIds, targetType: "dashboard-section", targetId, granted: true }));
-    setSnackbar({ open: true, message: `Granted section access for ${selectedIds.length} user(s).` });
+
+    const permissions = [];
+    for (const d of dashboards) {
+      const dbGranted = grantedPerms.find(
+        (p) => p.targetType === "dashboard" && p.targetId === d.id
+      )?.granted ?? false;
+      permissions.push({ targetType: "dashboard", targetId: d.id, granted: dbGranted });
+
+      for (const section of SECTIONS) {
+        const sectionTargetId = `${d.path}::${section}`;
+        const secGranted = grantedPerms.find(
+          (p) => p.targetType === "dashboard-section" && p.targetId === sectionTargetId
+        )?.granted ?? false;
+        permissions.push({ targetType: "dashboard-section", targetId: sectionTargetId, granted: secGranted });
+      }
+    }
+
+    await dispatch(bulkSavePermissions({ userIds: selectedIds, permissions }));
+    setSnackbar({ open: true, message: `Applied ${permissions.length} permission(s) to ${selectedIds.length} user(s).` });
   };
 
   return (
@@ -259,7 +313,7 @@ function BulkUsersTab() {
           multiple
           value={selectedIds}
           label="Select Users"
-          onChange={(e) => setSelectedIds(e.target.value)}
+          onChange={(e) => { setSelectedIds(e.target.value); setGrantedPerms([]); }}
           input={<OutlinedInput label="Select Users" />}
           renderValue={(selected) => selected.map((id) => users.find((u) => u.id === id)?.name).join(", ")}
         >
@@ -274,7 +328,7 @@ function BulkUsersTab() {
 
       {selectedIds.length > 0 && (
         <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
-          {selectedIds.length} user(s) selected — toggle any switch below to grant access to all selected.
+          {selectedIds.length} user(s) selected — toggle any switch below, then click Save.
         </Typography>
       )}
 
@@ -285,12 +339,23 @@ function BulkUsersTab() {
       )}
 
       {selectedIds.length > 0 && (
-        <DashboardSwitches
-          dashboards={dashboards}
-          perms={[]}
-          onToggleDashboard={handleToggleDashboard}
-          onToggleSection={handleToggleSection}
-        />
+        <>
+          <DashboardSwitches
+            dashboards={dashboards}
+            perms={grantedPerms}
+            onToggleDashboard={handleToggleDashboard}
+            onToggleSection={handleToggleSection}
+          />
+          <Box display="flex" justifyContent="flex-end" mt={3}>
+            <Button
+              variant="contained"
+              onClick={handleSave}
+              sx={{ textTransform: "none", fontFamily: "Outfit", fontWeight: 600 }}
+            >
+              Save Permissions
+            </Button>
+          </Box>
+        </>
       )}
 
       <Snackbar

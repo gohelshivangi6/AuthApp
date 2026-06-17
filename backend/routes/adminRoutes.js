@@ -9,6 +9,7 @@ const {
   validateCreateAssignment, validateUpdateAssignment,
   validateCreatePermission,
   validateBulkPermission,
+  validateBulkSavePermission,
   validateCreatePermissionTemplate,
   validateApplyDepartmentPermission,
   validateApplyRolePermission,
@@ -43,6 +44,7 @@ router.get("/permissions", ctrl.getPermissions);
 router.post("/permissions", validateCreatePermission, ctrl.createPermission);
 router.delete("/permissions/:id", ctrl.deletePermission);
 router.post("/permissions/bulk", validateBulkPermission, ctrl.bulkCreatePermissions);
+router.post("/permissions/bulk-save", validateBulkSavePermission, ctrl.bulkSavePermissions);
 
 router.get("/permission-templates", ctrl.getPermissionTemplates);
 router.post("/permission-templates", validateCreatePermissionTemplate, ctrl.upsertPermissionTemplate);
