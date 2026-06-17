@@ -165,6 +165,11 @@ function emitBulkPermissionUpdate(userIds, data = {}) {
   }
 }
 
+function emitLayoutUpdate(slug) {
+  if (!io) return;
+  io.of("/user").emit("layout-updated", { slug });
+}
+
 function getActiveUsersCount() {
   return userSockets.size;
 }
@@ -177,6 +182,7 @@ module.exports = {
   initWebSocket,
   emitPermissionUpdate,
   emitBulkPermissionUpdate,
+  emitLayoutUpdate,
   getActiveUsersCount,
   getActiveUserIds,
 };

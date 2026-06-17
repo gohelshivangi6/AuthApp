@@ -162,6 +162,16 @@ export const fetchDashboards = createAsyncThunk("admin/fetchDashboards", async (
   return res.data.dashboards;
 });
 
+export const fetchDashboardLayout = createAsyncThunk("admin/fetchDashboardLayout", async (slug) => {
+  const res = await axios.get(`${API}/dashboards/${slug}/layout`, { withCredentials: true });
+  return res.data.layout;
+});
+
+export const saveDashboardLayout = createAsyncThunk("admin/saveDashboardLayout", async ({ slug, layout }) => {
+  const res = await axios.put(`${API}/dashboards/${slug}/layout`, layout, { withCredentials: true });
+  return res.data.layout;
+});
+
 export const fetchStats = createAsyncThunk("admin/fetchStats", async () => {
   const res = await axios.get(`${API}/stats`, { withCredentials: true });
   return res.data.stats;
@@ -189,6 +199,7 @@ const adminSlice = createSlice({
     permissionTemplates: [],
     widgets: [],
     dashboards: [],
+    dashboardLayout: null,
     stats: null,
     activityLogs: [],
     activityLogsTotal: 0,
@@ -276,6 +287,8 @@ const adminSlice = createSlice({
         state.widgets = state.widgets.filter((w) => w.id !== action.payload);
       })
       .addCase(fetchDashboards.fulfilled, (state, action) => { state.dashboards = action.payload; })
+      .addCase(fetchDashboardLayout.fulfilled, (state, action) => { state.dashboardLayout = action.payload; })
+      .addCase(saveDashboardLayout.fulfilled, (state, action) => { state.dashboardLayout = action.payload; })
       .addCase(fetchStats.fulfilled, (state, action) => { state.stats = action.payload; })
       .addCase(fetchActivityLogs.fulfilled, (state, action) => {
         state.activityLogs = action.payload.logs;

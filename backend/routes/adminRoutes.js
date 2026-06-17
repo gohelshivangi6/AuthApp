@@ -60,6 +60,8 @@ router.put("/widgets/:id", validateUpdateWidget, ctrl.updateWidget);
 router.delete("/widgets/:id", ctrl.deleteWidget);
 
 router.get("/dashboards", ctrl.getDashboards);
+router.get("/dashboards/:slug/layout", ctrl.getDashboardLayout);
+router.put("/dashboards/:slug/layout", ctrl.updateDashboardLayout);
 
 router.get("/stats", ctrl.getStats);
 router.get("/activity-logs", ctrl.getActivityLogs);

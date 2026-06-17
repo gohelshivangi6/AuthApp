@@ -12,12 +12,14 @@ import BusinessIcon from "@mui/icons-material/Business";
 import BadgeIcon from "@mui/icons-material/Badge";
 import SecurityIcon from "@mui/icons-material/Security";
 import TimelineIcon from "@mui/icons-material/Timeline";
+import ViewQuiltIcon from "@mui/icons-material/ViewQuilt";
 import UserManager from "./admin/UserManager";
 import DepartmentManager from "./admin/DepartmentManager";
 import RoleManager from "./admin/RoleManager";
 import PermissionManager from "./admin/PermissionManager";
 import AnalyticsPanel from "./admin/AnalyticsPanel";
 import UserStatsPanel from "./admin/UserStatsPanel";
+import DashboardLayoutEditor from "./admin/DashboardLayoutEditor";
 
 const TABS = [
   { label: "Overview", icon: <DashboardIcon />, component: <AnalyticsPanel /> },
@@ -26,6 +28,7 @@ const TABS = [
   { label: "Roles", icon: <BadgeIcon />, component: <RoleManager /> },
   { label: "Permissions", icon: <SecurityIcon />, component: <PermissionManager /> },
   { label: "User Stats", icon: <TimelineIcon />, component: <UserStatsPanel /> },
+  { label: "Layouts", icon: <ViewQuiltIcon />, component: <DashboardLayoutEditor /> },
 ];
 
 export default function AdminDashboard() {
@@ -53,7 +56,7 @@ export default function AdminDashboard() {
           variant="scrollable"
           scrollButtons="auto"
           sx={{
-            "& .MuiTab-root": { textTransform: "none", fontFamily: "Outfit", fontWeight: 600, mx: 3 },
+            "& .MuiTab-root": { textTransform: "none", fontFamily: "Outfit", fontWeight: 600, mx: 1.5 },
           }}
         >
           {TABS.map((t, i) => (

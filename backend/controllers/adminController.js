@@ -2,7 +2,7 @@ const crypto = require("crypto");
 const { v4: uuidv4 } = require("uuid");
 const { readDB, writeDB } = require("../utils/dbHelper");
 const { hashPassword } = require("../utils/cryptoHelper");
-const { emitPermissionUpdate, emitBulkPermissionUpdate } = require("../utils/websocket");
+const { emitPermissionUpdate, emitBulkPermissionUpdate, emitLayoutUpdate } = require("../utils/websocket");
 const { sendEmail } = require("../utils/mailer");
 
 // ─── Users ─────────────────────────────────────────────────
@@ -859,6 +859,46 @@ async function getDashboards(req, res, next) {
   } catch (err) { next(err); }
 }
 
+// ─── Dashboard Layouts ──────────────────────────────────────
+
+async function getDashboardLayout(req, res, next) {
+  try {
+    const db = await readDB();
+    const layouts = db.dashboardLayouts || [];
+    const layout = layouts.find((l) => l.slug === req.params.slug);
+    if (layout) {
+      res.json({ success: true, layout });
+    } else {
+      res.json({
+        success: true,
+        layout: {
+          slug: req.params.slug,
+          sectionOrder: ["kpiCards", "charts", "tables"],
+          kpiCardsOrder: [],
+          chartsOrder: [],
+          tablesOrder: [],
+        },
+      });
+    }
+  } catch (err) { next(err); }
+}
+
+async function updateDashboardLayout(req, res, next) {
+  try {
+    const { slug } = req.params;
+    const { sectionOrder, kpiCardsOrder, chartsOrder, tablesOrder } = req.body;
+    const db = await readDB();
+    if (!db.dashboardLayouts) db.dashboardLayouts = [];
+    const idx = db.dashboardLayouts.findIndex((l) => l.slug === slug);
+    const layout = { slug, sectionOrder, kpiCardsOrder, chartsOrder, tablesOrder };
+    if (idx >= 0) db.dashboardLayouts[idx] = layout;
+    else db.dashboardLayouts.push(layout);
+    await writeDB(db);
+    emitLayoutUpdate(slug);
+    res.json({ success: true, layout });
+  } catch (err) { next(err); }
+}
+
 // ─── Stats & Activity Logs ──────────────────────────────────
 
 async function getStats(req, res, next) {
@@ -1151,6 +1191,8 @@ module.exports = {
   updateWidget,
   deleteWidget,
   getDashboards,
+  getDashboardLayout,
+  updateDashboardLayout,
   getStats,
   getActivityLogs,
   getUserStats,

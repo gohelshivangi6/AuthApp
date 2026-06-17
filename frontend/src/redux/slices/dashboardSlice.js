@@ -21,12 +21,17 @@ const dashboardSlice = createSlice({
     departments: [],
     widgets: [],
     sectionPermissions: [],
+    layoutBySlug: {},
     loading: false,
     error: null,
   },
   reducers: {
     setSectionPermissions(state, action) {
       state.sectionPermissions = action.payload;
+    },
+    setLayoutForSlug(state, action) {
+      const { slug, layout } = action.payload;
+      state.layoutBySlug[slug] = layout;
     },
     upsertSectionPermission(state, action) {
       const perm = action.payload;
@@ -63,5 +68,5 @@ const dashboardSlice = createSlice({
   },
 });
 
-export const { setSectionPermissions, upsertSectionPermission, removeSectionPermission } = dashboardSlice.actions;
+export const { setSectionPermissions, upsertSectionPermission, removeSectionPermission, setLayoutForSlug } = dashboardSlice.actions;
 export default dashboardSlice.reducer;

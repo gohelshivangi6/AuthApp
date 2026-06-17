@@ -37,7 +37,14 @@ function TrendChip({ change, changeType }) {
   );
 }
 
-export default function DashboardContent({ data, hiddenSections = [] }) {
+function applyItemOrder(items, order) {
+  if (!order || order.length === 0) return items;
+  const ordered = order.map((id) => items.find((i) => i.id === id)).filter(Boolean);
+  const remaining = items.filter((i) => !order.includes(i.id));
+  return [...ordered, ...remaining];
+}
+
+export default function DashboardContent({ data, hiddenSections = [], layout }) {
   const isHidden = (section) => hiddenSections.includes(section);
 
   if (!data) {
@@ -48,30 +55,19 @@ export default function DashboardContent({ data, hiddenSections = [] }) {
     );
   }
 
-  return (
-    <Box sx={{ py: 4, px: { xs: 2, md: 4 }, maxWidth: 1400, margin: "0 auto" }}>
-      <Paper
-        sx={{
-          p: 4,
-          mb: 4,
-          background: "rgba(18,18,38,0.6)",
-          backdropFilter: "blur(16px)",
-          border: "1px solid rgba(255,255,255,0.08)",
-          borderRadius: "16px",
-          textAlign: "center",
-        }}
-      >
-        <Typography variant="h3" sx={{ fontFamily: "Outfit", fontWeight: 800, mb: 1 }}>
-          {data.title}
-        </Typography>
-        <Typography variant="body1" color="textSecondary">
-          {data.description}
-        </Typography>
-      </Paper>
+  const sectionOrder = layout?.sectionOrder?.length
+    ? layout.sectionOrder.filter((sk) => !isHidden(sk))
+    : ["kpiCards", "charts", "tables"].filter((sk) => !isHidden(sk));
 
-      {!isHidden("kpiCards") && data.kpiCards && data.kpiCards.length > 0 && (
-        <Grid container spacing={2} sx={{ mb: 4 }}>
-          {data.kpiCards.map((kpi) => (
+  function renderSection(sectionKey) {
+    if (isHidden(sectionKey)) return null;
+
+    if (sectionKey === "kpiCards") {
+      const items = applyItemOrder(data.kpiCards || [], layout?.kpiCardsOrder);
+      if (items.length === 0) return null;
+      return (
+        <Grid container spacing={2} sx={{ mb: 4 }} key="kpiCards">
+          {items.map((kpi) => (
             <Grid size={{ xs: 12, sm: 6, md: 4 }} key={kpi.id}>
               <Paper
                 sx={{
@@ -100,14 +96,17 @@ export default function DashboardContent({ data, hiddenSections = [] }) {
             </Grid>
           ))}
         </Grid>
-      )}
+      );
+    }
 
-      {!isHidden("charts") && data.charts && data.charts.length > 0 && (
-        <Grid container spacing={3} sx={{ mb: 4 }}>
-          {data.charts.map((chart) => {
+    if (sectionKey === "charts") {
+      const items = applyItemOrder(data.charts || [], layout?.chartsOrder);
+      if (items.length === 0) return null;
+      return (
+        <Grid container spacing={3} sx={{ mb: 4 }} key="charts">
+          {items.map((chart) => {
             const ChartComponent = CHART_COMPONENTS[chart.type];
             if (!ChartComponent) return null;
-
             return (
               <Grid size={{ xs: 12, md: 6 }} key={chart.id}>
                 <Paper
@@ -132,11 +131,15 @@ export default function DashboardContent({ data, hiddenSections = [] }) {
             );
           })}
         </Grid>
-      )}
+      );
+    }
 
-      {!isHidden("tables") && data.tables && data.tables.length > 0 && (
-        <Grid container spacing={3}>
-          {data.tables.map((table) => (
+    if (sectionKey === "tables") {
+      const items = applyItemOrder(data.tables || [], layout?.tablesOrder);
+      if (items.length === 0) return null;
+      return (
+        <Grid container spacing={3} key="tables">
+          {items.map((table) => (
             <Grid size={{ xs: 12, md: table.headers.length > 4 ? 12 : 6 }} key={table.id}>
               <Paper
                 sx={{
@@ -206,7 +209,34 @@ export default function DashboardContent({ data, hiddenSections = [] }) {
             </Grid>
           ))}
         </Grid>
-      )}
+      );
+    }
+
+    return null;
+  }
+
+  return (
+    <Box sx={{ py: 4, px: { xs: 2, md: 4 }, maxWidth: 1400, margin: "0 auto" }}>
+      <Paper
+        sx={{
+          p: 4,
+          mb: 4,
+          background: "rgba(18,18,38,0.6)",
+          backdropFilter: "blur(16px)",
+          border: "1px solid rgba(255,255,255,0.08)",
+          borderRadius: "16px",
+          textAlign: "center",
+        }}
+      >
+        <Typography variant="h3" sx={{ fontFamily: "Outfit", fontWeight: 800, mb: 1 }}>
+          {data.title}
+        </Typography>
+        <Typography variant="body1" color="textSecondary">
+          {data.description}
+        </Typography>
+      </Paper>
+
+      {sectionOrder.map((sk) => renderSection(sk))}
     </Box>
   );
 }

@@ -3,8 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import DashboardContent from "../components/DashboardContent";
 import { decryptData } from "../decrypt/decryption";
-import { fetchSectionPermissions } from "../redux/slices/dashboardSlice";
-import { emitEvent, getUserSocket } from "../utils/websocket";
+import { fetchSectionPermissions, setLayoutForSlug } from "../redux/slices/dashboardSlice";
+import { emitEvent } from "../utils/websocket";
 import useDashboardAccess from "../hooks/useDashboardAccess";
 import { Box, CircularProgress } from "@mui/material";
 
@@ -14,6 +14,7 @@ export default function RevenueOpsPulse() {
   useDashboardAccess(DASHBOARD_SLUG);
   const dispatch = useDispatch();
   const sectionPermissions = useSelector((s) => s.dashboard.sectionPermissions);
+  const layout = useSelector((s) => s.dashboard.layoutBySlug[DASHBOARD_SLUG]);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -22,32 +23,27 @@ export default function RevenueOpsPulse() {
   }, [dispatch]);
 
   useEffect(() => {
-    const socket = getUserSocket();
-    if (!socket) return;
-    const handlePermUpdate = () => {
-      dispatch(fetchSectionPermissions());
-    };
-    socket.on("permissions-updated", handlePermUpdate);
-    return () => socket.off("permissions-updated", handlePermUpdate);
-  }, [dispatch]);
-
-  useEffect(() => {
     let cancelled = false;
-    axios.get('http://localhost:5000/api/dashboard-data/revenue-ops-pulse')
-      .then(async (res) => {
+    const load = async () => {
+      try {
+        const [dataRes, layoutRes] = await Promise.all([
+          axios.get('http://localhost:5000/api/dashboard-data/revenue-ops-pulse'),
+          axios.get('http://localhost:5000/api/dashboard-data/revenue-ops-pulse/layout'),
+        ]);
         if (cancelled) return;
-        const decrypted = await decryptData(res.data);
+        const decrypted = await decryptData(dataRes.data);
         setData(decrypted);
+        dispatch(setLayoutForSlug({ slug: DASHBOARD_SLUG, layout: layoutRes.data.layout }));
         emitEvent("dashboard_view", { dashboard: "revenue-ops-pulse" });
-      })
-      .catch(() => {
+      } catch {
         if (!cancelled) setData(null);
-      })
-      .finally(() => {
+      } finally {
         if (!cancelled) setLoading(false);
-      });
+      }
+    };
+    load();
     return () => { cancelled = true; };
-  }, []);
+  }, [dispatch]);
 
   const hiddenSections = useMemo(() => {
     return sectionPermissions
@@ -63,5 +59,5 @@ export default function RevenueOpsPulse() {
     );
   }
 
-  return <DashboardContent data={data} hiddenSections={hiddenSections} />;
+  return <DashboardContent data={data} hiddenSections={hiddenSections} layout={layout} />;
 }

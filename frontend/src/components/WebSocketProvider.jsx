@@ -7,7 +7,7 @@ import {
   getUserSocket,
 } from "../utils/websocket";
 import { updateUser } from "../redux/slices/authSlice";
-import { fetchDashboardData, fetchSectionPermissions } from "../redux/slices/dashboardSlice";
+import { fetchDashboardData, fetchSectionPermissions, setLayoutForSlug } from "../redux/slices/dashboardSlice";
 import { fetchStats } from "../redux/slices/adminSlice";
 import axios from "axios";
 
@@ -79,9 +79,19 @@ export function WebSocketProvider({ children }) {
 
     socket.on("stats-updated", handleStatsUpdate);
 
+    const handleLayoutUpdate = (data) => {
+      if (!data.slug) return;
+      axios.get(`http://localhost:5000/api/dashboard-data/${data.slug}/layout`)
+        .then((res) => dispatch(setLayoutForSlug({ slug: data.slug, layout: res.data.layout })))
+        .catch(() => {});
+    };
+
+    socket.on("layout-updated", handleLayoutUpdate);
+
     return () => {
       socket.off("permissions-updated", handlePermUpdate);
       socket.off("stats-updated", handleStatsUpdate);
+      socket.off("layout-updated", handleLayoutUpdate);
     };
   }, [dispatch, isAuthenticated, user?.role]);
 
