@@ -1,6 +1,7 @@
 const nodemailer = require('nodemailer');
 
 let transporter = null;
+let warned = false;
 
 function getTransporter() {
   if (transporter) return transporter;
@@ -11,7 +12,10 @@ function getTransporter() {
   const pass = process.env.SMTP_PASS;
 
   if (!host || !user || !pass) {
-    console.warn('[RealMailer] SMTP not configured. Set SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS in .env to send real emails.');
+    if (!warned) {
+      console.warn('[RealMailer] SMTP not configured. Set SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS in .env to send real emails.');
+      warned = true;
+    }
     return null;
   }
 
@@ -41,4 +45,18 @@ async function sendRealEmail({ to, subject, text, html }) {
   }
 }
 
-module.exports = { sendRealEmail };
+async function verifyTransporter() {
+  const transport = getTransporter();
+  if (!transport) {
+    console.warn('[RealMailer] SMTP not configured — real emails disabled. Set SMTP_* in .env to enable.');
+    return;
+  }
+  try {
+    await transport.verify();
+    console.log('[RealMailer] SMTP connection verified — ready to send real emails.');
+  } catch (error) {
+    console.error('[RealMailer] SMTP verification failed:', error.message);
+  }
+}
+
+module.exports = { sendRealEmail, verifyTransporter };

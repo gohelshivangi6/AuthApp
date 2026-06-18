@@ -1,5 +1,13 @@
 [
   {
+    "id": "mqjd4bwepuj",
+    "to": "shivangigohel18@gmail.com",
+    "subject": "Action Required: Your account has been flagged for deletion",
+    "text": "Hello Shivangi Gohel,\n\nAn administrator has flagged your account for deletion. If you do not reactivate within 2 minutes, your account will be permanently deleted.\n\nReactivate your account here:\nhttp://localhost:5173/reactivate?token=7c180f1a-5704-4364-9677-6d19288d411a&userId=5d335914-d80b-4edc-b6ea-b2317854539d\n\nAlternatively, simply log in to your account to cancel the deletion.",
+    "html": "<p>Hello Shivangi Gohel,</p><p>An administrator has flagged your account for deletion. If you do not reactivate within <strong>2 minutes</strong>, your account will be permanently deleted.</p><p><a href=\"http://localhost:5173/reactivate?token=7c180f1a-5704-4364-9677-6d19288d411a&userId=5d335914-d80b-4edc-b6ea-b2317854539d\" style=\"display:inline-block;padding:12px 24px;background:#6366f1;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;\">Reactivate My Account</a></p><p>Alternatively, simply <a href=\"http://localhost:5173/login\">log in</a> to your account to cancel the deletion.</p>",
+    "timestamp": "2026-06-18T10:34:05.246Z"
+  },
+  {
     "id": "mqjcktomnzb",
     "to": "aditya.rao@example.com",
     "subject": "Action Required: Your account has been flagged for deletion",

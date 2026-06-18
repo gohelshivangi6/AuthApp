@@ -1116,7 +1116,7 @@ async function bulkCreateUsers(req, res, next) {
 
 // ─── Inactive User Management ─────────────────────────────
 
-const INACTIVE_DAYS = 1;
+const INACTIVE_DAYS = 2;
 const DELETE_GRACE_PERIOD_MS = 2 * 60 * 1000; // 2 minutes
 
 async function getInactiveUsers(req, res, next) {

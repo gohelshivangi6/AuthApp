@@ -13,6 +13,7 @@ const { sessionToken } = require('./middleware/sessionToken');
 const errorHandler = require('./middleware/errorHandler');
 const { initCleanupTask } = require('./utils/cleanup');
 const { seed } = require('./utils/seed');
+const { verifyTransporter } = require('./utils/realMailer');
 const { initWebSocket } = require('./utils/websocket');
 
 const app = express();
@@ -60,6 +61,9 @@ app.use(errorHandler);
 
 // Start Periodic cleanup task for unverified 2FA accounts
 initCleanupTask();
+
+// Verify SMTP connection (non-blocking)
+verifyTransporter();
 
 // Start server
 const server = app.listen(PORT, () => {
