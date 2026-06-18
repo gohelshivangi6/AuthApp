@@ -48,6 +48,18 @@ function initWebSocket(httpServer) {
 
     socket.join(`user:${userId}`);
 
+    (async () => {
+      try {
+        const db = await readDB();
+        const workspaceIds = (db.workspaceMembers || [])
+          .filter((m) => m.userId === userId)
+          .map((m) => m.workspaceId);
+        for (const wid of workspaceIds) {
+          socket.join(`workspace:${wid}`);
+        }
+      } catch (_) {}
+    })();
+
     socket.on("event", async (data) => {
       try {
         await logActivity(userId, "event", {
@@ -175,6 +187,45 @@ function emitDeletionUpdate(data = {}) {
   io.of("/admin").to("admin").emit("deletion-update", data);
 }
 
+function emitWorkspaceMessage(workspaceId, data = {}) {
+  if (!io) return;
+  io.of("/user").to(`workspace:${workspaceId}`).emit("workspace-message", data);
+}
+
+async function joinUserWorkspaceRooms(userId) {
+  if (!io) return;
+  try {
+    const db = await readDB();
+    const workspaceIds = (db.workspaceMembers || [])
+      .filter((m) => m.userId === userId)
+      .map((m) => m.workspaceId);
+    const sockets = userSockets.get(userId);
+    if (sockets) {
+      for (const socketId of sockets) {
+        const socket = io.of("/user").sockets?.get(socketId);
+        if (socket) {
+          for (const wid of workspaceIds) {
+            socket.join(`workspace:${wid}`);
+          }
+        }
+      }
+    }
+  } catch (_) {}
+}
+
+async function removeUserFromWorkspaceRoom(userId, workspaceId) {
+  if (!io) return;
+  const sockets = userSockets.get(userId);
+  if (sockets) {
+    for (const socketId of sockets) {
+      const socket = io.of("/user").sockets?.get(socketId);
+      if (socket) {
+        socket.leave(`workspace:${workspaceId}`);
+      }
+    }
+  }
+}
+
 function getActiveUsersCount() {
   return userSockets.size;
 }
@@ -189,6 +240,9 @@ module.exports = {
   emitBulkPermissionUpdate,
   emitLayoutUpdate,
   emitDeletionUpdate,
+  emitWorkspaceMessage,
+  joinUserWorkspaceRooms,
+  removeUserFromWorkspaceRoom,
   getActiveUsersCount,
   getActiveUserIds,
 };

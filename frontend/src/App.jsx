@@ -22,6 +22,7 @@ import DevMailbox from "./components/DevMailbox";
 import HierarchyTable from "./components/HierarchyTable";
 import PublicRoute from "./routes/PublicRoute";
 import ProtectedRoute from "./routes/ProtectedRoute";
+import WorkspaceList from "./components/workspace/WorkspaceList";
 import { WebSocketProvider } from "./components/WebSocketProvider";
 
 // Create a custom modern dark theme using Outfit and Inter typography
@@ -127,6 +128,8 @@ function App() {
                   path="/dashboards/global-sales-cockpit"
                   element={<GlobalSalesCockpit />}
                 />
+                <Route path="/workspaces" element={<WorkspaceList />} />
+                <Route path="/workspaces/:id" element={<WorkspaceList />} />
                 <Route
                   path="/hierarchy"
                   element={

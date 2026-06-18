@@ -9,6 +9,7 @@ import {
 import { updateUser } from "../redux/slices/authSlice";
 import { fetchDashboardData, fetchSectionPermissions, setLayoutForSlug } from "../redux/slices/dashboardSlice";
 import { fetchStats } from "../redux/slices/adminSlice";
+import { receiveMessage, receiveEditedMessage, receiveDeletedMessage } from "../redux/slices/workspaceSlice";
 import axios from "axios";
 
 const WebSocketContext = createContext(null);
@@ -88,10 +89,23 @@ export function WebSocketProvider({ children }) {
 
     socket.on("layout-updated", handleLayoutUpdate);
 
+    const handleWorkspaceMessage = (data) => {
+      if (data.type === "new" && data.message) {
+        dispatch(receiveMessage({ workspaceId: data.message.workspaceId, message: data.message }));
+      } else if (data.type === "edited" && data.message) {
+        dispatch(receiveEditedMessage({ workspaceId: data.message.workspaceId, message: data.message }));
+      } else if (data.type === "deleted") {
+        dispatch(receiveDeletedMessage({ workspaceId: data.workspaceId, messageId: data.messageId }));
+      }
+    };
+
+    socket.on("workspace-message", handleWorkspaceMessage);
+
     return () => {
       socket.off("permissions-updated", handlePermUpdate);
       socket.off("stats-updated", handleStatsUpdate);
       socket.off("layout-updated", handleLayoutUpdate);
+      socket.off("workspace-message", handleWorkspaceMessage);
     };
   }, [dispatch, isAuthenticated, user?.role]);
 

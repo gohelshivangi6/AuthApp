@@ -32,6 +32,9 @@ async function seed() {
   if (!db.permissions) { db.permissions = []; needsWrite = true; }
   if (!db.activityLogs) { db.activityLogs = []; needsWrite = true; }
   if (!db.dashboards) { db.dashboards = []; needsWrite = true; }
+  if (!db.workspaces) { db.workspaces = []; needsWrite = true; }
+  if (!db.workspaceMembers) { db.workspaceMembers = []; needsWrite = true; }
+  if (!db.workspaceMessages) { db.workspaceMessages = []; needsWrite = true; }
 
   const adminExists = db.users.some(
     (u) => u.email === ADMIN_EMAIL && u.role === "admin"

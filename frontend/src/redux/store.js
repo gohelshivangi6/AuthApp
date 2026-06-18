@@ -11,6 +11,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import authReducer from './slices/authSlice';
 import adminReducer from './slices/adminSlice';
 import dashboardReducer from './slices/dashboardSlice';
+import workspaceReducer from './slices/workspaceSlice';
 
 import storageModule from 'redux-persist/lib/storage';
 import { persistReducer, persistStore } from 'redux-persist';
@@ -32,6 +33,7 @@ export const store = configureStore({
     auth: persistedReducer,
     admin: adminReducer,
     dashboard: dashboardReducer,
+    workspace: workspaceReducer,
   },
 });
 
