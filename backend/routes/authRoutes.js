@@ -15,6 +15,7 @@ const {
   updateProfile,
   changePassword,
   reactivateAccount,
+  getReactivateStatus,
 } = require('../controllers/authController');
 
 const {
@@ -62,6 +63,7 @@ router.get('/dashboard-data', requireAuth, sessionToken, (req, res) => {
 });
 
 // --- Reactivate Account (from deletion email link) ---
+router.get('/reactivate-status', getReactivateStatus);
 router.post('/reactivate', reactivateAccount);
 
 // --- Profile & Account Management ---

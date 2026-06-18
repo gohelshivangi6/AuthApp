@@ -1,5 +1,29 @@
 [
   {
+    "id": "mqjcktomnzb",
+    "to": "aditya.rao@example.com",
+    "subject": "Action Required: Your account has been flagged for deletion",
+    "text": "Hello Aditya Rao,\n\nAn administrator has flagged your account for deletion. If you do not reactivate within 2 minutes, your account will be permanently deleted.\n\nReactivate your account here:\nhttp://localhost:5173/reactivate?token=e82efc71-9153-44db-94b7-11e98b0c1a85&userId=0877393b-086d-47ea-b3fe-7b68e4dc32e2\n\nAlternatively, simply log in to your account to cancel the deletion.",
+    "html": "<p>Hello Aditya Rao,</p><p>An administrator has flagged your account for deletion. If you do not reactivate within <strong>2 minutes</strong>, your account will be permanently deleted.</p><p><a href=\"http://localhost:5173/reactivate?token=e82efc71-9153-44db-94b7-11e98b0c1a85&userId=0877393b-086d-47ea-b3fe-7b68e4dc32e2\" style=\"display:inline-block;padding:12px 24px;background:#6366f1;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;\">Reactivate My Account</a></p><p>Alternatively, simply <a href=\"http://localhost:5173/login\">log in</a> to your account to cancel the deletion.</p>",
+    "timestamp": "2026-06-18T10:18:55.174Z"
+  },
+  {
+    "id": "mqjckowrlot",
+    "to": "aditya.rao@example.com",
+    "subject": "Action Required: Your account has been flagged for deletion",
+    "text": "Hello Aditya Rao,\n\nAn administrator has flagged your account for deletion. If you do not reactivate within 2 minutes, your account will be permanently deleted.\n\nReactivate your account here:\nhttp://localhost:5173/reactivate?token=bf43a8bf-cfb2-4889-bbb2-5f5bcd147c20&userId=0877393b-086d-47ea-b3fe-7b68e4dc32e2\n\nAlternatively, simply log in to your account to cancel the deletion.",
+    "html": "<p>Hello Aditya Rao,</p><p>An administrator has flagged your account for deletion. If you do not reactivate within <strong>2 minutes</strong>, your account will be permanently deleted.</p><p><a href=\"http://localhost:5173/reactivate?token=bf43a8bf-cfb2-4889-bbb2-5f5bcd147c20&userId=0877393b-086d-47ea-b3fe-7b68e4dc32e2\" style=\"display:inline-block;padding:12px 24px;background:#6366f1;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;\">Reactivate My Account</a></p><p>Alternatively, simply <a href=\"http://localhost:5173/login\">log in</a> to your account to cancel the deletion.</p>",
+    "timestamp": "2026-06-18T10:18:48.987Z"
+  },
+  {
+    "id": "mqjc21zy3k8",
+    "to": "sneha.kapoor@example.com",
+    "subject": "Action Required: Your account has been flagged for deletion",
+    "text": "Hello Sneha Kapoor,\n\nAn administrator has flagged your account for deletion. If you do not reactivate within 2 minutes, your account will be permanently deleted.\n\nReactivate your account here:\nhttp://localhost:5173/reactivate?token=f9e158e8-1642-4c68-b548-c080ea84ae08&userId=aa9e0aa8-9531-40bb-9434-e4520a5c81de\n\nAlternatively, simply log in to your account to cancel the deletion.",
+    "html": "<p>Hello Sneha Kapoor,</p><p>An administrator has flagged your account for deletion. If you do not reactivate within <strong>2 minutes</strong>, your account will be permanently deleted.</p><p><a href=\"http://localhost:5173/reactivate?token=f9e158e8-1642-4c68-b548-c080ea84ae08&userId=aa9e0aa8-9531-40bb-9434-e4520a5c81de\" style=\"display:inline-block;padding:12px 24px;background:#6366f1;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;\">Reactivate My Account</a></p><p>Alternatively, simply <a href=\"http://localhost:5173/login\">log in</a> to your account to cancel the deletion.</p>",
+    "timestamp": "2026-06-18T10:04:19.487Z"
+  },
+  {
     "id": "mqjbp11tznz",
     "to": "sneha.kapoor@example.com",
     "subject": "Action Required: Your account has been flagged for deletion",

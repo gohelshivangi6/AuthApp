@@ -12,6 +12,7 @@ const {
   decrypt,
 } = require("../utils/cryptoHelper");
 const { sendEmail } = require("../utils/mailer");
+const { emitDeletionUpdate } = require("../utils/websocket");
 // const { removeToken, registerToken } = require("../middleware/sessionToken");
 
 const JWT_SECRET =
@@ -322,6 +323,7 @@ const login = async (req, res, next) => {
       user.pendingDeleteAt = null;
       user.deleteToken = null;
       await writeDB(db);
+      try { emitDeletionUpdate({ type: "cancelled", userId: user.id }); } catch (_) {}
       const authToken = signAuthToken(user.id);
       res.cookie("token", authToken, COOKIE_OPTIONS);
       return res.status(200).json({
@@ -440,6 +442,8 @@ const verify2FALogin = async (req, res, next) => {
     user.pendingDeleteAt = null;
     user.deleteToken = null;
     await writeDB(db);
+
+    try { emitDeletionUpdate({ type: "cancelled", userId: user.id }); } catch (_) {}
 
     const authToken = signAuthToken(user.id);
     res.cookie("token", authToken, COOKIE_OPTIONS);
@@ -619,6 +623,7 @@ const checkStatus = async (req, res, next) => {
       user.pendingDeleteAt = null;
       user.deleteToken = null;
       await writeDB(db);
+      try { emitDeletionUpdate({ type: "cancelled", userId: user.id }); } catch (_) {}
     }
 
     res.status(200).json({
@@ -661,6 +666,7 @@ const requireAuth = async (req, res, next) => {
       user.pendingDeleteAt = null;
       user.deleteToken = null;
       await writeDB(db);
+      try { emitDeletionUpdate({ type: "cancelled", userId: user.id }); } catch (_) {}
     }
 
     req.user = user;
@@ -701,9 +707,50 @@ const reactivateAccount = async (req, res, next) => {
     user.lastActiveAt = new Date().toISOString();
     await writeDB(db);
 
+    try { emitDeletionUpdate({ type: "cancelled", userId }); } catch (_) {}
+
     res.status(200).json({
       success: true,
       message: "Account reactivated successfully. Please log in.",
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+/**
+ * Returns the remaining time before a pending deletion expires (read-only).
+ */
+const getReactivateStatus = async (req, res, next) => {
+  try {
+    const { token, userId } = req.query;
+    if (!token || !userId) {
+      return res.status(400).json({ success: false, message: "Token and userId are required." });
+    }
+
+    const db = await readDB();
+    const user = db.users.find((u) => u.id === userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found." });
+    }
+
+    if (user.deleteToken !== token) {
+      return res.status(400).json({ success: false, message: "Invalid reactivation token." });
+    }
+
+    if (!user.pendingDeleteAt) {
+      return res.status(400).json({ success: false, message: "Account is not pending deletion." });
+    }
+
+    const now = Date.now();
+    const expiresAt = new Date(user.pendingDeleteAt).getTime();
+    const remainingMs = Math.max(0, expiresAt - now);
+
+    res.status(200).json({
+      success: true,
+      name: user.name,
+      remainingMs,
+      expired: remainingMs <= 0,
     });
   } catch (err) {
     next(err);
@@ -829,4 +876,5 @@ module.exports = {
   updateProfile,
   changePassword,
   reactivateAccount,
+  getReactivateStatus,
 };

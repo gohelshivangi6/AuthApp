@@ -1,4 +1,5 @@
 const { readDB, writeDB } = require('./dbHelper');
+const { emitDeletionUpdate } = require('./websocket');
 
 // Time limit for incomplete 2FA signup (24 hours in milliseconds)
 const SIGNUP_TIMEOUT_MS = 24 * 60 * 60 * 1000;
@@ -71,6 +72,11 @@ async function prunePendingDeletions() {
     db.permissions = (db.permissions || []).filter((p) => !deleteIds.has(p.userId));
 
     await writeDB(db);
+
+    for (const id of deleteIds) {
+      try { emitDeletionUpdate({ type: "deleted", userId: id }); } catch (_) {}
+    }
+
     console.log(`[Cleanup] Deleted ${deleteIds.size} user(s) with expired grace periods.`);
   } catch (error) {
     console.error('[Cleanup] Error during pending deletion sweep:', error);

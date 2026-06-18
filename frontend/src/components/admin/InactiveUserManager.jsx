@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   Box,
@@ -17,6 +17,7 @@ import {
 import UndoIcon from "@mui/icons-material/Undo";
 import BlockIcon from "@mui/icons-material/Block";
 import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
+import { getAdminSocket } from "../../utils/websocket";
 import {
   fetchInactiveUsers,
   fetchPendingDeletions,
@@ -43,21 +44,39 @@ export default function InactiveUserManager() {
     dispatch(fetchPendingDeletions());
   }, [dispatch]);
 
+  const refreshRef = useRef();
+
+  useEffect(() => {
+    refreshRef.current = () => {
+      dispatch(fetchInactiveUsers());
+      dispatch(fetchPendingDeletions());
+    };
+  });
+
   useEffect(() => {
     const timer = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(timer);
   }, []);
 
-  const refresh = useCallback(() => {
-    dispatch(fetchInactiveUsers());
-    dispatch(fetchPendingDeletions());
-  }, [dispatch]);
+  useEffect(() => {
+    const socket = getAdminSocket();
+    if (!socket) return;
+
+    const handler = () => { refreshRef.current?.(); };
+    socket.on("deletion-update", handler);
+    return () => { socket.off("deletion-update", handler); };
+  }, []);
+
+  useEffect(() => {
+    const timer = setInterval(() => refreshRef.current?.(), 5000);
+    return () => clearInterval(timer);
+  }, []);
 
   const handleMarkForDeletion = async (id) => {
     try {
       await dispatch(markForDeletion(id)).unwrap();
       setSnackbar({ open: true, message: "User flagged for deletion. Notification sent.", severity: "success" });
-      refresh();
+      refreshRef.current?.();
     } catch (err) {
       const msg = err?.response?.data?.message || "Failed to flag user";
       setSnackbar({ open: true, message: msg, severity: "error" });
@@ -68,7 +87,7 @@ export default function InactiveUserManager() {
     try {
       await dispatch(cancelDeletion(id)).unwrap();
       setSnackbar({ open: true, message: "Deletion cancelled.", severity: "success" });
-      refresh();
+      refreshRef.current?.();
     } catch (err) {
       const msg = err?.response?.data?.message || "Failed to cancel deletion";
       setSnackbar({ open: true, message: msg, severity: "error" });
@@ -81,7 +100,7 @@ export default function InactiveUserManager() {
         <Typography variant="h6" sx={{ fontFamily: "Outfit", fontWeight: 700 }}>
           Inactive User Management
         </Typography>
-        <Button variant="outlined" onClick={refresh} size="small">
+        <Button variant="outlined" onClick={() => refreshRef.current?.()} size="small">
           Refresh
         </Button>
       </Box>

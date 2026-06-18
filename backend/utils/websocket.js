@@ -170,6 +170,11 @@ function emitLayoutUpdate(slug) {
   io.of("/user").emit("layout-updated", { slug });
 }
 
+function emitDeletionUpdate(data = {}) {
+  if (!io) return;
+  io.of("/admin").to("admin").emit("deletion-update", data);
+}
+
 function getActiveUsersCount() {
   return userSockets.size;
 }
@@ -183,6 +188,7 @@ module.exports = {
   emitPermissionUpdate,
   emitBulkPermissionUpdate,
   emitLayoutUpdate,
+  emitDeletionUpdate,
   getActiveUsersCount,
   getActiveUserIds,
 };

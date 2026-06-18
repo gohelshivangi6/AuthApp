@@ -2,7 +2,7 @@ const crypto = require("crypto");
 const { v4: uuidv4 } = require("uuid");
 const { readDB, writeDB } = require("../utils/dbHelper");
 const { hashPassword } = require("../utils/cryptoHelper");
-const { emitPermissionUpdate, emitBulkPermissionUpdate, emitLayoutUpdate } = require("../utils/websocket");
+const { emitPermissionUpdate, emitBulkPermissionUpdate, emitLayoutUpdate, emitDeletionUpdate } = require("../utils/websocket");
 const { sendEmail } = require("../utils/mailer");
 
 // ─── Users ─────────────────────────────────────────────────
@@ -1191,6 +1191,8 @@ async function markForDeletion(req, res, next) {
 
     const reactivateLink = `http://localhost:5173/reactivate?token=${deleteToken}&userId=${id}`;
 
+    try { emitDeletionUpdate({ type: "flagged", userId: id }); } catch (_) {}
+
     await sendEmail({
       to: user.email,
       subject: "Action Required: Your account has been flagged for deletion",
@@ -1215,6 +1217,8 @@ async function cancelDeletion(req, res, next) {
     user.pendingDeleteAt = null;
     user.deleteToken = null;
     await writeDB(db);
+
+    try { emitDeletionUpdate({ type: "cancelled", userId: id }); } catch (_) {}
 
     res.json({ success: true, message: "Deletion cancelled." });
   } catch (err) { next(err); }

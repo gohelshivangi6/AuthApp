@@ -3,6 +3,14 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import { Box, Typography, CircularProgress, Alert, Button, Paper } from "@mui/material";
 import axios from "axios";
 
+function formatRemaining(ms) {
+  if (ms <= 0) return "Expired";
+  const totalSec = Math.ceil(ms / 1000);
+  const min = Math.floor(totalSec / 60);
+  const sec = totalSec % 60;
+  return `${min}:${sec.toString().padStart(2, "0")}`;
+}
+
 export default function Reactivate() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -10,8 +18,11 @@ export default function Reactivate() {
   const userId = searchParams.get("userId");
   const hasValidParams = !!(token && userId);
 
-  const [status, setStatus] = useState(() => hasValidParams ? "loading" : "error");
+  const [pageState, setPageState] = useState(() => hasValidParams ? "loading" : "error");
+  const [userName, setUserName] = useState("");
+  const [remainingMs, setRemainingMs] = useState(0);
   const [message, setMessage] = useState(() => hasValidParams ? "" : "Invalid reactivation link.");
+  const [reactivating, setReactivating] = useState(false);
 
   useEffect(() => {
     if (!hasValidParams) return;
@@ -19,17 +30,20 @@ export default function Reactivate() {
     let cancelled = false;
 
     axios
-      .post("http://localhost:5000/api/auth/reactivate", { token, userId })
+      .get("http://localhost:5000/api/auth/reactivate-status", {
+        params: { token, userId },
+      })
       .then((res) => {
         if (!cancelled) {
-          setStatus("success");
-          setMessage(res.data.message || "Account reactivated successfully!");
+          setUserName(res.data.name);
+          setRemainingMs(res.data.remainingMs);
+          setPageState(res.data.expired ? "expired" : "ready");
         }
       })
       .catch((err) => {
         if (!cancelled) {
-          setStatus("error");
-          setMessage(err?.response?.data?.message || "Failed to reactivate account.");
+          setPageState("error");
+          setMessage(err?.response?.data?.message || "Failed to check account status.");
         }
       });
 
@@ -37,11 +51,35 @@ export default function Reactivate() {
   }, [token, userId, hasValidParams]);
 
   useEffect(() => {
-    if (status === "success" || status === "error") {
-      const timer = setTimeout(() => navigate("/login", { replace: true }), 4000);
-      return () => clearTimeout(timer);
+    if (pageState !== "ready") return;
+    const timer = setInterval(() => {
+      setRemainingMs((prev) => {
+        const next = Math.max(0, prev - 1000);
+        if (next <= 0) {
+          setPageState("expired");
+          return 0;
+        }
+        return next;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [pageState]);
+
+  const handleReactivate = async () => {
+    setReactivating(true);
+    try {
+      const res = await axios.post("http://localhost:5000/api/auth/reactivate", { token, userId });
+      setPageState("success");
+      setMessage(res.data.message || "Account reactivated successfully!");
+      setTimeout(() => navigate("/login", { replace: true }), 3000);
+    } catch (err) {
+      setPageState("error");
+      setMessage(err?.response?.data?.message || "Failed to reactivate account.");
+      setReactivating(false);
     }
-  }, [status, navigate]);
+  };
+
+  const handleGoToLogin = () => navigate("/login");
 
   return (
     <Box
@@ -63,14 +101,72 @@ export default function Reactivate() {
           borderRadius: "16px",
         }}
       >
-        {status === "loading" && (
+        {pageState === "loading" && (
           <Box>
             <CircularProgress size={48} sx={{ mb: 2 }} />
-            <Typography>Reactivating your account...</Typography>
+            <Typography>Checking account status...</Typography>
           </Box>
         )}
 
-        {status === "success" && (
+        {pageState === "ready" && (
+          <Box>
+            <Typography variant="h5" sx={{ fontFamily: "Outfit", fontWeight: 700, mb: 2 }}>
+              Account Flagged for Deletion
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 1 }}>
+              Hello <strong>{userName}</strong>,
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+              Your account has been flagged for deletion. If you do not reactivate within the remaining time, your account will be permanently deleted.
+            </Typography>
+            <Box
+              sx={{
+                mb: 3,
+                p: 2,
+                borderRadius: 2,
+                background: "rgba(239,68,68,0.1)",
+                border: "1px solid rgba(239,68,68,0.3)",
+              }}
+            >
+              <Typography variant="h3" sx={{ fontFamily: "Outfit", fontWeight: 800, color: "#ef4444" }}>
+                {formatRemaining(remainingMs)}
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                remaining before permanent deletion
+              </Typography>
+            </Box>
+            <Button
+              variant="contained"
+              size="large"
+              fullWidth
+              onClick={handleReactivate}
+              disabled={reactivating}
+              sx={{ mb: 1.5, py: 1.2 }}
+            >
+              {reactivating ? "Reactivating..." : "Reactivate My Account"}
+            </Button>
+            <Typography variant="body2" color="text.secondary">
+              Or simply{" "}
+              <Button variant="text" size="small" onClick={handleGoToLogin} sx={{ textTransform: "none", p: 0, minWidth: "auto" }}>
+                log in
+              </Button>{" "}
+              to cancel the deletion.
+            </Typography>
+          </Box>
+        )}
+
+        {pageState === "expired" && (
+          <Box>
+            <Alert severity="error" sx={{ mb: 2 }}>
+              Your account has been permanently deleted.
+            </Alert>
+            <Button variant="outlined" onClick={handleGoToLogin}>
+              Go to Login
+            </Button>
+          </Box>
+        )}
+
+        {pageState === "success" && (
           <Box>
             <Alert severity="success" sx={{ mb: 2 }}>
               {message}
@@ -81,15 +177,12 @@ export default function Reactivate() {
           </Box>
         )}
 
-        {status === "error" && (
+        {pageState === "error" && (
           <Box>
             <Alert severity="error" sx={{ mb: 2 }}>
               {message}
             </Alert>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-              Redirecting to login page...
-            </Typography>
-            <Button variant="outlined" onClick={() => navigate("/login")}>
+            <Button variant="outlined" onClick={handleGoToLogin}>
               Go to Login
             </Button>
           </Box>
