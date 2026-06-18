@@ -71,7 +71,9 @@ const workspaceSlice = createSlice({
     receiveMessage(state, action) {
       const { workspaceId, message } = action.payload;
       if (!state.messages[workspaceId]) state.messages[workspaceId] = [];
-      state.messages[workspaceId].push(message);
+      if (!state.messages[workspaceId].some((m) => m.id === message.id)) {
+        state.messages[workspaceId].push(message);
+      }
     },
     receiveEditedMessage(state, action) {
       const { workspaceId, message } = action.payload;
@@ -129,7 +131,9 @@ const workspaceSlice = createSlice({
       .addCase(sendMessage.fulfilled, (state, action) => {
         const { workspaceId, message } = action.payload;
         if (!state.messages[workspaceId]) state.messages[workspaceId] = [];
-        state.messages[workspaceId].push(message);
+        if (!state.messages[workspaceId].some((m) => m.id === message.id)) {
+          state.messages[workspaceId].push(message);
+        }
       })
       .addCase(editMessage.fulfilled, (state, action) => {
         const { workspaceId, message } = action.payload;

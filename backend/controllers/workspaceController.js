@@ -172,10 +172,11 @@ async function addMember(req, res, next) {
 
     await writeDB(db);
 
+    const enriched = { ...member, name: user.name, email: user.email };
     try { emitWorkspaceMessage(id, { type: "member-added", userId }); } catch (_) {}
     try { await joinUserWorkspaceRooms(userId); } catch (_) {}
 
-    res.status(201).json({ success: true, member });
+    res.status(201).json({ success: true, member: enriched });
   } catch (err) { next(err); }
 }
 
@@ -332,7 +333,7 @@ async function deleteMessage(req, res, next) {
     message.content = "";
     await writeDB(db);
 
-    try { emitWorkspaceMessage(id, { type: "deleted", messageId: msgId }); } catch (_) {}
+    try { emitWorkspaceMessage(id, { type: "deleted", messageId: msgId, workspaceId: id }); } catch (_) {}
 
     res.json({ success: true, message: "Message deleted." });
   } catch (err) { next(err); }
