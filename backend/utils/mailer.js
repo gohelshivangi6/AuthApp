@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { sendRealEmail } = require('./realMailer');
 
 const EMAIL_FILE = path.join(__dirname, '..', 'data', 'emails.json');
 
@@ -12,6 +13,7 @@ if (!fs.existsSync(dir)) {
 /**
  * Simulates sending an email by appending it to a local JSON file.
  * Keeps only the last 50 emails to prevent resource exhaustion.
+ * Also attempts to send via real SMTP (nodemailer) in parallel.
  */
 async function sendEmail({ to, subject, text, html }) {
   const newEmail = {
@@ -45,6 +47,9 @@ async function sendEmail({ to, subject, text, html }) {
 
     await fs.promises.writeFile(EMAIL_FILE, JSON.stringify(emails, null, 2), 'utf8');
     console.log(`[Simulated Email Sent] To: ${to} | Subject: ${subject}`);
+
+    sendRealEmail({ to, subject, text, html }).catch(() => {});
+
     return true;
   } catch (error) {
     console.error('Failed to write simulated email to file:', error);

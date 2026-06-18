@@ -93,6 +93,9 @@ const signup = async (req, res, next) => {
       createdAt: new Date().toISOString(),
       resetPasswordToken: null,
       resetPasswordExpires: null,
+      lastActiveAt: null,
+      pendingDeleteAt: null,
+      deleteToken: null,
     };
 
     db.users.push(newUser);
@@ -216,6 +219,7 @@ const verify2FASetup = async (req, res, next) => {
     user.status = "VERIFIED";
     user.failedAttempts = 0;
     user.lockUntil = null;
+    user.lastActiveAt = new Date().toISOString();
     await writeDB(db);
 
     // Issue permanent auth token
@@ -314,6 +318,10 @@ const login = async (req, res, next) => {
 
     // CASE B: User is VERIFIED but has no 2FA configured (e.g., admin account)
     if (user.status === "VERIFIED" && !user.twoFactorSecretEncrypted) {
+      user.lastActiveAt = new Date().toISOString();
+      user.pendingDeleteAt = null;
+      user.deleteToken = null;
+      await writeDB(db);
       const authToken = signAuthToken(user.id);
       res.cookie("token", authToken, COOKIE_OPTIONS);
       return res.status(200).json({
@@ -428,6 +436,9 @@ const verify2FALogin = async (req, res, next) => {
     // Reset lock/failed attempts, log in
     user.failedAttempts = 0;
     user.lockUntil = null;
+    user.lastActiveAt = new Date().toISOString();
+    user.pendingDeleteAt = null;
+    user.deleteToken = null;
     await writeDB(db);
 
     const authToken = signAuthToken(user.id);
@@ -604,6 +615,12 @@ const checkStatus = async (req, res, next) => {
         .json({ success: false, message: "Account status invalid." });
     }
 
+    if (user.pendingDeleteAt) {
+      user.pendingDeleteAt = null;
+      user.deleteToken = null;
+      await writeDB(db);
+    }
+
     res.status(200).json({
       success: true,
       user: {
@@ -640,12 +657,56 @@ const requireAuth = async (req, res, next) => {
         .json({ success: false, message: "Authentication required." });
     }
 
+    if (user.pendingDeleteAt) {
+      user.pendingDeleteAt = null;
+      user.deleteToken = null;
+      await writeDB(db);
+    }
+
     req.user = user;
     next();
   } catch (error) {
     res
       .status(401)
       .json({ success: false, message: "Invalid authorization token." });
+  }
+};
+
+/**
+ * Reactivates an account flagged for deletion (from email link).
+ */
+const reactivateAccount = async (req, res, next) => {
+  try {
+    const { token, userId } = req.body;
+    if (!token || !userId) {
+      return res.status(400).json({ success: false, message: "Token and userId are required." });
+    }
+
+    const db = await readDB();
+    const user = db.users.find((u) => u.id === userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found." });
+    }
+
+    if (user.deleteToken !== token) {
+      return res.status(400).json({ success: false, message: "Invalid reactivation token." });
+    }
+
+    if (!user.pendingDeleteAt) {
+      return res.status(400).json({ success: false, message: "Account is not pending deletion." });
+    }
+
+    user.pendingDeleteAt = null;
+    user.deleteToken = null;
+    user.lastActiveAt = new Date().toISOString();
+    await writeDB(db);
+
+    res.status(200).json({
+      success: true,
+      message: "Account reactivated successfully. Please log in.",
+    });
+  } catch (err) {
+    next(err);
   }
 };
 
@@ -767,4 +828,5 @@ module.exports = {
   me,
   updateProfile,
   changePassword,
+  reactivateAccount,
 };

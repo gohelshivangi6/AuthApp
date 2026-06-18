@@ -66,4 +66,10 @@ router.get("/stats", ctrl.getStats);
 router.get("/activity-logs", ctrl.getActivityLogs);
 router.get("/users/:userId/stats", ctrl.getUserStats);
 
+// --- Inactive User Management ---
+router.get("/users/inactive", ctrl.getInactiveUsers);
+router.get("/users/pending-deletion", ctrl.getPendingDeletions);
+router.post("/users/:id/mark-for-deletion", ctrl.markForDeletion);
+router.post("/users/:id/cancel-deletion", ctrl.cancelDeletion);
+
 module.exports = router;

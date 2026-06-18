@@ -188,6 +188,26 @@ export const fetchUserStats = createAsyncThunk("admin/fetchUserStats", async (us
   return res.data.userStats;
 });
 
+export const fetchInactiveUsers = createAsyncThunk("admin/fetchInactiveUsers", async () => {
+  const res = await axios.get(`${API}/users/inactive`, { withCredentials: true });
+  return res.data.users;
+});
+
+export const fetchPendingDeletions = createAsyncThunk("admin/fetchPendingDeletions", async () => {
+  const res = await axios.get(`${API}/users/pending-deletion`, { withCredentials: true });
+  return res.data.users;
+});
+
+export const markForDeletion = createAsyncThunk("admin/markForDeletion", async (id) => {
+  await axios.post(`${API}/users/${id}/mark-for-deletion`, {}, { withCredentials: true });
+  return id;
+});
+
+export const cancelDeletion = createAsyncThunk("admin/cancelDeletion", async (id) => {
+  await axios.post(`${API}/users/${id}/cancel-deletion`, {}, { withCredentials: true });
+  return id;
+});
+
 const adminSlice = createSlice({
   name: "admin",
   initialState: {
@@ -205,6 +225,8 @@ const adminSlice = createSlice({
     activityLogsTotal: 0,
     selectedUserId: null,
     userStats: null,
+    inactiveUsers: [],
+    pendingDeletions: [],
     loading: false,
   },
   reducers: {
@@ -293,6 +315,14 @@ const adminSlice = createSlice({
       .addCase(fetchActivityLogs.fulfilled, (state, action) => {
         state.activityLogs = action.payload.logs;
         state.activityLogsTotal = action.payload.total;
+      })
+      .addCase(fetchInactiveUsers.fulfilled, (state, action) => { state.inactiveUsers = action.payload; })
+      .addCase(fetchPendingDeletions.fulfilled, (state, action) => { state.pendingDeletions = action.payload; })
+      .addCase(markForDeletion.fulfilled, (state, action) => {
+        state.inactiveUsers = state.inactiveUsers.filter((u) => u.id !== action.payload);
+      })
+      .addCase(cancelDeletion.fulfilled, (state, action) => {
+        state.pendingDeletions = state.pendingDeletions.filter((u) => u.id !== action.payload);
       })
       .addCase(fetchUserStats.fulfilled, (state, action) => { state.userStats = action.payload; })
       .addMatcher(

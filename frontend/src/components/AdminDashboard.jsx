@@ -13,6 +13,7 @@ import BadgeIcon from "@mui/icons-material/Badge";
 import SecurityIcon from "@mui/icons-material/Security";
 import TimelineIcon from "@mui/icons-material/Timeline";
 import ViewQuiltIcon from "@mui/icons-material/ViewQuilt";
+import PersonOffIcon from "@mui/icons-material/PersonOff";
 import UserManager from "./admin/UserManager";
 import DepartmentManager from "./admin/DepartmentManager";
 import RoleManager from "./admin/RoleManager";
@@ -20,10 +21,12 @@ import PermissionManager from "./admin/PermissionManager";
 import AnalyticsPanel from "./admin/AnalyticsPanel";
 import UserStatsPanel from "./admin/UserStatsPanel";
 import DashboardLayoutEditor from "./admin/DashboardLayoutEditor";
+import InactiveUserManager from "./admin/InactiveUserManager";
 
 const TABS = [
   { label: "Overview", icon: <DashboardIcon />, component: <AnalyticsPanel /> },
   { label: "Users", icon: <PeopleIcon />, component: <UserManager /> },
+  { label: "Inactive Users", icon: <PersonOffIcon />, component: <InactiveUserManager /> },
   { label: "Departments", icon: <BusinessIcon />, component: <DepartmentManager /> },
   { label: "Roles", icon: <BadgeIcon />, component: <RoleManager /> },
   { label: "Permissions", icon: <SecurityIcon />, component: <PermissionManager /> },
@@ -56,7 +59,7 @@ export default function AdminDashboard() {
           variant="scrollable"
           scrollButtons="auto"
           sx={{
-            "& .MuiTab-root": { textTransform: "none", fontFamily: "Outfit", fontWeight: 600, mx: 1.5 },
+            "& .MuiTab-root": { textTransform: "none", fontFamily: "Outfit", fontWeight: 600, mx: 0.2 },
           }}
         >
           {TABS.map((t, i) => (
