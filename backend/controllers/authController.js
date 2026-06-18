@@ -97,6 +97,7 @@ const signup = async (req, res, next) => {
       lastActiveAt: null,
       pendingDeleteAt: null,
       deleteToken: null,
+      suspended: false,
     };
 
     db.users.push(newUser);
@@ -258,6 +259,14 @@ const login = async (req, res, next) => {
       return res
         .status(401)
         .json({ success: false, message: "Invalid email or password." });
+    }
+
+    // Check if suspended
+    if (user.suspended) {
+      return res.status(403).json({
+        success: false,
+        message: "This account has been suspended. Contact your administrator.",
+      });
     }
 
     // Check if locked
@@ -633,6 +642,7 @@ const checkStatus = async (req, res, next) => {
         name: user.name,
         email: user.email,
         role: user.role || "user",
+        suspended: user.suspended || false,
       },
     });
   } catch (error) {
@@ -656,7 +666,7 @@ const requireAuth = async (req, res, next) => {
     const db = await readDB();
     const user = db.users.find((u) => u.id === decoded.userId);
 
-    if (!user || user.status !== "VERIFIED") {
+    if (!user || user.status !== "VERIFIED" || user.suspended) {
       return res
         .status(401)
         .json({ success: false, message: "Authentication required." });
@@ -769,6 +779,7 @@ const me = async (req, res, next) => {
         email: user.email,
         role: user.role || "user",
         hasTwoFactor: !!user.twoFactorSecretEncrypted,
+        suspended: user.suspended || false,
       },
     });
   } catch (error) {

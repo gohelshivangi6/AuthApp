@@ -208,6 +208,21 @@ export const cancelDeletion = createAsyncThunk("admin/cancelDeletion", async (id
   return id;
 });
 
+export const bulkDeleteUsers = createAsyncThunk("admin/bulkDeleteUsers", async (userIds) => {
+  await axios.post(`${API}/users/bulk-delete`, { userIds }, { withCredentials: true });
+  return userIds;
+});
+
+export const bulkSuspendUsers = createAsyncThunk("admin/bulkSuspendUsers", async ({ userIds, suspended }) => {
+  await axios.post(`${API}/users/bulk-suspend`, { userIds, suspended }, { withCredentials: true });
+  return { userIds: new Set(userIds), suspended };
+});
+
+export const cloneRole = createAsyncThunk("admin/cloneRole", async ({ id, ...data }) => {
+  const res = await axios.post(`${API}/roles/${id}/clone`, data, { withCredentials: true });
+  return res.data.role;
+});
+
 const adminSlice = createSlice({
   name: "admin",
   initialState: {
@@ -282,9 +297,7 @@ const adminSlice = createSlice({
       .addCase(deletePermission.fulfilled, (state, action) => {
         state.permissions = state.permissions.filter((p) => p.id !== action.payload);
       })
-      .addCase(bulkCreatePermissions.fulfilled, (state, action) => {
-        // re-fetch permissions is handled by the component
-      })
+      .addCase(bulkCreatePermissions.fulfilled, () => {})
       .addCase(fetchPermissionTemplates.fulfilled, (state, action) => { state.permissionTemplates = action.payload; })
       .addCase(upsertPermissionTemplate.fulfilled, (state, action) => {
         const idx = state.permissionTemplates.findIndex(
@@ -323,6 +336,19 @@ const adminSlice = createSlice({
       })
       .addCase(cancelDeletion.fulfilled, (state, action) => {
         state.pendingDeletions = state.pendingDeletions.filter((u) => u.id !== action.payload);
+      })
+      .addCase(bulkDeleteUsers.fulfilled, (state, action) => {
+        const ids = new Set(action.payload);
+        state.users = state.users.filter((u) => !ids.has(u.id));
+      })
+      .addCase(bulkSuspendUsers.fulfilled, (state, action) => {
+        const { userIds, suspended } = action.payload;
+        state.users.forEach((u) => {
+          if (userIds.has(u.id)) u.suspended = suspended;
+        });
+      })
+      .addCase(cloneRole.fulfilled, (state, action) => {
+        state.roles.push(action.payload);
       })
       .addCase(fetchUserStats.fulfilled, (state, action) => { state.userStats = action.payload; })
       .addMatcher(

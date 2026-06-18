@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   Box,
@@ -24,12 +24,16 @@ import {
   Alert,
   AlertTitle,
   Snackbar,
+  Checkbox,
+  Paper,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
+import BlockIcon from "@mui/icons-material/Block";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import Papa from "papaparse";
 import {
   fetchUsers,
@@ -42,7 +46,10 @@ import {
   fetchAssignments,
   createAssignment,
   deleteAssignment,
+  bulkDeleteUsers,
+  bulkSuspendUsers,
 } from "../../redux/slices/adminSlice";
+import { getAdminSocket } from "../../utils/websocket";
 
 export default function UserManager() {
   const dispatch = useDispatch();
@@ -72,12 +79,31 @@ export default function UserManager() {
   const [resultOpen, setResultOpen] = useState(false);
   const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
 
-  useEffect(() => {
+  const [selectedIds, setSelectedIds] = useState(new Set());
+  const [busy, setBusy] = useState(false);
+  const wsRef = useRef(null);
+
+  const fetchAll = useCallback(() => {
     dispatch(fetchUsers());
     dispatch(fetchDepartments());
     dispatch(fetchRoles());
     dispatch(fetchAssignments());
   }, [dispatch]);
+
+  useEffect(() => {
+    fetchAll();
+    const socket = getAdminSocket();
+    wsRef.current = socket;
+    if (socket) {
+      const handler = (data) => {
+        if (data?.type === "bulk-delete" || data?.type === "bulk-suspend" || data?.type === "flagged" || data?.type === "cancelled") {
+          fetchAll();
+        }
+      };
+      socket.on("deletion-update", handler);
+      return () => { socket.off("deletion-update", handler); };
+    }
+  }, [fetchAll]);
 
   const handleUserOpen = (user) => {
     if (user) {
@@ -120,32 +146,9 @@ export default function UserManager() {
     setAssignOpen(true);
   };
 
-  // const handleAssignSave = async () => {
-  //   const existing = assignments.find((a) => a.userId === assignTarget.id);
-  //   if (existing) {
-  //     await dispatch(deleteAssignment(existing.id));
-  //   }
-  //   if (assignForm.departmentId && assignForm.roleId) {
-  //     await dispatch(
-  //       createAssignment({
-  //         userId: assignTarget.id,
-  //         departmentId: assignForm.departmentId,
-  //         roleId: assignForm.roleId,
-  //       }),
-  //     );
-  //   }
-  //   setAssignOpen(false);
-  //   setAssignTarget(null);
-  //   dispatch(fetchAssignments());
-  //   dispatch(fetchUsers());
-  // };
-
   const handleAssignSave = async () => {
     const existing = assignments.find((a) => a.userId === assignTarget.id);
-
     const selectedRole = roles.find((r) => r.id === assignForm.roleId);
-
-    // Update user table
     await dispatch(
       updateUser({
         id: assignTarget.id,
@@ -154,12 +157,9 @@ export default function UserManager() {
         departmentId: assignForm.departmentId,
       }),
     );
-
-    // Update assignment table
     if (existing) {
       await dispatch(deleteAssignment(existing.id));
     }
-
     await dispatch(
       createAssignment({
         userId: assignTarget.id,
@@ -168,10 +168,8 @@ export default function UserManager() {
         role: selectedRole?.name,
       }),
     );
-
     setAssignOpen(false);
     setAssignTarget(null);
-
     await dispatch(fetchAssignments());
     await dispatch(fetchUsers());
   };
@@ -234,9 +232,61 @@ export default function UserManager() {
     setImportResult(null);
   };
 
+  const toggleSelect = (id) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedIds.size === users.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(users.map((u) => u.id)));
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedIds.size === 0) return;
+    if (!window.confirm(`Delete ${selectedIds.size} user(s)? This cannot be undone.`)) return;
+    setBusy(true);
+    try {
+      await dispatch(bulkDeleteUsers([...selectedIds])).unwrap();
+      setSelectedIds(new Set());
+      setSnackbar({ open: true, message: `${selectedIds.size} user(s) deleted.`, severity: "success" });
+    } catch {
+      setSnackbar({ open: true, message: "Bulk delete failed.", severity: "error" });
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const handleBulkSuspend = async (suspended) => {
+    if (selectedIds.size === 0) return;
+    const label = suspended ? "suspend" : "unsuspend";
+    if (!window.confirm(`${label} ${selectedIds.size} user(s)?`)) return;
+    setBusy(true);
+    try {
+      await dispatch(bulkSuspendUsers({ userIds: [...selectedIds], suspended })).unwrap();
+      setSelectedIds(new Set());
+      setSnackbar({ open: true, message: `${selectedIds.size} user(s) ${label}ed.`, severity: "success" });
+    } catch {
+      setSnackbar({ open: true, message: `Bulk ${label} failed.`, severity: "error" });
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const availableRoles = assignForm.departmentId
     ? roles.filter((r) => r.departmentId === assignForm.departmentId)
     : roles;
+
+  const selectedUsers = users.filter((u) => selectedIds.has(u.id));
+  const allSuspended = selectedUsers.length > 0 && selectedUsers.every((u) => u.suspended);
+  const allActive = selectedUsers.length > 0 && selectedUsers.every((u) => !u.suspended);
 
   return (
     <Box>
@@ -267,6 +317,67 @@ export default function UserManager() {
         </Box>
       </Box>
 
+      {selectedIds.size > 0 && (
+        <Paper
+          elevation={4}
+          sx={{
+            p: 1.5,
+            mb: 2,
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+            bgcolor: "primary.dark",
+            borderRadius: 2,
+          }}
+        >
+          <Typography variant="body2" sx={{ mr: 1 }}>
+            {selectedIds.size} selected
+          </Typography>
+          <Button
+            size="small"
+            variant="contained"
+            color="error"
+            startIcon={<DeleteIcon />}
+            onClick={handleBulkDelete}
+            disabled={busy}
+          >
+            Delete
+          </Button>
+          {allActive && (
+            <Button
+              size="small"
+              variant="contained"
+              color="warning"
+              startIcon={<BlockIcon />}
+              onClick={() => handleBulkSuspend(true)}
+              disabled={busy}
+            >
+              Suspend
+            </Button>
+          )}
+          {allSuspended && (
+            <Button
+              size="small"
+              variant="contained"
+              color="success"
+              startIcon={<CheckCircleIcon />}
+              onClick={() => handleBulkSuspend(false)}
+              disabled={busy}
+            >
+              Unsuspend
+            </Button>
+          )}
+          <Button
+            size="small"
+            variant="outlined"
+            onClick={() => setSelectedIds(new Set())}
+            sx={{ ml: "auto" }}
+          >
+            Clear
+          </Button>
+        </Paper>
+      )}
+
       <Table
         sx={{
           "& .MuiTableCell-root": { borderColor: "rgba(255,255,255,0.05)" },
@@ -274,6 +385,13 @@ export default function UserManager() {
       >
         <TableHead>
           <TableRow>
+            <TableCell padding="checkbox">
+              <Checkbox
+                indeterminate={selectedIds.size > 0 && selectedIds.size < users.length}
+                checked={users.length > 0 && selectedIds.size === users.length}
+                onChange={toggleSelectAll}
+              />
+            </TableCell>
             <TableCell>Name</TableCell>
             <TableCell>Email</TableCell>
             <TableCell>Status</TableCell>
@@ -287,13 +405,28 @@ export default function UserManager() {
             const dept = u.departmentId
               ? departments.find((d) => d.id === u.departmentId)
               : null;
-              console.log("DEPT", dept);
             const role = u.roleId ? roles.find((r) => r.id === u.roleId) : null;
             return (
-              <TableRow key={u.id}>
+              <TableRow
+                key={u.id}
+                selected={selectedIds.has(u.id)}
+                sx={{ opacity: u.suspended ? 0.5 : 1 }}
+              >
+                <TableCell padding="checkbox">
+                  <Checkbox
+                    checked={selectedIds.has(u.id)}
+                    onChange={() => toggleSelect(u.id)}
+                  />
+                </TableCell>
                 <TableCell>{u.name}</TableCell>
                 <TableCell>{u.email}</TableCell>
-                <TableCell>{u.status}</TableCell>
+                <TableCell>
+                  {u.suspended ? (
+                    <Chip label="Suspended" size="small" color="warning" variant="outlined" />
+                  ) : (
+                    <Chip label={u.status} size="small" color="success" variant="outlined" />
+                  )}
+                </TableCell>
                 <TableCell>{dept?.name || "—"}</TableCell>
                 <TableCell>
                   {role ? (
@@ -311,7 +444,6 @@ export default function UserManager() {
                   <IconButton
                     size="small"
                     onClick={() => handleAssignOpen(u)}
-                    // title={a ? "Change assignment" : "Assign to department"}
                     title="Change assignment"
                   >
                     <AssignmentIndIcon fontSize="small" />
@@ -332,7 +464,7 @@ export default function UserManager() {
           })}
           {users.length === 0 && (
             <TableRow>
-              <TableCell colSpan={7} align="center">
+              <TableCell colSpan={8} align="center">
                 <CircularProgress size={24} />
               </TableCell>
             </TableRow>

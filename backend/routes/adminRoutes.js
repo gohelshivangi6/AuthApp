@@ -72,4 +72,11 @@ router.get("/users/pending-deletion", ctrl.getPendingDeletions);
 router.post("/users/:id/mark-for-deletion", ctrl.markForDeletion);
 router.post("/users/:id/cancel-deletion", ctrl.cancelDeletion);
 
+// --- Bulk User Actions ---
+router.post("/users/bulk-delete", ctrl.bulkDeleteUsers);
+router.post("/users/bulk-suspend", ctrl.bulkSuspendUsers);
+
+// --- Role Clone ---
+router.post("/roles/:id/clone", ctrl.cloneRole);
+
 module.exports = router;

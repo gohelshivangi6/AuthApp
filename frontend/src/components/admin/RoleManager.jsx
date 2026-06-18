@@ -8,8 +8,9 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import {
-  fetchRoles, fetchDepartments, createRole, updateRole, deleteRole,
+  fetchRoles, fetchDepartments, createRole, updateRole, deleteRole, cloneRole,
 } from "../../redux/slices/adminSlice";
 
 export default function RoleManager() {
@@ -19,6 +20,9 @@ export default function RoleManager() {
   const [editRole, setEditRole] = useState(null);
   const [deptFilter, setDeptFilter] = useState("");
   const [form, setForm] = useState({ name: "", departmentId: "" });
+  const [cloneOpen, setCloneOpen] = useState(false);
+  const [cloneSource, setCloneSource] = useState(null);
+  const [cloneName, setCloneName] = useState("");
 
   useEffect(() => {
     dispatch(fetchRoles());
@@ -54,6 +58,20 @@ export default function RoleManager() {
     if (window.confirm("Delete this role?")) {
       await dispatch(deleteRole(id));
     }
+  };
+
+  const handleCloneOpen = (role) => {
+    setCloneSource(role);
+    setCloneName(`${role.name} (Copy)`);
+    setCloneOpen(true);
+  };
+
+  const handleClone = async () => {
+    if (!cloneSource || !cloneName.trim()) return;
+    await dispatch(cloneRole({ id: cloneSource.id, name: cloneName.trim() }));
+    setCloneOpen(false);
+    setCloneSource(null);
+    dispatch(fetchRoles());
   };
 
   const deptName = (id) => departments.find((d) => d.id === id)?.name || "—";
@@ -96,6 +114,9 @@ export default function RoleManager() {
             }}
             secondaryAction={
               <Box>
+                <IconButton onClick={() => handleCloneOpen(role)} title="Clone role">
+                  <ContentCopyIcon fontSize="small" />
+                </IconButton>
                 <IconButton onClick={() => handleOpen(role)}>
                   <EditIcon fontSize="small" />
                 </IconButton>
@@ -148,6 +169,27 @@ export default function RoleManager() {
           <Button onClick={() => setOpen(false)}>Cancel</Button>
           <Button onClick={handleSave} variant="contained">
             {editRole ? "Update" : "Create"}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={cloneOpen} onClose={() => setCloneOpen(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>Clone Role — {cloneSource?.name}</DialogTitle>
+        <DialogContent>
+          <Box display="flex" flexDirection="column" gap={2} mt={1}>
+            <TextField
+              label="New Role Name"
+              value={cloneName}
+              onChange={(e) => setCloneName(e.target.value)}
+              fullWidth
+              autoFocus
+            />
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setCloneOpen(false)}>Cancel</Button>
+          <Button onClick={handleClone} variant="contained" disabled={!cloneName.trim()}>
+            Clone
           </Button>
         </DialogActions>
       </Dialog>

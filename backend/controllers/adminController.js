@@ -33,6 +33,7 @@ async function getUsers(req, res, next) {
           departmentName: assignedDept?.name || null,
           status: u.status,
           createdAt: u.createdAt,
+          suspended: u.suspended || false,
           assignments: userAssignments,
         };
       });
@@ -67,6 +68,7 @@ async function createUser(req, res, next) {
       lastActiveAt: null,
       pendingDeleteAt: null,
       deleteToken: null,
+      suspended: false,
     };
 
     db.users.push(newUser);
@@ -1042,6 +1044,7 @@ async function bulkCreateUsers(req, res, next) {
         lastActiveAt: null,
         pendingDeleteAt: null,
         deleteToken: null,
+        suspended: false,
       };
 
       db.users.push(newUser);
@@ -1224,6 +1227,104 @@ async function cancelDeletion(req, res, next) {
   } catch (err) { next(err); }
 }
 
+// ─── Bulk User Actions ────────────────────────────────────
+
+async function bulkDeleteUsers(req, res, next) {
+  try {
+    const { userIds } = req.body;
+    if (!Array.isArray(userIds) || userIds.length === 0) {
+      return res.status(400).json({ success: false, message: "No user IDs provided." });
+    }
+
+    const db = await readDB();
+    const idSet = new Set(userIds);
+
+    db.users = db.users.filter((u) => !idSet.has(u.id));
+    db.userAssignments = (db.userAssignments || []).filter((a) => !idSet.has(a.userId));
+    db.permissions = (db.permissions || []).filter((p) => !idSet.has(p.userId));
+
+    await writeDB(db);
+
+    try { emitBulkPermissionUpdate(userIds, { type: "user", action: "bulk-deleted" }); } catch (_) {}
+
+    res.json({ success: true, message: `${userIds.length} user(s) deleted.` });
+  } catch (err) { next(err); }
+}
+
+async function bulkSuspendUsers(req, res, next) {
+  try {
+    const { userIds, suspended } = req.body;
+    if (!Array.isArray(userIds) || userIds.length === 0) {
+      return res.status(400).json({ success: false, message: "No user IDs provided." });
+    }
+
+    const db = await readDB();
+    for (const id of userIds) {
+      const user = db.users.find((u) => u.id === id);
+      if (user) user.suspended = !!suspended;
+    }
+    await writeDB(db);
+
+    try { emitBulkPermissionUpdate(userIds, { type: "user", action: suspended ? "suspended" : "unsuspended" }); } catch (_) {}
+
+    res.json({ success: true, message: `${userIds.length} user(s) ${suspended ? "suspended" : "unsuspended"}.` });
+  } catch (err) { next(err); }
+}
+
+// ─── Role Clone ───────────────────────────────────────────
+
+async function cloneRole(req, res, next) {
+  try {
+    const { id } = req.params;
+    const { name, departmentId } = req.body;
+
+    const db = await readDB();
+    const sourceRole = db.roles.find((r) => r.id === id);
+    if (!sourceRole) {
+      return res.status(404).json({ success: false, message: "Source role not found." });
+    }
+
+    const newRole = {
+      id: uuidv4(),
+      name: name || `${sourceRole.name} (Copy)`,
+      departmentId: departmentId || sourceRole.departmentId,
+      createdAt: new Date().toISOString(),
+    };
+
+    db.roles.push(newRole);
+
+    const sourceTemplates = (db.permissionTemplates || []).filter(
+      (t) => t.assigneeType === "role" && t.assigneeId === id
+    );
+
+    for (const t of sourceTemplates) {
+      if (!db.permissionTemplates) db.permissionTemplates = [];
+      db.permissionTemplates.push({
+        id: uuidv4(),
+        assigneeType: "role",
+        assigneeId: newRole.id,
+        targetType: t.targetType,
+        targetId: t.targetId,
+        granted: t.granted,
+        updatedAt: new Date().toISOString(),
+      });
+    }
+
+    await writeDB(db);
+
+    if (db.userAssignments) {
+      const affectedUserIds = db.userAssignments
+        .filter((a) => a.roleId === newRole.departmentId ? a.departmentId === newRole.departmentId : false)
+        .map((a) => a.userId);
+      if (affectedUserIds.length > 0) {
+        try { emitBulkPermissionUpdate([...new Set(affectedUserIds)], { type: "role", action: "cloned", roleId: newRole.id }); } catch (_) {}
+      }
+    }
+
+    res.status(201).json({ success: true, role: newRole, copiedTemplates: sourceTemplates.length });
+  } catch (err) { next(err); }
+}
+
 module.exports = {
   getUsers,
   createUser,
@@ -1266,4 +1367,7 @@ module.exports = {
   getPendingDeletions,
   markForDeletion,
   cancelDeletion,
+  bulkDeleteUsers,
+  bulkSuspendUsers,
+  cloneRole,
 };
