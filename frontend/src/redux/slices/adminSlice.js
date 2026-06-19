@@ -352,11 +352,11 @@ const adminSlice = createSlice({
       })
       .addCase(fetchUserStats.fulfilled, (state, action) => { state.userStats = action.payload; })
       .addMatcher(
-        (action) => action.type.endsWith("/pending"),
+        (action) => action.type.startsWith("admin/") && action.type.endsWith("/pending"),
         (state) => { state.loading = true; }
       )
       .addMatcher(
-        (action) => action.type.endsWith("/fulfilled") || action.type.endsWith("/rejected"),
+        (action) => action.type.startsWith("admin/") && (action.type.endsWith("/fulfilled") || action.type.endsWith("/rejected")),
         (state) => { state.loading = false; }
       );
   },

@@ -218,7 +218,7 @@ async function getMessages(req, res, next) {
     }
 
     let messages = (db.workspaceMessages || [])
-      .filter((m) => m.workspaceId === id)
+      .filter((m) => m.workspaceId === id && !(m.deletedFor || []).includes(req.user.id))
       .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
     const total = messages.length;
@@ -316,6 +316,7 @@ async function editMessage(req, res, next) {
 async function deleteMessage(req, res, next) {
   try {
     const { id, msgId } = req.params;
+    const { deleteFrom } = req.body;
     const db = await readDB();
 
     const message = (db.workspaceMessages || []).find(
@@ -327,6 +328,15 @@ async function deleteMessage(req, res, next) {
 
     if (message.userId !== req.user.id && req.user.role !== "admin") {
       return res.status(403).json({ success: false, message: "Access denied." });
+    }
+
+    if (message.userId === req.user.id && deleteFrom === "me") {
+      if (!message.deletedFor) message.deletedFor = [];
+      if (!message.deletedFor.includes(req.user.id)) {
+        message.deletedFor.push(req.user.id);
+      }
+      await writeDB(db);
+      return res.json({ success: true, message: "Message deleted from your view." });
     }
 
     message.deletedAt = new Date().toISOString();

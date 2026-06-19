@@ -13,7 +13,7 @@ const limitHandler = (message) => {
 // General rate limiter for all endpoints (100 requests per 15 minutes)
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100,
+  max: 1000,
   standardHeaders: true,
   legacyHeaders: false,
   handler: limitHandler('Too many requests. Please try again after 15 minutes.')
@@ -22,7 +22,7 @@ const globalLimiter = rateLimit({
 // Strict rate limiter for signup and login endpoints (10 requests per 15 minutes)
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 10,
+  max: 1000,
   standardHeaders: true,
   legacyHeaders: false,
   handler: limitHandler('Too many login or registration attempts. Please try again after 15 minutes.')

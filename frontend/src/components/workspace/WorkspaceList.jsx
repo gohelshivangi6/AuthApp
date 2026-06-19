@@ -54,12 +54,13 @@ export default function WorkspaceList() {
   }, [id, dispatch]);
 
   return (
-    <Box sx={{ display: "flex", height: "calc(100vh - 80px)", maxWidth: 1200, mx: "auto", mt: 2, px: 2, gap: 2 }}>
+    <Box sx={{ display: "flex", height: "calc(100vh - 80px)", width: "100%", mt: 2, gap: 2 }}>
       {/* Left sidebar */}
       <Box
         sx={{
-          width: 320,
+          width: 240,
           flexShrink: 0,
+          minWidth: 240,
           display: "flex",
           flexDirection: "column",
           bgcolor: "rgba(18,18,38,0.6)",

@@ -1,10 +1,12 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   Typography,
   Tabs,
   Tab,
   Paper,
+  Button,
 } from "@mui/material";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import PeopleIcon from "@mui/icons-material/People";
@@ -35,13 +37,23 @@ const TABS = [
 ];
 
 export default function AdminDashboard() {
+  const navigate = useNavigate();
   const [tab, setTab] = useState(0);
 
   return (
     <Box sx={{ py: 6, px: { xs: 2, md: 4 }, maxWidth: 1200, margin: "0 auto" }}>
-      <Typography variant="h4" sx={{ fontFamily: "Outfit", fontWeight: 800, mb: 3 }}>
-        Admin Dashboard
-      </Typography>
+      <Box display="flex" alignItems="center" justifyContent="space-between" mb={3}>
+        <Typography variant="h4" sx={{ fontFamily: "Outfit", fontWeight: 800 }}>
+          Admin Dashboard
+        </Typography>
+        <Button
+          variant="outlined"
+          onClick={() => navigate("/workspaces")}
+          sx={{ textTransform: "none", fontFamily: "Outfit", fontWeight: 600 }}
+        >
+          Go to Workspaces
+        </Button>
+      </Box>
 
       <Paper
         sx={{

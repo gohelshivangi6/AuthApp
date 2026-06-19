@@ -105,3 +105,6 @@ const gracefulShutdown = () => {
 
 process.on('SIGTERM', gracefulShutdown);
 process.on('SIGINT', gracefulShutdown);
+
+
+// ip, browser, expect ratio(screen size)

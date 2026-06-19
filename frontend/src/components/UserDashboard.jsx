@@ -12,6 +12,7 @@ import {
 import AccountTreeIcon from "@mui/icons-material/AccountTree";
 import BusinessIcon from "@mui/icons-material/Business";
 import DashboardIcon from "@mui/icons-material/Dashboard";
+import ForumIcon from "@mui/icons-material/Forum";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchDashboardData } from "../redux/slices/dashboardSlice";
 import WidgetRenderer from "./WidgetRenderer";
@@ -86,16 +87,26 @@ export default function UserDashboard() {
         <Typography variant="h4" sx={{ fontFamily: "Outfit", fontWeight: 800 }}>
           My Dashboard
         </Typography>
-        {hasDashboards && (
+        <Box display="flex" gap={1}>
+          {hasDashboards && (
+            <Button
+              variant="outlined"
+              startIcon={<DashboardIcon />}
+              onClick={() => navigate("/dashboards")}
+              sx={{ textTransform: "none", fontFamily: "Outfit", fontWeight: 600 }}
+            >
+              View Dashboards
+            </Button>
+          )}
           <Button
             variant="outlined"
-            startIcon={<DashboardIcon />}
-            onClick={() => navigate("/dashboards")}
+            startIcon={<ForumIcon />}
+            onClick={() => navigate("/workspaces")}
             sx={{ textTransform: "none", fontFamily: "Outfit", fontWeight: 600 }}
           >
-            View Dashboards
+            Go to Workspaces
           </Button>
-        )}
+        </Box>
       </Box>
       <Typography variant="body2" color="textSecondary" mb={4}>
         Welcome, {user?.name || "User"}

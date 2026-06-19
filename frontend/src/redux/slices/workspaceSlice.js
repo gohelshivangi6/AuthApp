@@ -53,9 +53,12 @@ export const editMessage = createAsyncThunk("workspace/editMessage", async ({ wo
   return { workspaceId, message: res.data.message };
 });
 
-export const deleteMessage = createAsyncThunk("workspace/deleteMessage", async ({ workspaceId, msgId }) => {
-  await axios.delete(`${API}/${workspaceId}/messages/${msgId}`, { withCredentials: true });
-  return { workspaceId, msgId };
+export const deleteMessage = createAsyncThunk("workspace/deleteMessage", async ({ workspaceId, msgId, deleteFrom }) => {
+  await axios.delete(`${API}/${workspaceId}/messages/${msgId}`, {
+    data: { deleteFrom },
+    withCredentials: true,
+  });
+  return { workspaceId, msgId, deleteFrom };
 });
 
 const workspaceSlice = createSlice({
@@ -114,9 +117,8 @@ const workspaceSlice = createSlice({
       })
       .addCase(addMember.fulfilled, (state, action) => {
         const { workspaceId, member } = action.payload;
-        if (state.members[workspaceId]) {
-          state.members[workspaceId].push(member);
-        }
+        if (!state.members[workspaceId]) state.members[workspaceId] = [];
+        state.members[workspaceId].push(member);
       })
       .addCase(removeMember.fulfilled, (state, action) => {
         const { workspaceId, userId } = action.payload;
@@ -149,11 +151,11 @@ const workspaceSlice = createSlice({
         }
       })
       .addMatcher(
-        (action) => action.type.endsWith("/pending"),
+        (action) => action.type.startsWith("workspace/") && action.type.endsWith("/pending"),
         (state) => { state.loading = true; }
       )
       .addMatcher(
-        (action) => action.type.endsWith("/fulfilled") || action.type.endsWith("/rejected"),
+        (action) => action.type.startsWith("workspace/") && (action.type.endsWith("/fulfilled") || action.type.endsWith("/rejected")),
         (state) => { state.loading = false; }
       );
   },

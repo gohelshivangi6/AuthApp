@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   Box, Typography, Button, IconButton, TextField, CircularProgress, Paper,
+  Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions,
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import EditIcon from "@mui/icons-material/Edit";
@@ -41,6 +42,7 @@ export default function WorkspaceView({ workspaceId }) {
   const [memberOpen, setMemberOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [editInput, setEditInput] = useState("");
+  const [deleteDialog, setDeleteDialog] = useState({ open: false, msgId: null });
   const messagesEndRef = useRef(null);
 
   const messageCount = workspaceMessages.length;
@@ -68,10 +70,22 @@ export default function WorkspaceView({ workspaceId }) {
     setEditInput("");
   };
 
-  const handleDelete = async (msgId) => {
-    if (window.confirm("Delete this message?")) {
-      await dispatch(deleteMessage({ workspaceId, msgId }));
-    }
+  const handleDeleteOwn = (msgId) => {
+    setDeleteDialog({ open: true, msgId });
+  };
+
+  const handleDeleteOther = async (msgId) => {
+    await dispatch(deleteMessage({ workspaceId, msgId, deleteFrom: "all" }));
+  };
+
+  const confirmDeleteFromMe = async () => {
+    await dispatch(deleteMessage({ workspaceId, msgId: deleteDialog.msgId, deleteFrom: "me" }));
+    setDeleteDialog({ open: false, msgId: null });
+  };
+
+  const confirmDeleteFromAll = async () => {
+    await dispatch(deleteMessage({ workspaceId, msgId: deleteDialog.msgId, deleteFrom: "all" }));
+    setDeleteDialog({ open: false, msgId: null });
   };
 
   const startEdit = (msg) => {
@@ -88,16 +102,23 @@ export default function WorkspaceView({ workspaceId }) {
     grouped[dateKey].push(msg);
   }
 
-  if (loading && workspaceMessages.length === 0) {
-    return (
-      <Box textAlign="center" py={10}>
-        <CircularProgress />
-      </Box>
-    );
-  }
-
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
+    <Box sx={{ display: "flex", flexDirection: "column", height: "100%", position: "relative" }}>
+      {loading && workspaceMessages.length === 0 && (
+        <Box
+          sx={{
+            position: "absolute",
+            inset: 0,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            bgcolor: "rgba(0,0,0,0.3)",
+            zIndex: 10,
+          }}
+        >
+          <CircularProgress />
+        </Box>
+      )}
       {/* Header */}
       <Paper
         sx={{
@@ -215,13 +236,13 @@ export default function WorkspaceView({ workspaceId }) {
                           <IconButton size="small" sx={{ opacity: 0.4 }} onClick={() => startEdit(msg)}>
                             <EditIcon sx={{ fontSize: 12 }} />
                           </IconButton>
-                          <IconButton size="small" sx={{ opacity: 0.4 }} onClick={() => handleDelete(msg.id)}>
+                          <IconButton size="small" sx={{ opacity: 0.4 }} onClick={() => handleDeleteOwn(msg.id)}>
                             <DeleteIcon sx={{ fontSize: 12 }} />
                           </IconButton>
                         </>
                       )}
                       {!isOwn && isAdmin && (
-                        <IconButton size="small" sx={{ opacity: 0.4 }} onClick={() => handleDelete(msg.id)}>
+                        <IconButton size="small" sx={{ opacity: 0.4 }} onClick={() => handleDeleteOther(msg.id)}>
                           <DeleteIcon sx={{ fontSize: 12 }} />
                         </IconButton>
                       )}
@@ -271,6 +292,33 @@ export default function WorkspaceView({ workspaceId }) {
       </Paper>
 
       <MemberManager workspaceId={workspaceId} open={memberOpen} onClose={() => setMemberOpen(false)} />
+
+      <Dialog open={deleteDialog.open} onClose={() => setDeleteDialog({ open: false, msgId: null })}>
+        <DialogTitle sx={{ fontFamily: "Outfit", fontWeight: 700 }}>Delete Message</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            How would you like to delete this message?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button
+            variant="outlined"
+            color="inherit"
+            onClick={confirmDeleteFromMe}
+            sx={{ textTransform: "none", fontFamily: "Outfit" }}
+          >
+            Delete from me
+          </Button>
+          <Button
+            variant="contained"
+            color="error"
+            onClick={confirmDeleteFromAll}
+            sx={{ textTransform: "none", fontFamily: "Outfit" }}
+          >
+            Delete from all
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }

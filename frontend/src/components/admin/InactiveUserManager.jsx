@@ -100,9 +100,9 @@ export default function InactiveUserManager() {
         <Typography variant="h6" sx={{ fontFamily: "Outfit", fontWeight: 700 }}>
           Inactive User Management
         </Typography>
-        <Button variant="outlined" onClick={() => refreshRef.current?.()} size="small">
+        {/* <Button variant="outlined" onClick={() => refreshRef.current?.()} size="small">
           Refresh
-        </Button>
+        </Button> */}
       </Box>
 
       {/* Section 1: Inactive Users */}

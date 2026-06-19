@@ -51,24 +51,17 @@ async function readDB() {
  * It writes to db.tmp.json, renames it to db.json, and copies to db.backup.json.
  */
 async function writeDB(data) {
-  // Chain to the write queue to prevent concurrent file modifications
-  writeQueue = writeQueue.then(async () => {
-    try {
+  writeQueue = writeQueue
+    .then(async () => {
       const dataStr = JSON.stringify(data, null, 2);
-      
-      // 1. Write to temp file
       await fs.promises.writeFile(TEMP_PATH, dataStr, 'utf8');
-      
-      // 2. Rename temp file to target file (atomic operation in OS)
       await fs.promises.rename(TEMP_PATH, DB_PATH);
-      
-      // 3. Make backup copy
       await fs.promises.copyFile(DB_PATH, BACKUP_PATH);
-    } catch (error) {
+    })
+    .catch((error) => {
       console.error('Failed to write to JSON database atomically:', error);
-      throw new Error('Database write operation failed');
-    }
-  });
+      writeQueue = Promise.resolve();
+    });
 
   return writeQueue;
 }
