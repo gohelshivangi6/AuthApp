@@ -28,7 +28,7 @@ import InactiveUserManager from "./admin/InactiveUserManager";
 const TABS = [
   { label: "Overview", icon: <DashboardIcon />, component: <AnalyticsPanel /> },
   { label: "Users", icon: <PeopleIcon />, component: <UserManager /> },
-  { label: "Inactive Users", icon: <PersonOffIcon />, component: <InactiveUserManager /> },
+  { label: "Active Users", icon: <PersonOffIcon />, component: <InactiveUserManager /> },
   { label: "Departments", icon: <BusinessIcon />, component: <DepartmentManager /> },
   { label: "Roles", icon: <BadgeIcon />, component: <RoleManager /> },
   { label: "Permissions", icon: <SecurityIcon />, component: <PermissionManager /> },

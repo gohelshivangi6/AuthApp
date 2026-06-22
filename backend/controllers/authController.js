@@ -303,6 +303,7 @@ const login = async (req, res, next) => {
     // Credentials match, reset failed counters
     user.failedAttempts = 0;
     user.lockUntil = null;
+    user.adminForceLoggedOutAt = null;
     await writeDB(db);
 
     // Check status:
@@ -447,6 +448,7 @@ const verify2FALogin = async (req, res, next) => {
     // Reset lock/failed attempts, log in
     user.failedAttempts = 0;
     user.lockUntil = null;
+    user.adminForceLoggedOutAt = null;
     user.lastActiveAt = new Date().toISOString();
     user.pendingDeleteAt = null;
     user.deleteToken = null;
@@ -672,6 +674,25 @@ const requireAuth = async (req, res, next) => {
         .json({ success: false, message: "Authentication required." });
     }
 
+    if (user.adminForceLoggedOutAt) {
+      user.adminForceLoggedOutAt = null;
+      await writeDB(db);
+      return res.status(401).json({ success: false, message: "Logged out by administrator.", code: "FORCE_LOGOUT" });
+    }
+
+    if (user.pendingInactivityLogout && new Date(user.pendingInactivityLogout).getTime() <= Date.now()) {
+      user.pendingInactivityLogout = null;
+      user.inactivityToken = null;
+      await writeDB(db);
+      return res.status(401).json({ success: false, message: "Session expired due to inactivity.", code: "INACTIVITY_LOGOUT" });
+    }
+
+    const lastActive = user.lastActivityAt ? new Date(user.lastActivityAt).getTime() : 0;
+    if (Date.now() - lastActive > 60000) {
+      user.lastActivityAt = new Date().toISOString();
+      await writeDB(db);
+    }
+
     if (user.pendingDeleteAt) {
       user.pendingDeleteAt = null;
       user.deleteToken = null;
@@ -873,6 +894,107 @@ const changePassword = async (req, res, next) => {
   }
 };
 
+/**
+ * Updates lastActivityAt to extend the user's session (called by frontend InactivityModal).
+ */
+const ping = async (req, res, next) => {
+  try {
+    const db = await readDB();
+    const userIndex = db.users.findIndex((u) => u.id === req.user.id);
+    if (userIndex === -1) {
+      return res.status(404).json({ success: false, message: "User not found." });
+    }
+    db.users[userIndex].lastActivityAt = new Date().toISOString();
+    db.users[userIndex].pendingInactivityLogout = null;
+    db.users[userIndex].inactivityToken = null;
+    await writeDB(db);
+    res.json({ success: true });
+  } catch (err) {
+    next(err);
+  }
+};
+
+/**
+ * Called from the stay-active email link to keep the session alive.
+ */
+const stayActive = async (req, res, next) => {
+  try {
+    const { token, userId } = req.body;
+    if (!token || !userId) {
+      return res.status(400).json({ success: false, message: "Token and userId are required." });
+    }
+
+    const db = await readDB();
+    const user = db.users.find((u) => u.id === userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found." });
+    }
+
+    if (user.inactivityToken !== token) {
+      return res.status(400).json({ success: false, message: "Invalid or expired token." });
+    }
+
+    const now = Date.now();
+    const expiresAt = new Date(user.pendingInactivityLogout).getTime();
+
+    if (!user.pendingInactivityLogout || expiresAt <= now) {
+      user.pendingInactivityLogout = null;
+      user.inactivityToken = null;
+      user.lastActivityAt = new Date().toISOString();
+      await writeDB(db);
+      return res.json({ success: true, message: "Session was already expired, but has been refreshed." });
+    }
+
+    user.pendingInactivityLogout = null;
+    user.inactivityToken = null;
+    user.lastActivityAt = new Date().toISOString();
+    await writeDB(db);
+
+    res.json({ success: true, message: "Session extended successfully." });
+  } catch (err) {
+    next(err);
+  }
+};
+
+/**
+ * Checks the status of an inactivity warning (called by the StayActive page on load).
+ */
+const getInactivityStatus = async (req, res, next) => {
+  try {
+    const { token, userId } = req.query;
+    if (!token || !userId) {
+      return res.status(400).json({ success: false, message: "Token and userId are required." });
+    }
+
+    const db = await readDB();
+    const user = db.users.find((u) => u.id === userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found." });
+    }
+
+    if (user.inactivityToken !== token) {
+      return res.json({ success: true, status: "invalid" });
+    }
+
+    if (!user.pendingInactivityLogout) {
+      return res.json({ success: true, status: "active" });
+    }
+
+    const now = Date.now();
+    const expiresAt = new Date(user.pendingInactivityLogout).getTime();
+    const remainingMs = Math.max(0, expiresAt - now);
+
+    res.json({
+      success: true,
+      status: remainingMs > 0 ? "valid" : "expired",
+      remainingMs,
+      name: user.name,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   signup,
   verify2FASetup,
@@ -888,4 +1010,7 @@ module.exports = {
   changePassword,
   reactivateAccount,
   getReactivateStatus,
+  ping,
+  stayActive,
+  getInactivityStatus,
 };

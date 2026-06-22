@@ -49,21 +49,33 @@ async function readDB() {
 /**
  * Writes data to db.json atomically.
  * It writes to db.tmp.json, renames it to db.json, and copies to db.backup.json.
+ * Retries on EPERM (Windows file lock contention).
  */
 async function writeDB(data) {
   writeQueue = writeQueue
     .then(async () => {
       const dataStr = JSON.stringify(data, null, 2);
       await fs.promises.writeFile(TEMP_PATH, dataStr, 'utf8');
-      await fs.promises.rename(TEMP_PATH, DB_PATH);
+      await renameWithRetry(TEMP_PATH, DB_PATH);
       await fs.promises.copyFile(DB_PATH, BACKUP_PATH);
     })
     .catch((error) => {
       console.error('Failed to write to JSON database atomically:', error);
-      writeQueue = Promise.resolve();
     });
 
   return writeQueue;
+}
+
+async function renameWithRetry(src, dest, maxRetries = 3) {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      await fs.promises.rename(src, dest);
+      return;
+    } catch (err) {
+      if (attempt === maxRetries || err.code !== 'EPERM') throw err;
+      await new Promise((r) => setTimeout(r, 100 * attempt));
+    }
+  }
 }
 
 module.exports = {

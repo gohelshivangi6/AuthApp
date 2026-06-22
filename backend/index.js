@@ -13,6 +13,7 @@ const { globalLimiter } = require('./middleware/rateLimit');
 const { sessionToken } = require('./middleware/sessionToken');
 const errorHandler = require('./middleware/errorHandler');
 const { initCleanupTask } = require('./utils/cleanup');
+const { initInactivityMonitor } = require('./utils/inactivityMonitor');
 const { seed } = require('./utils/seed');
 const { verifyTransporter } = require('./utils/realMailer');
 const { initWebSocket } = require('./utils/websocket');
@@ -63,6 +64,9 @@ app.use(errorHandler);
 
 // Start Periodic cleanup task for unverified 2FA accounts
 initCleanupTask();
+
+// Start inactivity monitor for session tracking
+initInactivityMonitor();
 
 // Verify SMTP connection (non-blocking)
 verifyTransporter();

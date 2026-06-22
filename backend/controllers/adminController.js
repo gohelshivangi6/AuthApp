@@ -2,7 +2,7 @@ const crypto = require("crypto");
 const { v4: uuidv4 } = require("uuid");
 const { readDB, writeDB } = require("../utils/dbHelper");
 const { hashPassword } = require("../utils/cryptoHelper");
-const { emitPermissionUpdate, emitBulkPermissionUpdate, emitLayoutUpdate, emitDeletionUpdate } = require("../utils/websocket");
+const { emitPermissionUpdate, emitBulkPermissionUpdate, emitLayoutUpdate, emitDeletionUpdate, forceDisconnectUser, getActiveUserIds } = require("../utils/websocket");
 const { sendEmail } = require("../utils/mailer");
 
 // ─── Users ─────────────────────────────────────────────────
@@ -1117,67 +1117,39 @@ async function bulkCreateUsers(req, res, next) {
   } catch (err) { next(err); }
 }
 
-// ─── Inactive User Management ─────────────────────────────
+// ─── Active User Management ─────────────────────────────
 
-const INACTIVE_DAYS = 1;
-const DELETE_GRACE_PERIOD_MS = 0.50 * 60 * 1000; // 2 minutes
-
-async function getInactiveUsers(req, res, next) {
+async function getActiveUsers(req, res, next) {
   try {
-    const db = await readDB();
-    const now = Date.now();
-    const cutoff = new Date(now - INACTIVE_DAYS * 24 * 60 * 60 * 1000).toISOString();
-
-    const inactive = db.users
-      .filter((u) => u.role !== "admin" && u.status === "VERIFIED" && !u.pendingDeleteAt)
-      .filter((u) => {
-        if (u.lastActiveAt) {
-          return u.lastActiveAt < cutoff;
-        }
-        return u.createdAt < cutoff;
-      })
-      .map((u) => ({
-        id: u.id,
-        name: u.name,
-        email: u.email,
-        role: u.role || "user",
-        status: u.status,
-        createdAt: u.createdAt,
-        lastActiveAt: u.lastActiveAt,
-        daysSinceLastActive: u.lastActiveAt
-          ? Math.floor((now - new Date(u.lastActiveAt).getTime()) / (24 * 60 * 60 * 1000))
-          : Math.floor((now - new Date(u.createdAt).getTime()) / (24 * 60 * 60 * 1000)),
-      }));
-
-    res.json({ success: true, users: inactive });
-  } catch (err) { next(err); }
-}
-
-async function getPendingDeletions(req, res, next) {
-  try {
+    const activeIds = new Set(getActiveUserIds());
     const db = await readDB();
     const now = Date.now();
 
-    const pending = db.users
-      .filter((u) => u.pendingDeleteAt)
+    const active = db.users
+      .filter((u) => u.role !== "admin" && u.status === "VERIFIED" && activeIds.has(u.id))
       .map((u) => {
-        const remaining = Math.max(0, new Date(u.pendingDeleteAt).getTime() - now);
+        const lastActive = u.lastActivityAt ? new Date(u.lastActivityAt).getTime() : null;
+        const sessionDuration = lastActive ? Math.floor((now - lastActive) / 1000) : 0;
+        const hasInactivityWarning = !!u.pendingInactivityLogout;
+        const warningExpiresAt = u.pendingInactivityLogout ? new Date(u.pendingInactivityLogout).getTime() : null;
         return {
           id: u.id,
           name: u.name,
           email: u.email,
           role: u.role || "user",
-          pendingDeleteAt: u.pendingDeleteAt,
-          remainingMs: remaining,
-          expired: remaining <= 0,
+          lastActivityAt: u.lastActivityAt,
+          sessionDurationSec: sessionDuration,
+          hasInactivityWarning,
+          warningExpiresAt,
+          warningExpired: warningExpiresAt ? warningExpiresAt <= now : false,
         };
       });
 
-    res.json({ success: true, users: pending });
+    res.json({ success: true, users: active });
   } catch (err) { next(err); }
 }
 
-async function markForDeletion(req, res, next) {
+async function forceLogoutUser(req, res, next) {
   try {
     const { id } = req.params;
     const db = await readDB();
@@ -1187,43 +1159,21 @@ async function markForDeletion(req, res, next) {
       return res.status(404).json({ success: false, message: "User not found." });
     }
 
-    const deleteToken = uuidv4();
-    user.pendingDeleteAt = new Date(Date.now() + DELETE_GRACE_PERIOD_MS).toISOString();
-    user.deleteToken = deleteToken;
+    user.adminForceLoggedOutAt = new Date().toISOString();
     await writeDB(db);
 
-    const reactivateLink = `http://localhost:5173/reactivate?token=${deleteToken}&userId=${id}`;
-
-    try { emitDeletionUpdate({ type: "flagged", userId: id }); } catch (_) {}
+    try {
+      forceDisconnectUser(id);
+    } catch (_) {}
 
     await sendEmail({
       to: user.email,
-      subject: "Action Required: Your account has been flagged for deletion",
-      text: `Hello ${user.name},\n\nAn administrator has flagged your account for deletion. If you do not reactivate within 2 minutes, your account will be permanently deleted.\n\nReactivate your account here:\n${reactivateLink}\n\nAlternatively, simply log in to your account to cancel the deletion.`,
-      html: `<p>Hello ${user.name},</p><p>An administrator has flagged your account for deletion. If you do not reactivate within <strong>2 minutes</strong>, your account will be permanently deleted.</p><p><a href="${reactivateLink}" style="display:inline-block;padding:12px 24px;background:#6366f1;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;">Reactivate My Account</a></p><p>Alternatively, simply <a href="http://localhost:5173/login">log in</a> to your account to cancel the deletion.</p>`,
+      subject: "You have been logged out by an administrator",
+      text: `Hello ${user.name},\n\nAn administrator has logged you out of your account. If you believe this was a mistake, please contact your administrator or log back in at http://localhost:5173/login.`,
+      html: `<p>Hello ${user.name},</p><p>An administrator has logged you out of your account.</p><p>If you believe this was a mistake, please contact your administrator or <a href="http://localhost:5173/login">log back in</a>.</p>`,
     });
 
-    res.json({ success: true, message: "User flagged for deletion. Notification sent." });
-  } catch (err) { next(err); }
-}
-
-async function cancelDeletion(req, res, next) {
-  try {
-    const { id } = req.params;
-    const db = await readDB();
-
-    const user = db.users.find((u) => u.id === id);
-    if (!user) {
-      return res.status(404).json({ success: false, message: "User not found." });
-    }
-
-    user.pendingDeleteAt = null;
-    user.deleteToken = null;
-    await writeDB(db);
-
-    try { emitDeletionUpdate({ type: "cancelled", userId: id }); } catch (_) {}
-
-    res.json({ success: true, message: "Deletion cancelled." });
+    res.json({ success: true, message: "User logged out. Notification sent." });
   } catch (err) { next(err); }
 }
 
@@ -1363,10 +1313,8 @@ module.exports = {
   getStats,
   getActivityLogs,
   getUserStats,
-  getInactiveUsers,
-  getPendingDeletions,
-  markForDeletion,
-  cancelDeletion,
+  getActiveUsers,
+  forceLogoutUser,
   bulkDeleteUsers,
   bulkSuspendUsers,
   cloneRole,

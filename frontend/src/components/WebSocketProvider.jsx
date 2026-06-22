@@ -6,10 +6,11 @@ import {
   disconnectSockets,
   getUserSocket,
 } from "../utils/websocket";
-import { updateUser } from "../redux/slices/authSlice";
+import { updateUser, logout } from "../redux/slices/authSlice";
 import { fetchDashboardData, fetchSectionPermissions, setLayoutForSlug } from "../redux/slices/dashboardSlice";
 import { fetchStats } from "../redux/slices/adminSlice";
 import { receiveMessage, receiveEditedMessage, receiveDeletedMessage } from "../redux/slices/workspaceSlice";
+import { clearSessionToken } from "../utils/sessionToken";
 import axios from "axios";
 
 const WebSocketContext = createContext(null);
@@ -101,13 +102,57 @@ export function WebSocketProvider({ children }) {
 
     socket.on("workspace-message", handleWorkspaceMessage);
 
+    const handleForceLogout = () => {
+      dispatch(logout());
+      disconnectSockets();
+      clearSessionToken();
+    };
+
+    socket.on("force-logout", handleForceLogout);
+
     return () => {
       socket.off("permissions-updated", handlePermUpdate);
       socket.off("stats-updated", handleStatsUpdate);
       socket.off("layout-updated", handleLayoutUpdate);
       socket.off("workspace-message", handleWorkspaceMessage);
+      socket.off("force-logout", handleForceLogout);
     };
   }, [dispatch, isAuthenticated, user?.role]);
+
+  const activityRef = useRef({ lastEmit: 0, hasActivity: false });
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    const handleActivity = () => {
+      activityRef.current.hasActivity = true;
+    };
+
+    window.addEventListener("mousemove", handleActivity);
+    window.addEventListener("keydown", handleActivity);
+    window.addEventListener("click", handleActivity);
+
+    const interval = setInterval(() => {
+      if (activityRef.current.hasActivity) {
+        const now = Date.now();
+        if (now - activityRef.current.lastEmit >= 10000) {
+          activityRef.current.lastEmit = now;
+          activityRef.current.hasActivity = false;
+          const sock = getUserSocket();
+          if (sock?.connected) {
+            sock.emit("event", { eventType: "activity" });
+          }
+        }
+      }
+    }, 5000);
+
+    return () => {
+      window.removeEventListener("mousemove", handleActivity);
+      window.removeEventListener("keydown", handleActivity);
+      window.removeEventListener("click", handleActivity);
+      clearInterval(interval);
+    };
+  }, [isAuthenticated]);
 
   return (
     <WebSocketContext.Provider value={{}}>

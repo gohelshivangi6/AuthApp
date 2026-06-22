@@ -9,6 +9,7 @@ import Verify2FA from "./pages/Verify2FA";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import Reactivate from "./pages/Reactivate";
+import StayActive from "./pages/StayActive";
 import Profile from "./pages/Profile";
 import Dashboard from "./pages/Dashboard";
 import DashboardNav from "./pages/DashboardNav";
@@ -24,6 +25,7 @@ import PublicRoute from "./routes/PublicRoute";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import WorkspaceList from "./components/workspace/WorkspaceList";
 import { WebSocketProvider } from "./components/WebSocketProvider";
+import InactivityModal from "./components/InactivityModal";
 
 // Create a custom modern dark theme using Outfit and Inter typography
 const theme = createTheme({
@@ -96,6 +98,7 @@ function App() {
           }}
         >
           <WebSocketProvider>
+            <InactivityModal />
             <Routes>
               <Route path="/" element={<Navigate to="/dashboards" replace />} />
               {/* <Route element={<PublicRoute />}> */}
@@ -104,6 +107,7 @@ function App() {
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/reactivate" element={<Reactivate />} />
+                <Route path="/stay-active" element={<StayActive />} />
                 <Route path="/verify-2fa" element={<Verify2FA />} />
                 <Route path="/setup-2fa" element={<Setup2FA />} />
               {/* </Route> */}

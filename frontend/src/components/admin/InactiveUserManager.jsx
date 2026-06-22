@@ -3,7 +3,6 @@ import { useSelector, useDispatch } from "react-redux";
 import {
   Box,
   Typography,
-  Button,
   Table,
   TableHead,
   TableBody,
@@ -13,56 +12,51 @@ import {
   Chip,
   Alert,
   Snackbar,
+  Tooltip,
 } from "@mui/material";
-import UndoIcon from "@mui/icons-material/Undo";
-import BlockIcon from "@mui/icons-material/Block";
-import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
+import LogoutIcon from "@mui/icons-material/Logout";
+import CircleIcon from "@mui/icons-material/Circle";
 import { getAdminSocket } from "../../utils/websocket";
-import {
-  fetchInactiveUsers,
-  fetchPendingDeletions,
-  markForDeletion,
-  cancelDeletion,
-} from "../../redux/slices/adminSlice";
+import { fetchActiveUsers, forceLogoutUser } from "../../redux/slices/adminSlice";
 
-function formatRemaining(ms) {
-  if (ms <= 0) return "Expired";
-  const totalSec = Math.ceil(ms / 1000);
-  const min = Math.floor(totalSec / 60);
-  const sec = totalSec % 60;
-  return `${min}:${sec.toString().padStart(2, "0")}`;
+function formatDuration(sec) {
+  if (!sec && sec !== 0) return "—";
+  const mins = Math.floor(sec / 60);
+  const hrs = Math.floor(mins / 60);
+  if (hrs > 0) return `${hrs}h ${mins % 60}m`;
+  if (mins > 0) return `${mins}m ${sec % 60}s`;
+  return `${sec}s`;
+}
+
+function formatTime(iso) {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  return d.toLocaleTimeString();
 }
 
 export default function InactiveUserManager() {
   const dispatch = useDispatch();
-  const { inactiveUsers, pendingDeletions } = useSelector((state) => state.admin);
+  const { activeUsers } = useSelector((state) => state.admin);
   const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
-  const [now, setNow] = useState(() => Date.now());
+  const [confirmUserId, setConfirmUserId] = useState(null);
 
   useEffect(() => {
-    dispatch(fetchInactiveUsers());
-    dispatch(fetchPendingDeletions());
+    dispatch(fetchActiveUsers());
   }, [dispatch]);
 
   const refreshRef = useRef();
 
   useEffect(() => {
     refreshRef.current = () => {
-      dispatch(fetchInactiveUsers());
-      dispatch(fetchPendingDeletions());
+      dispatch(fetchActiveUsers());
     };
   });
-
-  useEffect(() => {
-    const timer = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(timer);
-  }, []);
 
   useEffect(() => {
     const socket = getAdminSocket();
     if (!socket) return;
 
-    const handler = () => { refreshRef.current?.(); };
+    const handler = () => refreshRef.current?.();
     socket.on("deletion-update", handler);
     return () => { socket.off("deletion-update", handler); };
   }, []);
@@ -72,24 +66,14 @@ export default function InactiveUserManager() {
     return () => clearInterval(timer);
   }, []);
 
-  const handleMarkForDeletion = async (id) => {
+  const handleForceLogout = async (id) => {
     try {
-      await dispatch(markForDeletion(id)).unwrap();
-      setSnackbar({ open: true, message: "User flagged for deletion. Notification sent.", severity: "success" });
+      await dispatch(forceLogoutUser(id)).unwrap();
+      setSnackbar({ open: true, message: "User logged out. Notification sent.", severity: "success" });
+      setConfirmUserId(null);
       refreshRef.current?.();
     } catch (err) {
-      const msg = err?.response?.data?.message || "Failed to flag user";
-      setSnackbar({ open: true, message: msg, severity: "error" });
-    }
-  };
-
-  const handleCancelDeletion = async (id) => {
-    try {
-      await dispatch(cancelDeletion(id)).unwrap();
-      setSnackbar({ open: true, message: "Deletion cancelled.", severity: "success" });
-      refreshRef.current?.();
-    } catch (err) {
-      const msg = err?.response?.data?.message || "Failed to cancel deletion";
+      const msg = err?.response?.data?.message || "Failed to logout user";
       setSnackbar({ open: true, message: msg, severity: "error" });
     }
   };
@@ -98,113 +82,93 @@ export default function InactiveUserManager() {
     <Box>
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
         <Typography variant="h6" sx={{ fontFamily: "Outfit", fontWeight: 700 }}>
-          Inactive User Management
+          Currently Active Users
         </Typography>
-        {/* <Button variant="outlined" onClick={() => refreshRef.current?.()} size="small">
-          Refresh
-        </Button> */}
       </Box>
 
-      {/* Section 1: Inactive Users */}
       <Typography variant="subtitle1" sx={{ fontFamily: "Outfit", fontWeight: 600, mb: 1, color: "text.secondary" }}>
-        Inactive Users (30+ days) — {inactiveUsers.length}
+        Logged In — {activeUsers.length}
       </Typography>
 
       <Table sx={{ mb: 4, "& .MuiTableCell-root": { borderColor: "rgba(255,255,255,0.05)" } }}>
         <TableHead>
           <TableRow>
+            <TableCell>Status</TableCell>
             <TableCell>Name</TableCell>
             <TableCell>Email</TableCell>
-            <TableCell>Days Inactive</TableCell>
+            <TableCell>Last Activity</TableCell>
+            <TableCell>Session Duration</TableCell>
             <TableCell align="right">Actions</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {inactiveUsers.map((u) => (
+          {activeUsers.map((u) => (
             <TableRow key={u.id}>
+              <TableCell>
+                <Tooltip title={u.hasInactivityWarning ? "Inactivity warning sent" : "Active"}>
+                  <CircleIcon
+                    sx={{
+                      fontSize: 12,
+                      color: u.hasInactivityWarning ? "#f59e0b" : "#10b981",
+                      verticalAlign: "middle",
+                    }}
+                  />
+                </Tooltip>
+              </TableCell>
               <TableCell>{u.name}</TableCell>
               <TableCell>{u.email}</TableCell>
               <TableCell>
                 <Chip
-                  label={`${u.daysSinceLastActive} days`}
+                  label={formatTime(u.lastActivityAt)}
                   size="small"
-                  color="warning"
                   variant="outlined"
+                  sx={{ borderColor: "rgba(255,255,255,0.1)" }}
                 />
               </TableCell>
+              <TableCell>
+                <Typography variant="body2" color="text.secondary">
+                  {formatDuration(u.sessionDurationSec)}
+                </Typography>
+              </TableCell>
               <TableCell align="right">
-                <IconButton
-                  size="small"
-                  color="error"
-                  onClick={() => handleMarkForDeletion(u.id)}
-                  title="Flag for deletion"
-                >
-                  <BlockIcon fontSize="small" />
-                </IconButton>
+                {confirmUserId === u.id ? (
+                  <Box sx={{ display: "flex", gap: 1, justifyContent: "flex-end" }}>
+                    <IconButton
+                      size="small"
+                      color="error"
+                      onClick={() => handleForceLogout(u.id)}
+                      title="Confirm logout"
+                    >
+                      <LogoutIcon fontSize="small" />
+                    </IconButton>
+                    <IconButton
+                      size="small"
+                      color="default"
+                      onClick={() => setConfirmUserId(null)}
+                      title="Cancel"
+                      sx={{ fontSize: 12 }}
+                    >
+                      <Typography variant="caption" sx={{ fontWeight: 600 }}>X</Typography>
+                    </IconButton>
+                  </Box>
+                ) : (
+                  <IconButton
+                    size="small"
+                    color="error"
+                    onClick={() => setConfirmUserId(u.id)}
+                    title="Force logout user"
+                  >
+                    <LogoutIcon fontSize="small" />
+                  </IconButton>
+                )}
               </TableCell>
             </TableRow>
           ))}
-          {inactiveUsers.length === 0 && (
+          {activeUsers.length === 0 && (
             <TableRow>
-              <TableCell colSpan={4} align="center">
+              <TableCell colSpan={6} align="center">
                 <Typography variant="body2" color="text.secondary" sx={{ py: 2 }}>
-                  No inactive users found.
-                </Typography>
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
-
-      {/* Section 2: Pending Deletions */}
-      <Typography variant="subtitle1" sx={{ fontFamily: "Outfit", fontWeight: 600, mb: 1, color: "text.secondary" }}>
-        Pending Deletions — {pendingDeletions.length}
-      </Typography>
-
-      <Table sx={{ "& .MuiTableCell-root": { borderColor: "rgba(255,255,255,0.05)" } }}>
-        <TableHead>
-          <TableRow>
-            <TableCell>Name</TableCell>
-            <TableCell>Email</TableCell>
-            <TableCell>Time Remaining</TableCell>
-            <TableCell align="right">Actions</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {pendingDeletions.map((u) => {
-            const expired = now >= new Date(u.pendingDeleteAt).getTime();
-            const remaining = Math.max(0, new Date(u.pendingDeleteAt).getTime() - now);
-            return (
-              <TableRow key={u.id} sx={{ opacity: expired ? 0.5 : 1 }}>
-                <TableCell>{u.name}</TableCell>
-                <TableCell>{u.email}</TableCell>
-                <TableCell>
-                  <Chip
-                    icon={<HourglassEmptyIcon />}
-                    label={expired ? "Expired — pending removal" : formatRemaining(remaining)}
-                    size="small"
-                    color={expired ? "error" : "warning"}
-                    variant="outlined"
-                  />
-                </TableCell>
-                <TableCell align="right">
-                  <IconButton
-                    size="small"
-                    color="default"
-                    onClick={() => handleCancelDeletion(u.id)}
-                    title="Cancel deletion"
-                  >
-                    <UndoIcon fontSize="small" />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            );
-          })}
-          {pendingDeletions.length === 0 && (
-            <TableRow>
-              <TableCell colSpan={4} align="center">
-                <Typography variant="body2" color="text.secondary" sx={{ py: 2 }}>
-                  No pending deletions.
+                  No active users found.
                 </Typography>
               </TableCell>
             </TableRow>

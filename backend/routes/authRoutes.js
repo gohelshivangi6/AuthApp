@@ -16,6 +16,9 @@ const {
   changePassword,
   reactivateAccount,
   getReactivateStatus,
+  ping,
+  stayActive,
+  getInactivityStatus,
 } = require('../controllers/authController');
 
 const {
@@ -65,6 +68,11 @@ router.get('/dashboard-data', requireAuth, sessionToken, (req, res) => {
 // --- Reactivate Account (from deletion email link) ---
 router.get('/reactivate-status', getReactivateStatus);
 router.post('/reactivate', reactivateAccount);
+
+// --- Inactivity Ping & Stay Active ---
+router.post('/ping', requireAuth, ping);
+router.post('/stay-active', stayActive);
+router.get('/inactivity-status', getInactivityStatus);
 
 // --- Profile & Account Management ---
 router.put('/profile', requireAuth, validateUpdateProfile, handleValidationErrors, updateProfile);
