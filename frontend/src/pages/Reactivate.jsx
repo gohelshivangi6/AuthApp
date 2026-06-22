@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Box, Typography, CircularProgress, Alert, Button, Paper } from "@mui/material";
-import axios from "axios";
+import { getReactivateStatus, reactivateAccount } from "../services/authService";
 
 function formatRemaining(ms) {
   if (ms <= 0) return "Expired";
@@ -29,10 +29,7 @@ export default function Reactivate() {
 
     let cancelled = false;
 
-    axios
-      .get("http://localhost:5000/api/auth/reactivate-status", {
-        params: { token, userId },
-      })
+    getReactivateStatus(token, userId)
       .then((res) => {
         if (!cancelled) {
           setUserName(res.data.name);
@@ -68,7 +65,7 @@ export default function Reactivate() {
   const handleReactivate = async () => {
     setReactivating(true);
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/reactivate", { token, userId });
+      const res = await reactivateAccount(token, userId);
       setPageState("success");
       setMessage(res.data.message || "Account reactivated successfully!");
       setTimeout(() => navigate("/login", { replace: true }), 3000);

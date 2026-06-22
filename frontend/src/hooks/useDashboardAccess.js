@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getUserSocket } from "../utils/websocket";
-import axios from "axios";
+import { getAllowedDashboards } from "../services/dashboardService";
 
 export default function useDashboardAccess(slug) {
   const navigate = useNavigate();
@@ -32,8 +32,7 @@ export default function useDashboardAccess(slug) {
       }
 
       if (data.type === "permission" && data.action === "bulk-save") {
-        axios
-          .get("http://localhost:5000/api/dashboard/allowed", { withCredentials: true })
+        getAllowedDashboards()
           .then((res) => {
             const allowed = res.data.dashboards || [];
             if (!allowed.some((d) => d.path === slug)) {

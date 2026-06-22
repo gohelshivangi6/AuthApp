@@ -10,9 +10,7 @@ import {
 import TouchAppIcon from "@mui/icons-material/TouchApp";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ErrorIcon from "@mui/icons-material/Error";
-import axios from "axios";
-
-const API = "http://localhost:5000/api/auth";
+import { getInactivityStatus, stayActive } from "../services/authService";
 
 export default function StayActive() {
   const [searchParams] = useSearchParams();
@@ -38,10 +36,7 @@ export default function StayActive() {
 
     let cancelled = false;
 
-    axios
-      .get(`${API}/inactivity-status`, {
-        params: { token, userId },
-      })
+    getInactivityStatus(token, userId)
       .then((res) => {
         if (cancelled) return;
         const data = res.data;
@@ -87,7 +82,7 @@ export default function StayActive() {
   const handleStayActive = async () => {
     setExtending(true);
     try {
-      const res = await axios.post(`${API}/stay-active`, { token, userId });
+      const res = await stayActive(token, userId);
       setMessage(res.data.message || "Session extended successfully.");
       setStatus("active");
     } catch (err) {

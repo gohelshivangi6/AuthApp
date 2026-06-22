@@ -13,11 +13,11 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
-import axios from "axios";
 import {
   fetchDashboards, fetchDashboardLayout, saveDashboardLayout,
 } from "../../redux/slices/adminSlice";
 import { decryptData } from "../../decrypt/decryption";
+import { getDashboardDataBySlug } from "../../services/dashboardService";
 
 const SECTION_LABELS = {
   kpiCards: "KPI Cards",
@@ -167,8 +167,7 @@ export default function DashboardLayoutEditor() {
     dispatch(fetchDashboardLayout(selectedSlug));
     const timer = setTimeout(() => {
       setMessage({ type: "", text: "" });
-      axios
-        .get(`http://localhost:5000/api/dashboard-data/${selectedSlug}`, { withCredentials: true })
+      getDashboardDataBySlug(selectedSlug)
         .then(async (res) => {
           const decrypted = await decryptData(res.data);
           setDashboardData(decrypted);

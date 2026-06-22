@@ -17,7 +17,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { fetchDashboardData } from "../redux/slices/dashboardSlice";
 import WidgetRenderer from "./WidgetRenderer";
 import { getUserSocket } from "../utils/websocket";
-import axios from "axios";
+import { getAllowedDashboards } from "../services/dashboardService";
 
 export default function UserDashboard() {
   const dispatch = useDispatch();
@@ -28,8 +28,7 @@ export default function UserDashboard() {
 
   useEffect(() => {
     dispatch(fetchDashboardData());
-    axios
-      .get("http://localhost:5000/api/dashboard/allowed", { withCredentials: true })
+    getAllowedDashboards()
       .then((res) => setHasDashboards(res.data.dashboards.length > 0))
       .catch(() => setHasDashboards(false));
   }, [dispatch]);

@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import axios from "axios";
+import { checkStatus } from "../services/authService";
 
 const AuthContext = createContext();
 
@@ -13,12 +13,7 @@ export const AuthProvider = ({ children }) => {
 
   const checkAuth = async () => {
     try {
-      const res = await axios.get(
-        "http://localhost:5000/api/auth/me",
-        {
-          withCredentials: true,
-        },
-      );
+      const res = await checkStatus();
 
       setUser(res.data.user);
     } catch {

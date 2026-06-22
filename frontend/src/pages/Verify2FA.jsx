@@ -8,13 +8,11 @@ import {
   Alert
 } from '@mui/material';
 import LockIcon from '@mui/icons-material/Lock';
-import axios from 'axios';
 import GlassCard from '../components/GlassCard';
 import { useAuth } from '../routes/AuthContext';
 import { useDispatch } from 'react-redux';
 import { loginFailure, loginStart, loginSuccess } from '../redux/slices/authSlice';
-
-const API_URL = 'http://localhost:5000/api/auth/verify-2fa-login';
+import { verify2FALogin } from '../services/authService';
 
 const Verify2FA = () => {
   const location = useLocation();
@@ -63,16 +61,7 @@ const Verify2FA = () => {
 
     try {
       dispatch(loginStart());
-      const res = await axios.post(
-        API_URL,
-        { code },
-        {
-          headers: {
-            Authorization: `Bearer ${tempToken}`
-          },
-          withCredentials: true
-        }
-      );
+      const res = await verify2FALogin(code, tempToken);
 
       console.log('2FA verification response:', res.data);
       if (res.data.success) {

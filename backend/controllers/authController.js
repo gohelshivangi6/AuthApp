@@ -1,144 +1,44 @@
-const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
-const speakeasy = require("speakeasy");
-const qrcode = require("qrcode");
-const { v4: uuidv4 } = require("uuid");
 
 const { readDB, writeDB } = require("../utils/dbHelper");
 const {
-  hashPassword,
-  comparePassword,
-  encrypt,
-  decrypt,
-} = require("../utils/cryptoHelper");
-const { sendEmail } = require("../utils/mailer");
+  getUserById,
+  clearInactivityFlags,
+  isLocked,
+} = require("../services/userService");
 const { emitDeletionUpdate } = require("../utils/websocket");
-// const { removeToken, registerToken } = require("../middleware/sessionToken");
+const authService = require("../services/authService");
 
-const JWT_SECRET =
-  process.env.JWT_SECRET || "fallback_jwt_secret_for_development_purposes";
 const COOKIE_OPTIONS = {
   httpOnly: true,
   secure: process.env.NODE_ENV === "production",
   sameSite: "strict",
-  maxAge: 365 * 24 * 60 * 60 * 1000, // 365 hour
+  maxAge: 365 * 24 * 60 * 60 * 1000,
 };
 
-/**
- * Signs a short-lived token for temporary states (like pending 2FA).
- */
-const signTempToken = (userId, type) => {
-  return jwt.sign({ userId, type }, JWT_SECRET, { expiresIn: "365d" });
-};
+const JWT_SECRET =
+  process.env.JWT_SECRET || "fallback_jwt_secret_for_development_purposes";
 
-/**
- * Signs a long-lived token for authorized user sessions.
- */
-const signAuthToken = (userId) => {
-  return jwt.sign({ userId }, JWT_SECRET, { expiresIn: "365d" });
-};
-
-/**
- * Helper to check lockout status.
- */
-const isLocked = (user) => {
-  if (!user.lockUntil) return false;
-  return new Date(user.lockUntil).getTime() > Date.now();
-};
-
-/**
- * Handler for user registration (Signup).
- */
 const signup = async (req, res, next) => {
   try {
     const { name, email, password } = req.body;
-    const db = await readDB();
-
-    // Check if user already exists
-    const existingUser = db.users.find((u) => u.email === email);
-    if (existingUser) {
-      // If the existing user is fully verified, we block signup
-      if (existingUser.status === "VERIFIED") {
-        return res.status(400).json({
-          success: false,
-          message: "An account with this email address already exists.",
-        });
-      }
-
-      // If the user started signup but never completed 2FA, we allow them to override it
-      // This solves the incomplete 2FA signup deadlock
-      console.log(
-        `[Signup] Overriding unverified pending registration for email: ${email}`,
-      );
-      db.users = db.users.filter((u) => u.email !== email);
-    }
-
-    // Hash the password
-    const hashedPassword = await hashPassword(password);
-
-    // Generate TOTP Secret for 2FA setup
-    const secret = speakeasy.generateSecret({
-      name: `SecureAuthApp (${email})`,
-    });
-
-    const newUser = {
-      id: uuidv4(),
-      name,
-      email,
-      passwordHash: hashedPassword,
-      role: "user",
-      status: "PENDING_2FA",
-      twoFactorSecretEncrypted: encrypt(secret.base32),
-      failedAttempts: 0,
-      lockUntil: null,
-      createdAt: new Date().toISOString(),
-      resetPasswordToken: null,
-      resetPasswordExpires: null,
-      lastActiveAt: null,
-      pendingDeleteAt: null,
-      deleteToken: null,
-      suspended: false,
-    };
-
-    db.users.push(newUser);
-    await writeDB(db);
-
-    // Generate QR Code data URL
-    const qrCodeUrl = await qrcode.toDataURL(secret.otpauth_url);
-
-    // Sign a temporary token for completing 2FA setup
-    const tempToken = signTempToken(newUser.id, "registration_pending_2fa");
-
-    // Simulate sending welcome/verification email
-    await sendEmail({
-      to: email,
-      subject: "Welcome to SecureAuthApp - Finish 2FA Registration",
-      text: `Hello ${name},\n\nPlease complete your registration by configuring Two-Factor Authentication.\nYour 2FA manual entry code is: ${secret.base32}`,
-      html: `<p>Hello ${name},</p><p>Please complete your registration by configuring Two-Factor Authentication.</p><p>Your 2FA manual entry code is: <strong>${secret.base32}</strong></p>`,
-    });
-
+    const result = await authService.signup({ name, email, password });
     res.status(201).json({
       success: true,
       message:
         "Registration started. Please configure Two-Factor Authentication.",
-      tempToken,
-      qrCodeUrl,
-      manualSecret: secret.base32,
+      tempToken: result.tempToken,
+      qrCodeUrl: result.qrCodeUrl,
+      manualSecret: result.manualSecret,
     });
   } catch (error) {
     next(error);
   }
 };
 
-/**
- * Verifies and enables 2FA setup (Completes Signup).
- */
 const verify2FASetup = async (req, res, next) => {
   try {
     const { code } = req.body;
-
-    // Express-validator makes sure code is valid structure
-    // Extract authorization token from headers
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return res
@@ -146,98 +46,18 @@ const verify2FASetup = async (req, res, next) => {
         .json({ success: false, message: "Authorization token required." });
     }
     const token = authHeader.split(" ")[1];
-
-    let decoded;
-    try {
-      decoded = jwt.verify(token, JWT_SECRET);
-    } catch (err) {
-      return res
-        .status(401)
-        .json({
-          success: false,
-          message: "Invalid or expired 2FA setup session.",
-        });
-    }
-
-    if (decoded.type !== "registration_pending_2fa") {
-      return res
-        .status(400)
-        .json({ success: false, message: "Invalid session context." });
-    }
-
-    const db = await readDB();
-    const userIndex = db.users.findIndex((u) => u.id === decoded.userId);
-    if (userIndex === -1) {
-      return res
-        .status(404)
-        .json({ success: false, message: "User not found." });
-    }
-
-    const user = db.users[userIndex];
-
-    // Decrypt the secret key
-    const secret = decrypt(user.twoFactorSecretEncrypted);
-
-    const expected = speakeasy.totp({
-      secret,
-      encoding: "base32",
-    });
-
-    if (!secret) {
-      return res
-        .status(500)
-        .json({ success: false, message: "Encryption cipher failure." });
-    }
-
-    // Verify TOTP token
-    const verified = speakeasy.totp.verify({
-      secret: secret,
-      encoding: "base32",
-      token: code,
-      window: 1, // Allow 30 seconds clock drift skew
-    });
-
-    if (!verified) {
-      // Limit verification failures to prevent brute force on 6-digit codes
-      user.failedAttempts = (user.failedAttempts || 0) + 1;
-      if (user.failedAttempts >= 5) {
-        user.lockUntil = new Date(Date.now() + 15 * 60 * 1000).toISOString(); // 15 mins lockout
-        user.failedAttempts = 0;
-        await writeDB(db);
-        return res.status(403).json({
-          success: false,
-          message:
-            "Too many invalid attempts. This account is locked for 15 minutes.",
-        });
-      }
-      await writeDB(db);
-      return res.status(400).json({
-        success: false,
-        message: `Invalid 2FA verification code. ${5 - user.failedAttempts} attempts remaining.`,
-      });
-    }
-
-    // Success: Enable 2FA, complete registration
-    user.status = "VERIFIED";
-    user.failedAttempts = 0;
-    user.lockUntil = null;
-    user.lastActiveAt = new Date().toISOString();
-    await writeDB(db);
-
-    // Issue permanent auth token
-    const authToken = signAuthToken(user.id);
-    res.cookie("token", authToken, COOKIE_OPTIONS);
-    // registerToken(req.sessionNonce);
+    const result = await authService.verify2FASetup({ code, token });
+    res.cookie("token", result.authToken, COOKIE_OPTIONS);
     res.status(200).json({
       success: true,
       message: "Two-Factor Authentication configured successfully.",
-      token: authToken,
+      token: result.authToken,
       user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role || "user",
-        hasTwoFactor: !!user.twoFactorSecretEncrypted,
+        id: result.user.id,
+        name: result.user.name,
+        email: result.user.email,
+        role: result.user.role || "user",
+        hasTwoFactor: !!result.user.twoFactorSecretEncrypted,
       },
     });
   } catch (error) {
@@ -245,133 +65,54 @@ const verify2FASetup = async (req, res, next) => {
   }
 };
 
-/**
- * Handles user authentication (Password check).
- */
 const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
-    const db = await readDB();
+    const result = await authService.login({ email, password });
 
-    const user = db.users.find((u) => u.email === email);
-    if (!user) {
-      // Use generic error message to prevent account enumeration
-      return res
-        .status(401)
-        .json({ success: false, message: "Invalid email or password." });
-    }
-
-    // Check if suspended
-    if (user.suspended) {
-      return res.status(403).json({
-        success: false,
-        message: "This account has been suspended. Contact your administrator.",
-      });
-    }
-
-    // Check if locked
-    if (isLocked(user)) {
-      const lockRemaining = Math.ceil(
-        (new Date(user.lockUntil).getTime() - Date.now()) / 60000,
-      );
-      return res.status(403).json({
-        success: false,
-        message: `This account has been locked due to too many failed attempts. Try again in ${lockRemaining} minute(s).`,
-      });
-    }
-
-    // Check password
-    const isMatch = await comparePassword(password, user.passwordHash);
-    if (!isMatch) {
-      user.failedAttempts = (user.failedAttempts || 0) + 1;
-      if (user.failedAttempts >= 5) {
-        user.lockUntil = new Date(Date.now() + 15 * 60 * 1000).toISOString();
-        user.failedAttempts = 0;
-        await writeDB(db);
-        return res.status(403).json({
-          success: false,
-          message:
-            "Too many failed login attempts. This account is locked for 15 minutes.",
-        });
-      }
-      await writeDB(db);
-      return res
-        .status(401)
-        .json({ success: false, message: "Invalid email or password." });
-    }
-
-    // Credentials match, reset failed counters
-    user.failedAttempts = 0;
-    user.lockUntil = null;
-    user.adminForceLoggedOutAt = null;
-    await writeDB(db);
-
-    // Check status:
-    // CASE A: User has not finished their 2FA configuration
-    if (user.status === "PENDING_2FA") {
-      const secret = decrypt(user.twoFactorSecretEncrypted);
-      const otpauth_url = speakeasy.otpauthURL({
-        secret: secret,
-        label: `SecureAuthApp (${user.email})`,
-      });
-      const qrCodeUrl = await qrcode.toDataURL(otpauth_url);
-      const tempToken = signTempToken(user.id, "registration_pending_2fa");
-
+    if (result.case === "PENDING_2FA") {
       return res.status(200).json({
         success: true,
         status: "PENDING_2FA",
         message: "Registration incomplete. Please configure 2FA.",
-        tempToken,
-        qrCodeUrl,
-        manualSecret: secret,
+        tempToken: result.tempToken,
+        qrCodeUrl: result.qrCodeUrl,
+        manualSecret: result.manualSecret,
       });
     }
 
-    // CASE B: User is VERIFIED but has no 2FA configured (e.g., admin account)
-    if (user.status === "VERIFIED" && !user.twoFactorSecretEncrypted) {
-      user.lastActiveAt = new Date().toISOString();
-      user.pendingDeleteAt = null;
-      user.deleteToken = null;
-      await writeDB(db);
-      try { emitDeletionUpdate({ type: "cancelled", userId: user.id }); } catch (_) {}
-      const authToken = signAuthToken(user.id);
-      res.cookie("token", authToken, COOKIE_OPTIONS);
+    if (result.case === "VERIFIED_NO_2FA") {
+      res.cookie("token", result.authToken, COOKIE_OPTIONS);
       return res.status(200).json({
         success: true,
         message: "Login successful.",
-        token: authToken,
+        token: result.authToken,
         user: {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          role: user.role || "user",
-          hasTwoFactor: !!user.twoFactorSecretEncrypted,
+          id: result.user.id,
+          name: result.user.name,
+          email: result.user.email,
+          role: result.user.role || "user",
+          hasTwoFactor: !!result.user.twoFactorSecretEncrypted,
         },
       });
     }
 
-    // CASE C: User is fully verified, needs to input 2FA code to log in
-    const tempToken = signTempToken(user.id, "pending_2fa_verification");
     return res.status(200).json({
-      email: user.email,
-      name: user.name,
+      email: result.email,
+      name: result.name,
       success: true,
       status: "PENDING_2FA_VERIFICATION",
       message: "Password verified. Please enter 2FA verification code.",
-      tempToken,
+      tempToken: result.tempToken,
     });
   } catch (error) {
     next(error);
   }
 };
 
-/**
- * Verifies 2FA during Login.
- */
 const verify2FALogin = async (req, res, next) => {
   try {
     const { code } = req.body;
-
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return res
@@ -379,96 +120,18 @@ const verify2FALogin = async (req, res, next) => {
         .json({ success: false, message: "Authorization token required." });
     }
     const token = authHeader.split(" ")[1];
-
-    let decoded;
-    try {
-      decoded = jwt.verify(token, JWT_SECRET);
-    } catch (err) {
-      return res
-        .status(401)
-        .json({
-          success: false,
-          message: "Invalid or expired 2FA login session.",
-        });
-    }
-
-    if (decoded.type !== "pending_2fa_verification") {
-      return res
-        .status(400)
-        .json({ success: false, message: "Invalid session context." });
-    }
-
-    const db = await readDB();
-    const userIndex = db.users.findIndex((u) => u.id === decoded.userId);
-    if (userIndex === -1) {
-      return res
-        .status(404)
-        .json({ success: false, message: "User not found." });
-    }
-
-    const user = db.users[userIndex];
-
-    if (isLocked(user)) {
-      const lockRemaining = Math.ceil(
-        (new Date(user.lockUntil).getTime() - Date.now()) / 60000,
-      );
-      return res.status(403).json({
-        success: false,
-        message: `This account has been locked. Try again in ${lockRemaining} minute(s).`,
-      });
-    }
-
-    const secret = decrypt(user.twoFactorSecretEncrypted);
-    const verified = speakeasy.totp.verify({
-      secret: secret,
-      encoding: "base32",
-      token: code,
-      window: 1,
-    });
-
-    if (!verified) {
-      user.failedAttempts = (user.failedAttempts || 0) + 1;
-      if (user.failedAttempts >= 5) {
-        user.lockUntil = new Date(Date.now() + 15 * 60 * 1000).toISOString();
-        user.failedAttempts = 0;
-        await writeDB(db);
-        return res.status(403).json({
-          success: false,
-          message:
-            "Too many invalid 2FA attempts. This account is locked for 15 minutes.",
-        });
-      }
-      await writeDB(db);
-      return res.status(400).json({
-        success: false,
-        message: `Invalid 2FA code. ${5 - user.failedAttempts} attempts remaining.`,
-      });
-    }
-
-    // Reset lock/failed attempts, log in
-    user.failedAttempts = 0;
-    user.lockUntil = null;
-    user.adminForceLoggedOutAt = null;
-    user.lastActiveAt = new Date().toISOString();
-    user.pendingDeleteAt = null;
-    user.deleteToken = null;
-    await writeDB(db);
-
-    try { emitDeletionUpdate({ type: "cancelled", userId: user.id }); } catch (_) {}
-
-    const authToken = signAuthToken(user.id);
-    res.cookie("token", authToken, COOKIE_OPTIONS);
-    // registerToken(req.sessionNonce);
+    const result = await authService.verify2FALogin({ code, token });
+    res.cookie("token", result.authToken, COOKIE_OPTIONS);
     res.status(200).json({
       success: true,
       message: "Login successful.",
-      token: authToken,
+      token: result.authToken,
       user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role || "user",
-        hasTwoFactor: !!user.twoFactorSecretEncrypted,
+        id: result.user.id,
+        name: result.user.name,
+        email: result.user.email,
+        role: result.user.role || "user",
+        hasTwoFactor: !!result.user.twoFactorSecretEncrypted,
       },
     });
   } catch (error) {
@@ -476,111 +139,25 @@ const verify2FALogin = async (req, res, next) => {
   }
 };
 
-/**
- * Initiates the forgot password request.
- */
 const forgotPassword = async (req, res, next) => {
   try {
     const { email } = req.body;
-    const db = await readDB();
-
-    const user = db.users.find((u) => u.email === email);
-
-    // Unified response to prevent user existence checking
-    const genericResponse = {
+    // Always return the same response to prevent user enumeration
+    await authService.forgotPassword({ email });
+    res.status(200).json({
       success: true,
       message:
         "If that email is registered, a password reset link has been sent to it.",
-    };
-
-    if (!user || user.status !== "VERIFIED") {
-      // Silently log and exit
-      console.log(
-        `[Forgot Password] Requested for non-existent or unverified email: ${email}`,
-      );
-      return res.status(200).json(genericResponse);
-    }
-
-    // Generate secure token and hashed version to store
-    const resetToken = crypto.randomBytes(32).toString("hex");
-    const hashedToken = crypto
-      .createHash("sha256")
-      .update(resetToken)
-      .digest("hex");
-
-    user.resetPasswordToken = hashedToken;
-    user.resetPasswordExpires = new Date(
-      Date.now() + 15 * 60 * 1000,
-    ).toISOString(); // 15 mins
-    await writeDB(db);
-
-    const resetLink = `http://localhost:5173/reset-password?token=${resetToken}`;
-
-    await sendEmail({
-      to: email,
-      subject: "SecureAuthApp - Password Reset Request",
-      text: `Hello ${user.name},\n\nYou requested a password reset. Reset your password here:\n${resetLink}\n\nThis link will expire in 15 minutes.`,
-      html: `<p>Hello ${user.name},</p><p>You requested a password reset. Reset your password by clicking the link below:</p><p><a href="${resetLink}">${resetLink}</a></p><p>This link will expire in 15 minutes.</p>`,
     });
-
-    console.log("Email sent successfully");
-
-    res.status(200).json(genericResponse);
   } catch (error) {
     next(error);
   }
 };
 
-/**
- * Performs password reset.
- */
 const resetPassword = async (req, res, next) => {
   try {
     const { token, password } = req.body;
-    const db = await readDB();
-
-    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
-
-    const userIndex = db.users.findIndex(
-      (u) =>
-        u.resetPasswordToken === hashedToken &&
-        new Date(u.resetPasswordExpires).getTime() > Date.now(),
-    );
-
-    if (userIndex === -1) {
-      return res.status(400).json({
-        success: false,
-        message: "Password reset token is invalid or has expired.",
-      });
-    }
-
-    const user = db.users[userIndex];
-
-    // Check if new password is same as old password
-    const isSame = await comparePassword(password, user.passwordHash);
-    if (isSame) {
-      return res.status(400).json({
-        success: false,
-        message: "New password cannot be the same as your old password.",
-      });
-    }
-
-    user.passwordHash = await hashPassword(password);
-    user.resetPasswordToken = null;
-    user.resetPasswordExpires = null;
-    // Reset lockout in case they were locked out
-    user.failedAttempts = 0;
-    user.lockUntil = null;
-
-    await writeDB(db);
-
-    await sendEmail({
-      to: user.email,
-      subject: "SecureAuthApp - Password Changed successfully",
-      text: `Hello ${user.name},\n\nYour account password has been successfully updated. If you did not make this change, contact us immediately.`,
-      html: `<p>Hello ${user.name},</p><p>Your account password has been successfully updated. If you did not make this change, contact us immediately.</p>`,
-    });
-
+    await authService.resetPassword({ token, password });
     res.status(200).json({
       success: true,
       message: "Password reset successfully. You can now log in.",
@@ -590,9 +167,6 @@ const resetPassword = async (req, res, next) => {
   }
 };
 
-/**
- * Logs out the user (clears cookies).
- */
 const logout = (req, res) => {
   res.clearCookie("token", COOKIE_OPTIONS);
   res.status(200).json({
@@ -601,60 +175,19 @@ const logout = (req, res) => {
   });
 };
 
-/**
- * Checks authentication status (verifies JWT token cookie).
- */
 const checkStatus = async (req, res, next) => {
   try {
     const token = req.cookies.token;
-    if (!token) {
-      return res
-        .status(401)
-        .json({ success: false, message: "Not authenticated." });
-    }
-
-    let decoded;
-    try {
-      decoded = jwt.verify(token, JWT_SECRET);
-    } catch (err) {
-      return res
-        .status(401)
-        .json({ success: false, message: "Invalid or expired session token." });
-    }
-
-    const db = await readDB();
-    const user = db.users.find((u) => u.id === decoded.userId);
-    if (!user || user.status !== "VERIFIED") {
-      return res
-        .status(401)
-        .json({ success: false, message: "Account status invalid." });
-    }
-
-    if (user.pendingDeleteAt) {
-      user.pendingDeleteAt = null;
-      user.deleteToken = null;
-      await writeDB(db);
-      try { emitDeletionUpdate({ type: "cancelled", userId: user.id }); } catch (_) {}
-    }
-
+    const user = await authService.checkStatus({ token });
     res.status(200).json({
       success: true,
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role || "user",
-        suspended: user.suspended || false,
-      },
+      user,
     });
   } catch (error) {
     next(error);
   }
 };
 
-/**
- * Authentication middleware for protecting API endpoints.
- */
 const requireAuth = async (req, res, next) => {
   try {
     const token = req.cookies.token;
@@ -664,9 +197,17 @@ const requireAuth = async (req, res, next) => {
         .json({ success: false, message: "Access denied. Sign in required." });
     }
 
-    const decoded = jwt.verify(token, JWT_SECRET);
+    let decoded;
+    try {
+      decoded = jwt.verify(token, JWT_SECRET);
+    } catch (err) {
+      return res
+        .status(401)
+        .json({ success: false, message: "Invalid authorization token." });
+    }
+
     const db = await readDB();
-    const user = db.users.find((u) => u.id === decoded.userId);
+    const user = getUserById(db, decoded.userId);
 
     if (!user || user.status !== "VERIFIED" || user.suspended) {
       return res
@@ -681,23 +222,16 @@ const requireAuth = async (req, res, next) => {
     }
 
     if (user.pendingInactivityLogout && new Date(user.pendingInactivityLogout).getTime() <= Date.now()) {
-      user.pendingInactivityLogout = null;
-      user.inactivityToken = null;
+      clearInactivityFlags(user);
       await writeDB(db);
       return res.status(401).json({ success: false, message: "Session expired due to inactivity.", code: "INACTIVITY_LOGOUT" });
-    }
-
-    const lastActive = user.lastActivityAt ? new Date(user.lastActivityAt).getTime() : 0;
-    if (Date.now() - lastActive > 60000) {
-      user.lastActivityAt = new Date().toISOString();
-      await writeDB(db);
     }
 
     if (user.pendingDeleteAt) {
       user.pendingDeleteAt = null;
       user.deleteToken = null;
-      await writeDB(db);
       try { emitDeletionUpdate({ type: "cancelled", userId: user.id }); } catch (_) {}
+      await writeDB(db);
     }
 
     req.user = user;
@@ -709,37 +243,13 @@ const requireAuth = async (req, res, next) => {
   }
 };
 
-/**
- * Reactivates an account flagged for deletion (from email link).
- */
 const reactivateAccount = async (req, res, next) => {
   try {
     const { token, userId } = req.body;
     if (!token || !userId) {
       return res.status(400).json({ success: false, message: "Token and userId are required." });
     }
-
-    const db = await readDB();
-    const user = db.users.find((u) => u.id === userId);
-    if (!user) {
-      return res.status(404).json({ success: false, message: "User not found." });
-    }
-
-    if (user.deleteToken !== token) {
-      return res.status(400).json({ success: false, message: "Invalid reactivation token." });
-    }
-
-    if (!user.pendingDeleteAt) {
-      return res.status(400).json({ success: false, message: "Account is not pending deletion." });
-    }
-
-    user.pendingDeleteAt = null;
-    user.deleteToken = null;
-    user.lastActiveAt = new Date().toISOString();
-    await writeDB(db);
-
-    try { emitDeletionUpdate({ type: "cancelled", userId }); } catch (_) {}
-
+    await authService.reactivateAccount({ token, userId });
     res.status(200).json({
       success: true,
       message: "Account reactivated successfully. Please log in.",
@@ -749,39 +259,18 @@ const reactivateAccount = async (req, res, next) => {
   }
 };
 
-/**
- * Returns the remaining time before a pending deletion expires (read-only).
- */
 const getReactivateStatus = async (req, res, next) => {
   try {
     const { token, userId } = req.query;
     if (!token || !userId) {
       return res.status(400).json({ success: false, message: "Token and userId are required." });
     }
-
-    const db = await readDB();
-    const user = db.users.find((u) => u.id === userId);
-    if (!user) {
-      return res.status(404).json({ success: false, message: "User not found." });
-    }
-
-    if (user.deleteToken !== token) {
-      return res.status(400).json({ success: false, message: "Invalid reactivation token." });
-    }
-
-    if (!user.pendingDeleteAt) {
-      return res.status(400).json({ success: false, message: "Account is not pending deletion." });
-    }
-
-    const now = Date.now();
-    const expiresAt = new Date(user.pendingDeleteAt).getTime();
-    const remainingMs = Math.max(0, expiresAt - now);
-
+    const result = await authService.getReactivateStatus({ token, userId });
     res.status(200).json({
       success: true,
-      name: user.name,
-      remainingMs,
-      expired: remainingMs <= 0,
+      name: result.name,
+      remainingMs: result.remainingMs,
+      expired: result.expired,
     });
   } catch (err) {
     next(err);
@@ -790,7 +279,6 @@ const getReactivateStatus = async (req, res, next) => {
 
 const me = async (req, res, next) => {
   try {
-    // registerToken(req.sessionNonce);
     const user = req.user;
     res.status(200).json({
       success: true,
@@ -813,78 +301,28 @@ const me = async (req, res, next) => {
   }
 };
 
-/**
- * Updates the authenticated user's profile (name).
- */
 const updateProfile = async (req, res, next) => {
   try {
     const { name } = req.body;
-    const user = req.user;
-    const db = await readDB();
-
-    const userIndex = db.users.findIndex((u) => u.id === user.id);
-    if (userIndex === -1) {
-      return res.status(404).json({ success: false, message: "User not found." });
-    }
-
-    if (name !== undefined) {
-      db.users[userIndex].name = name;
-    }
-
-    await writeDB(db);
-
+    const user = await authService.updateProfile({ userId: req.user.id, name });
     res.status(200).json({
       success: true,
       message: "Profile updated successfully.",
-      user: {
-        id: db.users[userIndex].id,
-        name: db.users[userIndex].name,
-        email: db.users[userIndex].email,
-        role: db.users[userIndex].role || "user",
-        hasTwoFactor: !!db.users[userIndex].twoFactorSecretEncrypted,
-      },
+      user,
     });
   } catch (error) {
     next(error);
   }
 };
 
-/**
- * Changes the authenticated user's password.
- */
 const changePassword = async (req, res, next) => {
   try {
     const { currentPassword, newPassword } = req.body;
-    const user = req.user;
-
-    // Verify current password
-    const isMatch = await comparePassword(currentPassword, user.passwordHash);
-    if (!isMatch) {
-      return res.status(400).json({
-        success: false,
-        message: "Current password is incorrect.",
-      });
-    }
-
-    // Check new password is different
-    const isSame = await comparePassword(newPassword, user.passwordHash);
-    if (isSame) {
-      return res.status(400).json({
-        success: false,
-        message: "New password cannot be the same as your current password.",
-      });
-    }
-
-    // Hash and update
-    const db = await readDB();
-    const userIndex = db.users.findIndex((u) => u.id === user.id);
-    if (userIndex === -1) {
-      return res.status(404).json({ success: false, message: "User not found." });
-    }
-
-    db.users[userIndex].passwordHash = await hashPassword(newPassword);
-    await writeDB(db);
-
+    await authService.changePassword({
+      userId: req.user.id,
+      currentPassword,
+      newPassword,
+    });
     res.status(200).json({
       success: true,
       message: "Password changed successfully.",
@@ -894,101 +332,87 @@ const changePassword = async (req, res, next) => {
   }
 };
 
-/**
- * Updates lastActivityAt to extend the user's session (called by frontend InactivityModal).
- */
+const generate2FASecret = async (req, res, next) => {
+  try {
+    const result = await authService.generate2FASecret({ userId: req.user.id });
+    res.status(200).json({
+      success: true,
+      tempToken: result.tempToken,
+      qrCodeUrl: result.qrCodeUrl,
+      manualSecret: result.manualSecret,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const enable2FA = async (req, res, next) => {
+  try {
+    const { code, tempToken } = req.body;
+    const result = await authService.enable2FA({
+      userId: req.user.id,
+      code,
+      tempToken,
+    });
+    res.status(200).json({
+      success: true,
+      message: "Two-Factor Authentication enabled successfully.",
+      user: result.user,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const disable2FA = async (req, res, next) => {
+  try {
+    const { password } = req.body;
+    const result = await authService.disable2FA({
+      userId: req.user.id,
+      password,
+    });
+    res.status(200).json({
+      success: true,
+      message: "Two-Factor Authentication disabled successfully.",
+      user: result.user,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const ping = async (req, res, next) => {
   try {
-    const db = await readDB();
-    const userIndex = db.users.findIndex((u) => u.id === req.user.id);
-    if (userIndex === -1) {
-      return res.status(404).json({ success: false, message: "User not found." });
-    }
-    db.users[userIndex].lastActivityAt = new Date().toISOString();
-    db.users[userIndex].pendingInactivityLogout = null;
-    db.users[userIndex].inactivityToken = null;
-    await writeDB(db);
+    await authService.ping({ userId: req.user.id });
     res.json({ success: true });
   } catch (err) {
     next(err);
   }
 };
 
-/**
- * Called from the stay-active email link to keep the session alive.
- */
 const stayActive = async (req, res, next) => {
   try {
     const { token, userId } = req.body;
     if (!token || !userId) {
       return res.status(400).json({ success: false, message: "Token and userId are required." });
     }
-
-    const db = await readDB();
-    const user = db.users.find((u) => u.id === userId);
-    if (!user) {
-      return res.status(404).json({ success: false, message: "User not found." });
-    }
-
-    if (user.inactivityToken !== token) {
-      return res.status(400).json({ success: false, message: "Invalid or expired token." });
-    }
-
-    const now = Date.now();
-    const expiresAt = new Date(user.pendingInactivityLogout).getTime();
-
-    if (!user.pendingInactivityLogout || expiresAt <= now) {
-      user.pendingInactivityLogout = null;
-      user.inactivityToken = null;
-      user.lastActivityAt = new Date().toISOString();
-      await writeDB(db);
-      return res.json({ success: true, message: "Session was already expired, but has been refreshed." });
-    }
-
-    user.pendingInactivityLogout = null;
-    user.inactivityToken = null;
-    user.lastActivityAt = new Date().toISOString();
-    await writeDB(db);
-
-    res.json({ success: true, message: "Session extended successfully." });
+    const result = await authService.stayActive({ token, userId });
+    res.json({ success: true, message: result.message });
   } catch (err) {
     next(err);
   }
 };
 
-/**
- * Checks the status of an inactivity warning (called by the StayActive page on load).
- */
 const getInactivityStatus = async (req, res, next) => {
   try {
     const { token, userId } = req.query;
     if (!token || !userId) {
       return res.status(400).json({ success: false, message: "Token and userId are required." });
     }
-
-    const db = await readDB();
-    const user = db.users.find((u) => u.id === userId);
-    if (!user) {
-      return res.status(404).json({ success: false, message: "User not found." });
-    }
-
-    if (user.inactivityToken !== token) {
-      return res.json({ success: true, status: "invalid" });
-    }
-
-    if (!user.pendingInactivityLogout) {
-      return res.json({ success: true, status: "active" });
-    }
-
-    const now = Date.now();
-    const expiresAt = new Date(user.pendingInactivityLogout).getTime();
-    const remainingMs = Math.max(0, expiresAt - now);
-
+    const result = await authService.getInactivityStatus({ token, userId });
     res.json({
       success: true,
-      status: remainingMs > 0 ? "valid" : "expired",
-      remainingMs,
-      name: user.name,
+      ...result,
     });
   } catch (err) {
     next(err);
@@ -1010,6 +434,9 @@ module.exports = {
   changePassword,
   reactivateAccount,
   getReactivateStatus,
+  generate2FASecret,
+  enable2FA,
+  disable2FA,
   ping,
   stayActive,
   getInactivityStatus,

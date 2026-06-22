@@ -10,13 +10,11 @@ import {
   Divider
 } from '@mui/material';
 import ShieldIcon from '@mui/icons-material/Shield';
-import axios from 'axios';
 import GlassCard from '../components/GlassCard';
 import { useAuth } from '../routes/AuthContext';
 import { useDispatch } from 'react-redux';
 import { loginStart, loginSuccess } from '../redux/slices/authSlice';
-
-const API_URL = 'http://localhost:5000/api/auth/verify-2fa-setup';
+import { verify2FASetup } from '../services/authService';
 
 const Setup2FA = () => {
   const location = useLocation();
@@ -61,16 +59,7 @@ const Setup2FA = () => {
 
     try {
       dispatch(loginStart());
-      const res = await axios.post(
-        API_URL,
-        { code },
-        {
-          headers: {
-            Authorization: `Bearer ${tempToken}`
-          },
-          withCredentials: true // allows cookie storage
-        }
-      );
+      const res = await verify2FASetup(code, tempToken);
       console.log('2FA verification response:', res.data);
       if (res.data.success) {
         setError('');

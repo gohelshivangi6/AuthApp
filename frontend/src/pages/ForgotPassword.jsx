@@ -8,10 +8,8 @@ import {
   Alert
 } from '@mui/material';
 import ContactSupportIcon from '@mui/icons-material/ContactSupport';
-import axios from 'axios';
 import GlassCard from '../components/GlassCard';
-
-const API_URL = 'http://localhost:5000/api/auth/forgot-password';
+import { forgotPassword } from '../services/authService';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
@@ -31,7 +29,7 @@ const ForgotPassword = () => {
     setLoading(true);
 
     try {
-      const res = await axios.post(API_URL, { email });
+      const res = await forgotPassword(email);
       if (res.data.success) {
         setSuccess(res.data.message || 'If that email is registered, a password reset link has been sent to it.');
       }

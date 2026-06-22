@@ -19,9 +19,8 @@ import CloseIcon from '@mui/icons-material/Close';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import DeleteSweepIcon from '@mui/icons-material/DeleteSweep';
 import LinkIcon from '@mui/icons-material/Link';
-import axios from 'axios';
-
-const DEV_API_URL = 'http://localhost:5000/api/auth/dev/emails';
+import { getDevEmails } from '../services/authService';
+import api from '../services/apiClient';
 
 const DevMailbox = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -32,7 +31,7 @@ const DevMailbox = () => {
   const fetchEmails = async () => {
     try {
       setError(false);
-      const res = await axios.get(DEV_API_URL);
+      const res = await getDevEmails();
       if (res.data && res.data.success) {
         setEmails(res.data.emails);
       }
@@ -45,7 +44,7 @@ const DevMailbox = () => {
   const clearMailbox = async () => {
     try {
       setLoading(true);
-      await axios.post(`${DEV_API_URL}/clear`);
+      await api.post('/api/auth/dev/emails/clear');
       setEmails([]);
     } catch (err) {
       console.error('Failed to clear mailbox', err);

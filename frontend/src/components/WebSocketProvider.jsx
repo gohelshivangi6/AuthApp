@@ -11,7 +11,8 @@ import { fetchDashboardData, fetchSectionPermissions, setLayoutForSlug } from ".
 import { fetchStats } from "../redux/slices/adminSlice";
 import { receiveMessage, receiveEditedMessage, receiveDeletedMessage } from "../redux/slices/workspaceSlice";
 import { clearSessionToken } from "../utils/sessionToken";
-import axios from "axios";
+import { checkStatus } from "../services/authService";
+import { getDashboardLayout } from "../services/dashboardService";
 
 const WebSocketContext = createContext(null);
 
@@ -61,8 +62,7 @@ export function WebSocketProvider({ children }) {
       }
 
       dispatch(fetchDashboardData());
-      axios
-        .get("http://localhost:5000/api/auth/me", { withCredentials: true })
+      checkStatus()
         .then((res) => {
           if (res.data.user) {
             dispatch(updateUser(res.data.user));
@@ -83,7 +83,7 @@ export function WebSocketProvider({ children }) {
 
     const handleLayoutUpdate = (data) => {
       if (!data.slug) return;
-      axios.get(`http://localhost:5000/api/dashboard-data/${data.slug}/layout`)
+      getDashboardLayout(data.slug)
         .then((res) => dispatch(setLayoutForSlug({ slug: data.slug, layout: res.data.layout })))
         .catch(() => {});
     };

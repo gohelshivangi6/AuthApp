@@ -15,10 +15,10 @@ import {
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import CloseIcon from "@mui/icons-material/Close";
 import { getUserSocket } from "../utils/websocket";
-import axios from "axios";
 import { logout } from "../redux/slices/authSlice";
 import { disconnectSockets } from "../utils/websocket";
 import { clearSessionToken } from "../utils/sessionToken";
+import { ping } from "../services/authService";
 
 let lastInactivityEvent = 0;
 
@@ -90,11 +90,7 @@ export default function InactivityModal() {
   const handleStayActive = async () => {
     setExtending(true);
     try {
-      await axios.post(
-        "http://localhost:5000/api/auth/ping",
-        {},
-        { withCredentials: true }
-      );
+      await ping();
       setOpen(false);
       setCountdown(0);
       if (timerRef.current) {

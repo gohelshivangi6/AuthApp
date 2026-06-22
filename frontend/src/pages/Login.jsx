@@ -13,11 +13,9 @@ import {
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import VpnKeyIcon from '@mui/icons-material/VpnKey';
-import axios from 'axios';
 import GlassCard from '../components/GlassCard';
 import { loginSuccess } from '../redux/slices/authSlice';
-
-const API_URL = 'http://localhost:5000/api/auth/login';
+import { login } from '../services/authService';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -59,12 +57,7 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const res = await axios.post(API_URL, {
-        email: formData.email,
-        password: formData.password
-      }, {
-        withCredentials: true
-      });
+      const res = await login(formData.email, formData.password);
 
       console.log('Login response:', res.data);
 
@@ -89,7 +82,7 @@ const Login = () => {
         } else if (res.data.user) {
           // Direct login (no 2FA required — e.g. admin account)
           dispatch(loginSuccess({ user: res.data.user, token: res.data.token }));
-          navigate('/dashboard');
+          navigate('/dashboards');
         }
       }
     } catch (err) {

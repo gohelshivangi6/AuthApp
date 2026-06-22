@@ -1,17 +1,13 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
+import * as dashboardService from "../../services/dashboardService";
 
 export const fetchDashboardData = createAsyncThunk("dashboard/fetchData", async () => {
-  const res = await axios.get("http://localhost:5000/api/dashboard", {
-    withCredentials: true,
-  });
+  const res = await dashboardService.getDashboardData();
   return res.data;
 });
 
 export const fetchSectionPermissions = createAsyncThunk("dashboard/fetchSectionPermissions", async () => {
-  const res = await axios.get("http://localhost:5000/api/dashboard/section-permissions", {
-    withCredentials: true,
-  });
+  const res = await dashboardService.getSectionPermissions();
   return res.data.permissions;
 });
 

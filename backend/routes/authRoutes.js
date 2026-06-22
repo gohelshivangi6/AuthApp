@@ -16,6 +16,9 @@ const {
   changePassword,
   reactivateAccount,
   getReactivateStatus,
+  generate2FASecret,
+  enable2FA,
+  disable2FA,
   ping,
   stayActive,
   getInactivityStatus,
@@ -37,7 +40,7 @@ const {
   passwordResetLimiter
 } = require('../middleware/rateLimit');
 
-const { getEmails, clearEmails } = require('../utils/mailer');
+const { getEmails, clearEmails } = require('../services/emailService');
 const { sessionToken } = require('../middleware/sessionToken');
 
 // --- Auth Routes ---
@@ -75,8 +78,13 @@ router.post('/stay-active', stayActive);
 router.get('/inactivity-status', getInactivityStatus);
 
 // --- Profile & Account Management ---
-router.put('/profile', requireAuth, validateUpdateProfile, handleValidationErrors, updateProfile);
-router.post('/change-password', requireAuth, validateChangePassword, handleValidationErrors, changePassword);
+router.put('/me', requireAuth, validateUpdateProfile, handleValidationErrors, updateProfile);
+router.put('/me/password', requireAuth, validateChangePassword, handleValidationErrors, changePassword);
+
+// --- 2FA Management (authenticated user on profile page) ---
+router.post('/2fa/generate', requireAuth, generate2FASecret);
+router.post('/2fa/enable', requireAuth, validate2FA, handleValidationErrors, enable2FA);
+router.post('/2fa/disable', requireAuth, disable2FA);
 
 // --- Dev Utilities (Simulated Email Sandbox) ---
 router.get('/dev/emails', async (req, res, next) => {

@@ -18,12 +18,10 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutlined';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
-import axios from 'axios';
 import GlassCard from '../components/GlassCard';
 import { useDispatch } from 'react-redux';
 import { loginStart } from '../redux/slices/authSlice';
-
-const API_URL = 'http://localhost:5000/api/auth/signup';
+import { signup } from '../services/authService';
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -86,12 +84,7 @@ const Signup = () => {
     try {
       // dispatch(loginStart());
 
-      const res = await axios.post(API_URL, {
-        name: formData.name,
-        email: formData.email,
-        password: formData.password,
-        website: formData.website // include honeypot field
-      });
+      const res = await signup(formData.name, formData.email, formData.password);
 
       // dispatch(loginSuccess(res.data));
 

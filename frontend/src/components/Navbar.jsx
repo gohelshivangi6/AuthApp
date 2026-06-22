@@ -18,7 +18,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import { logout } from "../redux/slices/authSlice";
 import { disconnectSockets } from "../utils/websocket";
 import { clearSessionToken } from "../utils/sessionToken";
-import axios from "axios";
+import { logout as logoutApi } from "../services/authService";
 
 function decodeJWT(token) {
   try {
@@ -37,11 +37,7 @@ const Navbar = () => {
 
   const handleLogout = useCallback(async () => {
     try {
-      await axios.post(
-        "http://localhost:5000/api/auth/logout",
-        {},
-        { withCredentials: true }
-      );
+      await logoutApi();
     } catch {
       // proceed with local cleanup even if API fails
     }

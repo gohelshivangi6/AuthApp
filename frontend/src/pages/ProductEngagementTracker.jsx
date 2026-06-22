@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import axios from 'axios';
 import DashboardContent from "../components/DashboardContent";
+import { getDashboardDataBySlug, getDashboardLayout } from "../services/dashboardService";
 import { decryptData } from "../decrypt/decryption";
 import { fetchSectionPermissions, setLayoutForSlug } from "../redux/slices/dashboardSlice";
 import { emitEvent } from "../utils/websocket";
@@ -27,8 +27,8 @@ export default function ProductEngagementTracker() {
     const load = async () => {
       try {
         const [dataRes, layoutRes] = await Promise.all([
-          axios.get('http://localhost:5000/api/dashboard-data/product-engagement-tracker'),
-          axios.get('http://localhost:5000/api/dashboard-data/product-engagement-tracker/layout'),
+          getDashboardDataBySlug(DASHBOARD_SLUG),
+          getDashboardLayout(DASHBOARD_SLUG),
         ]);
         if (cancelled) return;
         const decrypted = await decryptData(dataRes.data);

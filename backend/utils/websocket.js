@@ -10,10 +10,12 @@ const userSockets = new Map(); // userId -> Set<socketId>
 const socketMetadata = new Map(); // socketId -> { userId, sessionId }
 const lastActivityLog = new Map(); // userId -> timestamp, throttles activity log writes
 
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
+
 function initWebSocket(httpServer) {
   io = new Server(httpServer, {
     cors: {
-      origin: ["http://localhost:5173", "http://127.0.0.1:5173"],
+      origin: [FRONTEND_URL, FRONTEND_URL.replace('localhost', '127.0.0.1')],
       credentials: true,
     },
   });

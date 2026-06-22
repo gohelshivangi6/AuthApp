@@ -1,63 +1,58 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
-
-const API = "http://localhost:5000/api/workspaces";
+import * as workspaceService from "../../services/workspaceService";
 
 export const fetchWorkspaces = createAsyncThunk("workspace/fetchWorkspaces", async () => {
-  const res = await axios.get(API, { withCredentials: true });
+  const res = await workspaceService.getWorkspaces();
   return res.data.workspaces;
 });
 
 export const createWorkspace = createAsyncThunk("workspace/createWorkspace", async (data) => {
-  const res = await axios.post(API, data, { withCredentials: true });
+  const res = await workspaceService.createWorkspace(data.name, data.description);
   return res.data.workspace;
 });
 
 export const updateWorkspace = createAsyncThunk("workspace/updateWorkspace", async ({ id, ...data }) => {
-  const res = await axios.put(`${API}/${id}`, data, { withCredentials: true });
+  const res = await workspaceService.updateWorkspace(id, data);
   return res.data.workspace;
 });
 
 export const deleteWorkspace = createAsyncThunk("workspace/deleteWorkspace", async (id) => {
-  await axios.delete(`${API}/${id}`, { withCredentials: true });
+  await workspaceService.deleteWorkspace(id);
   return id;
 });
 
 export const fetchMembers = createAsyncThunk("workspace/fetchMembers", async (workspaceId) => {
-  const res = await axios.get(`${API}/${workspaceId}/members`, { withCredentials: true });
+  const res = await workspaceService.getMembers(workspaceId);
   return { workspaceId, members: res.data.members };
 });
 
 export const addMember = createAsyncThunk("workspace/addMember", async ({ workspaceId, userId }) => {
-  const res = await axios.post(`${API}/${workspaceId}/members`, { userId }, { withCredentials: true });
+  const res = await workspaceService.addMember(workspaceId, userId);
   return { workspaceId, member: res.data.member };
 });
 
 export const removeMember = createAsyncThunk("workspace/removeMember", async ({ workspaceId, userId }) => {
-  await axios.delete(`${API}/${workspaceId}/members/${userId}`, { withCredentials: true });
+  await workspaceService.removeMember(workspaceId, userId);
   return { workspaceId, userId };
 });
 
 export const fetchMessages = createAsyncThunk("workspace/fetchMessages", async ({ workspaceId, page = 1, limit = 50 }) => {
-  const res = await axios.get(`${API}/${workspaceId}/messages?page=${page}&limit=${limit}`, { withCredentials: true });
+  const res = await workspaceService.getMessages(workspaceId, { page, limit });
   return { workspaceId, ...res.data };
 });
 
 export const sendMessage = createAsyncThunk("workspace/sendMessage", async ({ workspaceId, content }) => {
-  const res = await axios.post(`${API}/${workspaceId}/messages`, { content }, { withCredentials: true });
+  const res = await workspaceService.sendMessage(workspaceId, content);
   return { workspaceId, message: res.data.message };
 });
 
 export const editMessage = createAsyncThunk("workspace/editMessage", async ({ workspaceId, msgId, content }) => {
-  const res = await axios.put(`${API}/${workspaceId}/messages/${msgId}`, { content }, { withCredentials: true });
+  const res = await workspaceService.editMessage(workspaceId, msgId, content);
   return { workspaceId, message: res.data.message };
 });
 
 export const deleteMessage = createAsyncThunk("workspace/deleteMessage", async ({ workspaceId, msgId, deleteFrom }) => {
-  await axios.delete(`${API}/${workspaceId}/messages/${msgId}`, {
-    data: { deleteFrom },
-    withCredentials: true,
-  });
+  await workspaceService.deleteMessage(workspaceId, msgId, deleteFrom);
   return { workspaceId, msgId, deleteFrom };
 });
 

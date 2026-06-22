@@ -1,5 +1,4 @@
 import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
-import axios from 'axios';
 import {
   Box,
   Typography,
@@ -46,8 +45,8 @@ import ErrorIcon from '@mui/icons-material/Error';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ScheduleIcon from '@mui/icons-material/Schedule';
 import { decryptData } from '../decrypt/decryption';
-
-const API_BASE = 'http://localhost:5000/api/hierarchy';
+import { getHierarchy } from '../services/hierarchyService';
+import api from '../services/apiClient';
 
 const ICON_MAP = {
   GroupsIcon: <GroupsIcon />,
@@ -290,7 +289,7 @@ function renderCellValue(col, item, theme, currencyConfig) {
 
 async function exportCSV(data, columns) {
   try {
-    const response = await axios.post(`${API_BASE}/export/csv`, { data, columns }, { responseType: 'blob' });
+    const response = await api.post('/api/hierarchy/export/csv', { data, columns }, { responseType: 'blob' });
     const url = URL.createObjectURL(new Blob([response.data], { type: 'text/csv' }));
     const a = document.createElement('a');
     a.href = url;
@@ -364,16 +363,11 @@ export default function HierarchyTable() {
 
     const fetchAll = async (isPoll = false) => {
       try {
-        const [configRes, dataRes] = await Promise.all([
-          axios.get(`${API_BASE}/config`),
-          axios.get(`${API_BASE}/data`),
-        ]);
+        const res = await getHierarchy();
         if (cancelled) return;
 
-        // const configStr = JSON.stringify(configRes.data);
-        // const dataStr = JSON.stringify(dataRes.data);
-        const configStr = await decryptData(configRes.data);
-        const dataStr = await decryptData(dataRes.data);
+        const configStr = await decryptData(res.data.config);
+        const dataStr = await decryptData(res.data.data);
         console.log("dataStr", dataStr);
        
 

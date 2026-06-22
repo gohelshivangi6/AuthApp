@@ -18,10 +18,8 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutlined';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import LockResetIcon from '@mui/icons-material/LockReset';
-import axios from 'axios';
 import GlassCard from '../components/GlassCard';
-
-const API_URL = 'http://localhost:5000/api/auth/reset-password';
+import { resetPassword } from '../services/authService';
 
 const ResetPassword = () => {
   const navigate = useNavigate();
@@ -85,10 +83,7 @@ const ResetPassword = () => {
     setLoading(true);
 
     try {
-      const res = await axios.post(API_URL, {
-        token,
-        password: formData.password
-      });
+      const res = await resetPassword(token, formData.password);
 
       if (res.data.success) {
         setSuccess('Password updated successfully! Redirecting to login...');

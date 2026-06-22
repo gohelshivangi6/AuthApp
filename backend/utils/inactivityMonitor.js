@@ -1,10 +1,12 @@
 const { readDB, writeDB } = require('./dbHelper');
-const { sendEmail } = require('./mailer');
+const { sendInactivityWarningEmail } = require('../services/emailService');
 const { getActiveUserIds, emitInactivityWarning, forceDisconnectUser } = require('./websocket');
 const { v4: uuidv4 } = require('uuid');
 
-const INACTIVITY_TIMEOUT_MS = 15 * 60 * 1000;
-const GRACE_PERIOD_MS = 2 * 60 * 1000;
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
+const INACTIVITY_TIMEOUT_MS = parseInt(process.env.INACTIVITY_TIMEOUT_MS, 10) || 15 * 60 * 1000;
+const GRACE_PERIOD_MS = parseInt(process.env.GRACE_PERIOD_MS, 10) || 2 * 60 * 1000;
+const MONITOR_INTERVAL_MS = parseInt(process.env.MONITOR_INTERVAL_MS, 10) || 30000;
 
 async function checkInactivity() {
   try {
@@ -12,7 +14,9 @@ async function checkInactivity() {
     if (!db.users || db.users.length === 0) return;
 
     const now = Date.now();
+    console.log("Now ", now);
     const activeIds = new Set(getActiveUserIds());
+    console.log("active ids", activeIds);
     let changed = false;
 
     for (const user of db.users) {
@@ -21,10 +25,14 @@ async function checkInactivity() {
 
       const lastActive = user.lastActivityAt ? new Date(user.lastActivityAt).getTime() : null;
       if (!lastActive) continue;
+      console.log("last activity ", lastActive);
 
       const inactiveDuration = now - lastActive;
+      console.log("inactive duration ", inactiveDuration);
       const hasPending = user.pendingInactivityLogout != null;
+      console.log("pending logout ", hasPending);
       const pendingExpiry = hasPending ? new Date(user.pendingInactivityLogout).getTime() : null;
+      console.log("oending expiry ", pendingExpiry);
 
       if (pendingExpiry && pendingExpiry <= now) {
         user.adminForceLoggedOutAt = new Date().toISOString();
@@ -41,21 +49,19 @@ async function checkInactivity() {
         const token = uuidv4();
         user.pendingInactivityLogout = new Date(now + GRACE_PERIOD_MS).toISOString();
         user.inactivityToken = token;
-        user.lastActiveAt = new Date().toISOString();
+        user.lastActivityAt = new Date().toISOString();
         changed = true;
 
-        if (activeIds.has(user.id)) {
-          emitInactivityWarning(user.id);
-        }
+        // console.log('user id before', user.id);
+        // if (activeIds.has(user.id)) {
+        //   console.log('user id', user.id);
+        //   emitInactivityWarning(user.id);
+        // }
+        emitInactivityWarning(user.id);
 
-        const stayActiveLink = `http://localhost:5173/stay-active?token=${token}&userId=${user.id}`;
+        const stayActiveLink = `${FRONTEND_URL}/stay-active?token=${token}&userId=${user.id}`;
 
-        await sendEmail({
-          to: user.email,
-          subject: 'Are you still there?',
-          text: `Hello ${user.name},\n\nYou've been inactive for 15 minutes. If you want to stay logged in, click the link below within 2 minutes:\n\n${stayActiveLink}\n\nIf you do not respond, you will be automatically logged out.`,
-          html: `<p>Hello ${user.name},</p><p>You've been inactive for 15 minutes.</p><p><a href="${stayActiveLink}" style="display:inline-block;padding:12px 24px;background:#6366f1;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;">Stay Active</a></p><p>If you do not respond within <strong>2 minutes</strong>, you will be automatically logged out.</p>`,
-        });
+        await sendInactivityWarningEmail(user, token);
       }
     }
 
@@ -69,8 +75,9 @@ function initInactivityMonitor() {
   console.log('[InactivityMonitor] Starting...');
   checkInactivity().catch((err) => console.error('[InactivityMonitor] Initial check failed:', err));
   setInterval(() => {
+    console.log("...");
     checkInactivity().catch((err) => console.error('[InactivityMonitor] Periodic check failed:', err));
-  }, 30000);
+  }, MONITOR_INTERVAL_MS);
 }
 
 module.exports = { initInactivityMonitor };
