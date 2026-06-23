@@ -610,7 +610,6 @@ async function ping({ userId }) {
 
   db.users[userIndex].lastActivityAt = new Date().toISOString();
   db.users[userIndex].pendingInactivityLogout = null;
-  db.users[userIndex].inactivityToken = null;
   await writeDB(db);
 }
 

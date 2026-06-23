@@ -49,7 +49,6 @@ async function checkInactivity() {
         const token = uuidv4();
         user.pendingInactivityLogout = new Date(now + GRACE_PERIOD_MS).toISOString();
         user.inactivityToken = token;
-        user.lastActivityAt = new Date().toISOString();
         changed = true;
 
         // console.log('user id before', user.id);

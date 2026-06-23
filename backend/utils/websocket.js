@@ -69,7 +69,9 @@ function initWebSocket(httpServer) {
             socket.emit("inactivity-warning", { userId });
           }
         }
-      } catch (_) {}
+      } catch (err) {
+        console.error("[WS] init handler error for user", userId, err.message);
+      }
     })();
 
     socket.on("event", async (data) => {
@@ -104,7 +106,7 @@ function initWebSocket(httpServer) {
           const lastActive = user.lastActivityAt
             ? new Date(user.lastActivityAt).getTime()
             : 0;
-          if (now - lastActive > 60000) {
+          if (now - lastActive > 30000) {
             user.lastActivityAt = new Date().toISOString();
           }
         }
@@ -113,7 +115,9 @@ function initWebSocket(httpServer) {
         if (didLog && io) {
           io.of("/user").emit("stats-updated");
         }
-      } catch (_) {}
+      } catch (err) {
+        console.error("[WS] event handler error for user", userId, err.message);
+      }
     });
 
     socket.on("page_view", async (data) => {
@@ -137,7 +141,7 @@ function initWebSocket(httpServer) {
           const lastActive = user.lastActivityAt
             ? new Date(user.lastActivityAt).getTime()
             : 0;
-          if (now - lastActive > 60000) {
+          if (now - lastActive > 30000) {
             user.lastActivityAt = new Date().toISOString();
           }
         }
@@ -146,7 +150,9 @@ function initWebSocket(httpServer) {
         if (io) {
           io.of("/user").emit("stats-updated");
         }
-      } catch (_) {}
+      } catch (err) {
+        console.error("[WS] page_view handler error for user", userId, err.message);
+      }
     });
 
     socket.on("disconnect", async () => {
@@ -232,7 +238,9 @@ async function logActivity(userId, type, metadata = {}) {
     if (io) {
       io.of("/user").emit("stats-updated");
     }
-  } catch (_) {}
+  } catch (err) {
+    console.error("[WS] logActivity error:", err.message);
+  }
 }
 
 function emitPermissionUpdate(userId, data = {}) {
@@ -280,7 +288,9 @@ async function joinUserWorkspaceRooms(userId) {
         }
       }
     }
-  } catch (_) {}
+  } catch (err) {
+    console.error("[WS] addUserToWorkspaceRoom error:", err.message);
+  }
 }
 
 async function removeUserFromWorkspaceRoom(userId, workspaceId) {
@@ -310,12 +320,14 @@ async function updateLastActivity(userId) {
     const user = db.users.find((u) => u.id === userId);
     if (user) {
       const lastActive = user.lastActivityAt ? new Date(user.lastActivityAt).getTime() : 0;
-      if (Date.now() - lastActive > 60000) {
+      if (Date.now() - lastActive > 30000) {
         user.lastActivityAt = new Date().toISOString();
         await writeDB(db);
       }
     }
-  } catch (_) {}
+  } catch (err) {
+    console.error("[WS] updateLastActivity error for user", userId, err.message);
+  }
 }
 
 function emitInactivityWarning(userId) {

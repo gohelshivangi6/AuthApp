@@ -136,11 +136,11 @@ export function WebSocketProvider({ children }) {
       if (activityRef.current.hasActivity) {
         const now = Date.now();
         if (now - activityRef.current.lastEmit >= 10000) {
-          activityRef.current.lastEmit = now;
-          activityRef.current.hasActivity = false;
           const sock = getUserSocket();
           if (sock?.connected) {
             sock.emit("event", { eventType: "activity" });
+            activityRef.current.lastEmit = now;
+            activityRef.current.hasActivity = false;
           }
         }
       }
