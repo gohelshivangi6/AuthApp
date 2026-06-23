@@ -13,6 +13,12 @@ import {
   Alert,
   Snackbar,
   Tooltip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Button,
 } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
 import CircleIcon from "@mui/icons-material/Circle";
@@ -131,36 +137,14 @@ export default function InactiveUserManager() {
                 </Typography>
               </TableCell>
               <TableCell align="right">
-                {confirmUserId === u.id ? (
-                  <Box sx={{ display: "flex", gap: 1, justifyContent: "flex-end" }}>
-                    <IconButton
-                      size="small"
-                      color="error"
-                      onClick={() => handleForceLogout(u.id)}
-                      title="Confirm logout"
-                    >
-                      <LogoutIcon fontSize="small" />
-                    </IconButton>
-                    <IconButton
-                      size="small"
-                      color="default"
-                      onClick={() => setConfirmUserId(null)}
-                      title="Cancel"
-                      sx={{ fontSize: 12 }}
-                    >
-                      <Typography variant="caption" sx={{ fontWeight: 600 }}>X</Typography>
-                    </IconButton>
-                  </Box>
-                ) : (
-                  <IconButton
-                    size="small"
-                    color="error"
-                    onClick={() => setConfirmUserId(u.id)}
-                    title="Force logout user"
-                  >
-                    <LogoutIcon fontSize="small" />
-                  </IconButton>
-                )}
+                <IconButton
+                  size="small"
+                  color="error"
+                  onClick={() => setConfirmUserId(u.id)}
+                  title="Force logout user"
+                >
+                  <LogoutIcon fontSize="small" />
+                </IconButton>
               </TableCell>
             </TableRow>
           ))}
@@ -175,6 +159,39 @@ export default function InactiveUserManager() {
           )}
         </TableBody>
       </Table>
+
+      <Dialog
+        open={confirmUserId !== null}
+        onClose={() => setConfirmUserId(null)}
+        PaperProps={{ sx: { bgcolor: "#1e1e38", borderRadius: 2 } }}
+      >
+        <DialogTitle sx={{ fontFamily: "Outfit", fontWeight: 700 }}>
+          Confirm Force Logout
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText sx={{ color: "text.secondary" }}>
+            Are you sure you want to force logout{' '}
+            <strong>{activeUsers.find((u) => u.id === confirmUserId)?.name || "this user"}</strong>
+            ? They will be disconnected immediately and must sign in again.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => setConfirmUserId(null)}
+            sx={{ color: "text.secondary", fontFamily: "Inter" }}
+          >
+            No
+          </Button>
+          <Button
+            onClick={() => handleForceLogout(confirmUserId)}
+            variant="contained"
+            color="error"
+            sx={{ fontFamily: "Outfit", fontWeight: 600 }}
+          >
+            Yes, logout
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <Snackbar
         open={snackbar.open}

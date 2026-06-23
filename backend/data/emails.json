@@ -1,5 +1,21 @@
 [
   {
+    "id": "mqq7w8suyd1",
+    "to": "shivangigohel18@gmail.com",
+    "subject": "You have been logged out by an administrator",
+    "text": "Hello Shivangi Gohel,\n\nAn administrator has logged you out. You can log back in at: http://localhost:5173/login",
+    "html": "<p>Hello Shivangi Gohel,</p><p>An administrator has logged you out.</p><p><a href=\"http://localhost:5173/login\">Click here to log back in</a></p>",
+    "timestamp": "2026-06-23T05:42:13.134Z"
+  },
+  {
+    "id": "mqq7vkl5oxq",
+    "to": "shivangigohel18@gmail.com",
+    "subject": "You have been logged out by an administrator",
+    "text": "Hello Shivangi Gohel,\n\nAn administrator has logged you out. You can log back in at: http://localhost:5173/login",
+    "html": "<p>Hello Shivangi Gohel,</p><p>An administrator has logged you out.</p><p><a href=\"http://localhost:5173/login\">Click here to log back in</a></p>",
+    "timestamp": "2026-06-23T05:41:41.753Z"
+  },
+  {
     "id": "mqq7o14uplt",
     "to": "shivangigohel18@gmail.com",
     "subject": "You have been logged out by an administrator",
@@ -382,21 +398,5 @@
     "text": "Hello Shivangi Gohel,\n\nYou've been inactive for 15 minutes. If you want to stay logged in, click the link below within 2 minutes:\n\nhttp://localhost:5173/stay-active?token=b70ea2e7-341d-40c1-a931-be10f5e83f17&userId=5d335914-d80b-4edc-b6ea-b2317854539d\n\nIf you do not respond, you will be automatically logged out.",
     "html": "<p>Hello Shivangi Gohel,</p><p>You've been inactive for 15 minutes.</p><p><a href=\"http://localhost:5173/stay-active?token=b70ea2e7-341d-40c1-a931-be10f5e83f17&userId=5d335914-d80b-4edc-b6ea-b2317854539d\" style=\"display:inline-block;padding:12px 24px;background:#6366f1;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;\">Stay Active</a></p><p>If you do not respond within <strong>2 minutes</strong>, you will be automatically logged out.</p>",
     "timestamp": "2026-06-22T08:41:50.771Z"
-  },
-  {
-    "id": "mqowykzyuxx",
-    "to": "shivangigohel18@gmail.com",
-    "subject": "Are you still there?",
-    "text": "Hello Shivangi Gohell,\n\nYou've been inactive for 15 minutes. If you want to stay logged in, click the link below within 2 minutes:\n\nhttp://localhost:5173/stay-active?token=704fbf50-90f8-44ec-931c-76c430add048&userId=5d335914-d80b-4edc-b6ea-b2317854539d\n\nIf you do not respond, you will be automatically logged out.",
-    "html": "<p>Hello Shivangi Gohell,</p><p>You've been inactive for 15 minutes.</p><p><a href=\"http://localhost:5173/stay-active?token=704fbf50-90f8-44ec-931c-76c430add048&userId=5d335914-d80b-4edc-b6ea-b2317854539d\" style=\"display:inline-block;padding:12px 24px;background:#6366f1;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;\">Stay Active</a></p><p>If you do not respond within <strong>2 minutes</strong>, you will be automatically logged out.</p>",
-    "timestamp": "2026-06-22T07:48:20.303Z"
-  },
-  {
-    "id": "mqowp9ipsl9",
-    "to": "shivangigohel18@gmail.com",
-    "subject": "Are you still there?",
-    "text": "Hello Shivangi Gohel,\n\nYou've been inactive for 15 minutes. If you want to stay logged in, click the link below within 2 minutes:\n\nhttp://localhost:5173/stay-active?token=2b556af9-fe69-4766-bd28-ae979a0f92d7&userId=5d335914-d80b-4edc-b6ea-b2317854539d\n\nIf you do not respond, you will be automatically logged out.",
-    "html": "<p>Hello Shivangi Gohel,</p><p>You've been inactive for 15 minutes.</p><p><a href=\"http://localhost:5173/stay-active?token=2b556af9-fe69-4766-bd28-ae979a0f92d7&userId=5d335914-d80b-4edc-b6ea-b2317854539d\" style=\"display:inline-block;padding:12px 24px;background:#6366f1;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;\">Stay Active</a></p><p>If you do not respond within <strong>2 minutes</strong>, you will be automatically logged out.</p>",
-    "timestamp": "2026-06-22T07:41:05.521Z"
   }
 ]

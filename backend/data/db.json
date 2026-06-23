@@ -14,7 +14,7 @@
       "resetPasswordToken": null,
       "resetPasswordExpires": null,
       "adminForceLoggedOutAt": null,
-      "lastActivityAt": "2026-06-23T05:35:57.331Z",
+      "lastActivityAt": "2026-06-23T05:42:12.102Z",
       "pendingDeleteAt": null,
       "deleteToken": null
     },
@@ -31,13 +31,13 @@
       "createdAt": "2026-06-22T10:09:35.485Z",
       "resetPasswordToken": null,
       "resetPasswordExpires": null,
-      "lastActivityAt": "2026-06-23T05:35:20.581Z",
+      "lastActivityAt": "2026-06-23T05:42:06.174Z",
       "pendingDeleteAt": null,
       "deleteToken": null,
       "suspended": false,
       "pendingInactivityLogout": null,
       "inactivityToken": "6f0e86b3-32e7-4607-b36b-da8bcec1fdca",
-      "adminForceLoggedOutAt": "2026-06-23T05:35:49.900Z"
+      "adminForceLoggedOutAt": "2026-06-23T05:42:13.105Z"
     }
   ],
   "activityLogs": [
@@ -3814,6 +3814,126 @@
       "metadata": {
         "sessionId": "ae799e23-4b48-49f1-b612-cadcacd0726d",
         "eventType": "activity"
+      }
+    },
+    {
+      "id": "f7efb0b8-978c-4654-b06d-4ff03137f6fb",
+      "userId": "b12bf9c8-987e-42ed-b105-e2f6429962c8",
+      "type": "event",
+      "timestamp": "2026-06-23T05:37:07.326Z",
+      "metadata": {
+        "sessionId": "ae799e23-4b48-49f1-b612-cadcacd0726d",
+        "eventType": "activity"
+      }
+    },
+    {
+      "id": "e85d410c-7556-4138-87f0-59435bb583ad",
+      "userId": "b12bf9c8-987e-42ed-b105-e2f6429962c8",
+      "type": "event",
+      "timestamp": "2026-06-23T05:38:57.167Z",
+      "metadata": {
+        "sessionId": "ae799e23-4b48-49f1-b612-cadcacd0726d",
+        "eventType": "activity"
+      }
+    },
+    {
+      "id": "7c9eabcc-7055-4246-be18-7dded504288b",
+      "userId": "b12bf9c8-987e-42ed-b105-e2f6429962c8",
+      "type": "event",
+      "timestamp": "2026-06-23T05:41:22.170Z",
+      "metadata": {
+        "sessionId": "ae799e23-4b48-49f1-b612-cadcacd0726d",
+        "eventType": "activity"
+      }
+    },
+    {
+      "id": "e4e3a9ef-aad4-4ed2-9734-df535fc0d669",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "session_start",
+      "timestamp": "2026-06-23T05:41:29.496Z",
+      "metadata": {
+        "sessionId": "13a195da-59e2-4de3-bd10-34e655eb6368",
+        "ip": "::1"
+      }
+    },
+    {
+      "id": "ee6bf27b-88f7-488b-8590-6465bb5afaf6",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "event",
+      "timestamp": "2026-06-23T05:41:29.587Z",
+      "metadata": {
+        "sessionId": "13a195da-59e2-4de3-bd10-34e655eb6368",
+        "eventType": "dashboard_list_view"
+      }
+    },
+    {
+      "id": "a56853f4-1bfa-4263-8380-e98363bdacfd",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "session_end",
+      "timestamp": "2026-06-23T05:41:41.759Z",
+      "metadata": {
+        "sessionId": "13a195da-59e2-4de3-bd10-34e655eb6368",
+        "durationMs": 12265
+      }
+    },
+    {
+      "id": "ec62ae0a-d4f0-49ee-9ba4-ff3a8a637bfc",
+      "userId": "b12bf9c8-987e-42ed-b105-e2f6429962c8",
+      "type": "session_end",
+      "timestamp": "2026-06-23T05:41:46.337Z",
+      "metadata": {
+        "sessionId": "ae799e23-4b48-49f1-b612-cadcacd0726d",
+        "durationMs": 524133
+      }
+    },
+    {
+      "id": "790ff6a5-d395-43ec-86f4-08b6663bcf96",
+      "userId": "b12bf9c8-987e-42ed-b105-e2f6429962c8",
+      "type": "session_start",
+      "timestamp": "2026-06-23T05:41:47.137Z",
+      "metadata": {
+        "sessionId": "5da8ef0d-5c0f-4adf-8883-b2148f993f13",
+        "ip": "::1"
+      }
+    },
+    {
+      "id": "a9925e8d-9d2f-4d82-abd1-3abc139c2551",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "session_start",
+      "timestamp": "2026-06-23T05:42:06.315Z",
+      "metadata": {
+        "sessionId": "08d1c2b9-2c28-4333-b989-6795e9c6d6e4",
+        "ip": "::1"
+      }
+    },
+    {
+      "id": "4a025b11-a682-4c94-8b91-0c6c96452ea7",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "event",
+      "timestamp": "2026-06-23T05:42:06.356Z",
+      "metadata": {
+        "sessionId": "08d1c2b9-2c28-4333-b989-6795e9c6d6e4",
+        "eventType": "dashboard_list_view"
+      }
+    },
+    {
+      "id": "1cc80f75-b29f-4bbc-8223-f48e1ad6259b",
+      "userId": "b12bf9c8-987e-42ed-b105-e2f6429962c8",
+      "type": "event",
+      "timestamp": "2026-06-23T05:42:12.102Z",
+      "metadata": {
+        "sessionId": "5da8ef0d-5c0f-4adf-8883-b2148f993f13",
+        "eventType": "activity"
+      }
+    },
+    {
+      "id": "7fe02a31-e596-4018-98f1-f20747865f88",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "session_end",
+      "timestamp": "2026-06-23T05:42:13.156Z",
+      "metadata": {
+        "sessionId": "08d1c2b9-2c28-4333-b989-6795e9c6d6e4",
+        "durationMs": 6826
       }
     }
   ],
