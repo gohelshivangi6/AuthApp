@@ -6,7 +6,10 @@ const {
   clearInactivityFlags,
   isLocked,
 } = require("../services/userService");
-const { emitDeletionUpdate } = require("../utils/websocket");
+const {
+  emitDeletionUpdate,
+  removeLoggedOutUser,
+} = require("../utils/websocket");
 const authService = require("../services/authService");
 
 const COOKIE_OPTIONS = {
@@ -168,6 +171,7 @@ const resetPassword = async (req, res, next) => {
 };
 
 const logout = (req, res) => {
+  removeLoggedOutUser(req.user.id);
   res.clearCookie("token", COOKIE_OPTIONS);
   res.status(200).json({
     success: true,

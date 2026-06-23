@@ -169,10 +169,9 @@ function initWebSocket(httpServer) {
       const sockets = userSockets.get(userId);
       if (sockets) {
         sockets.delete(socket.id);
-        if (sockets.size === 0) {
-          userSockets.delete(userId);
-        }
       }
+      // Don't delete userId from userSockets — user stays "logged in" even without WS connection.
+      // Only remove on explicit logout via removeLoggedOutUser().
 
       meta.sessionStart = Date.now();
     });
@@ -307,11 +306,25 @@ async function removeUserFromWorkspaceRoom(userId, workspaceId) {
 }
 
 function getActiveUsersCount() {
-  return userSockets.size;
+  let count = 0;
+  for (const [_, sockets] of userSockets) {
+    if (sockets.size > 0) count++;
+  }
+  return count;
 }
 
 function getActiveUserIds() {
   return Array.from(userSockets.keys());
+}
+
+function removeLoggedOutUser(userId) {
+  const sockets = userSockets.get(userId);
+  if (sockets) {
+    for (const socketId of sockets) {
+      socketMetadata.delete(socketId);
+    }
+  }
+  userSockets.delete(userId);
 }
 
 async function updateLastActivity(userId) {
@@ -347,6 +360,7 @@ function forceDisconnectUser(userId) {
       }
     }
   }
+  removeLoggedOutUser(userId);
 }
 
 module.exports = {
@@ -360,6 +374,7 @@ module.exports = {
   removeUserFromWorkspaceRoom,
   getActiveUsersCount,
   getActiveUserIds,
+  removeLoggedOutUser,
   emitInactivityWarning,
   forceDisconnectUser,
 };

@@ -51,7 +51,7 @@ router.post('/verify-2fa-login', authLimiter, validate2FA, handleValidationError
 router.post('/forgot-password', passwordResetLimiter, validateForgotPassword, handleValidationErrors, forgotPassword);
 router.post('/reset-password', passwordResetLimiter, validateResetPassword, handleValidationErrors, resetPassword);
 router.get('/me', requireAuth, me);
-router.post('/logout', sessionToken, logout);
+router.post('/logout', requireAuth, logout);
 router.get('/status', checkStatus);
 
 // --- Protected Dashboard Data Route ---
