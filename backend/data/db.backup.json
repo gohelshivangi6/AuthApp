@@ -14,7 +14,7 @@
       "resetPasswordToken": null,
       "resetPasswordExpires": null,
       "adminForceLoggedOutAt": null,
-      "lastActivityAt": "2026-06-23T05:42:12.102Z",
+      "lastActivityAt": "2026-06-23T05:57:07.335Z",
       "pendingDeleteAt": null,
       "deleteToken": null
     },
@@ -31,13 +31,13 @@
       "createdAt": "2026-06-22T10:09:35.485Z",
       "resetPasswordToken": null,
       "resetPasswordExpires": null,
-      "lastActivityAt": "2026-06-23T05:42:06.174Z",
+      "lastActivityAt": "2026-06-23T05:58:01.319Z",
       "pendingDeleteAt": null,
       "deleteToken": null,
       "suspended": false,
       "pendingInactivityLogout": null,
-      "inactivityToken": "6f0e86b3-32e7-4607-b36b-da8bcec1fdca",
-      "adminForceLoggedOutAt": "2026-06-23T05:42:13.105Z"
+      "inactivityToken": "698d1cdb-a997-4f56-840e-eedeb3f1b45a",
+      "adminForceLoggedOutAt": null
     }
   ],
   "activityLogs": [
@@ -3934,6 +3934,117 @@
       "metadata": {
         "sessionId": "08d1c2b9-2c28-4333-b989-6795e9c6d6e4",
         "durationMs": 6826
+      }
+    },
+    {
+      "id": "b3fa61df-8851-49cf-b227-5849bbb74fd3",
+      "userId": "b12bf9c8-987e-42ed-b105-e2f6429962c8",
+      "type": "event",
+      "timestamp": "2026-06-23T05:43:02.108Z",
+      "metadata": {
+        "sessionId": "5da8ef0d-5c0f-4adf-8883-b2148f993f13",
+        "eventType": "activity"
+      }
+    },
+    {
+      "id": "d26c3382-738e-4081-b369-58b1deccd7c7",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "session_start",
+      "timestamp": "2026-06-23T05:54:35.469Z",
+      "metadata": {
+        "sessionId": "517f5d70-032e-4fd3-8452-c7132c077154",
+        "ip": "::1"
+      }
+    },
+    {
+      "id": "69d711eb-1e5a-4af4-9481-2ebd4987ff63",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "event",
+      "timestamp": "2026-06-23T05:54:35.528Z",
+      "metadata": {
+        "sessionId": "517f5d70-032e-4fd3-8452-c7132c077154",
+        "eventType": "dashboard_list_view"
+      }
+    },
+    {
+      "id": "9b93a315-5d8d-4971-bbf3-2a51fed6b2da",
+      "userId": "b12bf9c8-987e-42ed-b105-e2f6429962c8",
+      "type": "event",
+      "timestamp": "2026-06-23T05:54:42.096Z",
+      "metadata": {
+        "sessionId": "5da8ef0d-5c0f-4adf-8883-b2148f993f13",
+        "eventType": "activity"
+      }
+    },
+    {
+      "id": "77cbdad2-b1d2-46f5-b1cf-a20d73858665",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "event",
+      "timestamp": "2026-06-23T05:55:06.872Z",
+      "metadata": {
+        "sessionId": "517f5d70-032e-4fd3-8452-c7132c077154",
+        "eventType": "dashboard_list_view"
+      }
+    },
+    {
+      "id": "e5e90ae9-c5ca-4167-98ab-e611cd894ee5",
+      "userId": "b12bf9c8-987e-42ed-b105-e2f6429962c8",
+      "type": "event",
+      "timestamp": "2026-06-23T05:55:22.099Z",
+      "metadata": {
+        "sessionId": "5da8ef0d-5c0f-4adf-8883-b2148f993f13",
+        "eventType": "activity"
+      }
+    },
+    {
+      "id": "4ea323d8-5d11-4975-be0d-ff2178c7fe23",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "event",
+      "timestamp": "2026-06-23T05:55:40.367Z",
+      "metadata": {
+        "dashboard": "global-sales-cockpit",
+        "sessionId": "517f5d70-032e-4fd3-8452-c7132c077154",
+        "eventType": "dashboard_view"
+      }
+    },
+    {
+      "id": "77211bc3-d0ed-4047-9eb0-3bfb79a4750a",
+      "userId": "b12bf9c8-987e-42ed-b105-e2f6429962c8",
+      "type": "event",
+      "timestamp": "2026-06-23T05:55:57.328Z",
+      "metadata": {
+        "sessionId": "5da8ef0d-5c0f-4adf-8883-b2148f993f13",
+        "eventType": "activity"
+      }
+    },
+    {
+      "id": "19418fc1-fae1-4598-9af7-63bdffd6dbbb",
+      "userId": "b12bf9c8-987e-42ed-b105-e2f6429962c8",
+      "type": "event",
+      "timestamp": "2026-06-23T05:57:07.335Z",
+      "metadata": {
+        "sessionId": "5da8ef0d-5c0f-4adf-8883-b2148f993f13",
+        "eventType": "activity"
+      }
+    },
+    {
+      "id": "6986b04b-427c-440e-8fe3-c44753f6d0b5",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "event",
+      "timestamp": "2026-06-23T05:57:11.330Z",
+      "metadata": {
+        "sessionId": "517f5d70-032e-4fd3-8452-c7132c077154",
+        "eventType": "activity"
+      }
+    },
+    {
+      "id": "27d6037a-1b19-4fc3-83f3-6d821268d017",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "event",
+      "timestamp": "2026-06-23T05:58:01.319Z",
+      "metadata": {
+        "sessionId": "517f5d70-032e-4fd3-8452-c7132c077154",
+        "eventType": "activity"
       }
     }
   ],

@@ -182,7 +182,7 @@ async function bulkCreatePermissions(req, res, next) {
 
 async function bulkSavePermissions(req, res, next) {
   try {
-    const result = await adminService.bulkSavePermissions(req.body);
+    const result = await adminService.bulkSavePermissions(req.body); 
     if (result.error) return res.status(result.statusCode).json({ success: false, message: result.error });
     res.status(result.statusCode || 201).json(result);
   } catch (err) { next(err); }
