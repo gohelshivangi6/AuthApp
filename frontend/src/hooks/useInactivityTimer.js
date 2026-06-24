@@ -7,9 +7,18 @@ import { disconnectSockets } from "../utils/websocket";
 import { clearSessionToken } from "../utils/sessionToken";
 import { logout as logoutApi } from "../services/authService";
 
-const INACTIVITY_TIMEOUT_MS = 1 * 30 * 1000; // 1 minute (for testing)
-const GRACE_PERIOD_SEC = 30; // 30 seconds (for testing)
+// const INACTIVITY_TIMEOUT_MS = import.meta.env.VITE_INACTIVITY_TIMEOUT_MS
+// const GRACE_PERIOD_SEC = import.meta.env.VITE_GRACE_PERIOD_SEC; 
 const HEARTBEAT_INTERVAL_MS = 60000; // heartbeat every 60s while active
+const INACTIVITY_TIMEOUT_MS = Number(
+  import.meta.env.VITE_INACTIVITY_TIMEOUT_MS
+);
+
+const GRACE_PERIOD_SEC = Number(
+  import.meta.env.VITE_GRACE_PERIOD_SEC
+);
+console.log("inac", INACTIVITY_TIMEOUT_MS);
+console.log("gra", GRACE_PERIOD_SEC);
 
 export default function useInactivityTimer() {
   const dispatch = useDispatch();

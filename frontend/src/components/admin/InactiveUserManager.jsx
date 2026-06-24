@@ -108,7 +108,7 @@ export default function InactiveUserManager() {
         <Typography variant="h6" sx={{ fontFamily: "Outfit", fontWeight: 700 }}>
           Currently Active Users
         </Typography>
-        <Button 
+        {/* <Button 
           variant="outlined" 
           size="small" 
           startIcon={<RefreshIcon />} 
@@ -116,7 +116,7 @@ export default function InactiveUserManager() {
           sx={{ fontFamily: "Outfit", borderColor: "rgba(255,255,255,0.2)", color: "text.primary" }}
         >
           Refresh
-        </Button>
+        </Button> */}
       </Box>
 
       <Typography variant="subtitle1" sx={{ fontFamily: "Outfit", fontWeight: 600, mb: 1, color: "text.secondary" }}>
@@ -129,8 +129,8 @@ export default function InactiveUserManager() {
             <TableCell>Status</TableCell>
             <TableCell>Name</TableCell>
             <TableCell>Email</TableCell>
-            <TableCell>Last Activity</TableCell>
-            <TableCell>Session Duration</TableCell>
+            {/* <TableCell>Last Activity</TableCell> */}
+            {/* <TableCell>Session Duration</TableCell> */}
             <TableCell align="right">Actions</TableCell>
           </TableRow>
         </TableHead>
@@ -150,7 +150,7 @@ export default function InactiveUserManager() {
               </TableCell>
               <TableCell>{u.name}</TableCell>
               <TableCell>{u.email}</TableCell>
-              <TableCell>
+              {/* <TableCell>
                 <Chip
                   label={formatTime(u.lastActivityAt)}
                   size="small"
@@ -162,7 +162,7 @@ export default function InactiveUserManager() {
                 <Typography variant="body2" color="text.secondary">
                   {formatDuration(u.sessionDurationSec)}
                 </Typography>
-              </TableCell>
+              </TableCell> */}
               <TableCell align="right">
                 <IconButton
                   size="small"
