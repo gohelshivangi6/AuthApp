@@ -111,6 +111,7 @@ function initWebSocket(httpServer) {
             : 0;
           if (now - lastActive > 30000) {
             user.lastActivityAt = new Date().toISOString();
+            emitAdminUserStatus(userId, "active");
           }
         }
 
@@ -146,6 +147,7 @@ function initWebSocket(httpServer) {
             : 0;
           if (now - lastActive > 30000) {
             user.lastActivityAt = new Date().toISOString();
+            emitAdminUserStatus(userId, "active");
           }
         }
 
@@ -230,7 +232,9 @@ function initWebSocket(httpServer) {
         emitAdminUserStatus(userId, "offline");
       }
 
-      meta.sessionStart = Date.now();
+      if (meta) {
+        meta.sessionStart = Date.now();
+      }
     });
 
     const meta = socketMetadata.get(socket.id);
@@ -402,7 +406,11 @@ function getActiveUsersCount() {
 }
 
 function getActiveUserIds() {
-  return Array.from(userSockets.keys());
+  const activeIds = [];
+  for (const [userId, sockets] of userSockets) {
+    if (sockets.size > 0) activeIds.push(userId);
+  }
+  return activeIds;
 }
 
 function removeLoggedOutUser(userId) {

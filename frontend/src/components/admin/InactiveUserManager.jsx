@@ -40,6 +40,8 @@ function formatTime(iso) {
   return d.toLocaleTimeString();
 }
 
+import RefreshIcon from "@mui/icons-material/Refresh";
+
 export default function InactiveUserManager() {
   const dispatch = useDispatch();
   const { activeUsers } = useSelector((state) => state.admin);
@@ -96,12 +98,25 @@ export default function InactiveUserManager() {
     }
   };
 
+  const handleManualRefresh = () => {
+    dispatch(fetchActiveUsers());
+  };
+
   return (
     <Box>
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
         <Typography variant="h6" sx={{ fontFamily: "Outfit", fontWeight: 700 }}>
           Currently Active Users
         </Typography>
+        <Button 
+          variant="outlined" 
+          size="small" 
+          startIcon={<RefreshIcon />} 
+          onClick={handleManualRefresh}
+          sx={{ fontFamily: "Outfit", borderColor: "rgba(255,255,255,0.2)", color: "text.primary" }}
+        >
+          Refresh
+        </Button>
       </Box>
 
       <Typography variant="subtitle1" sx={{ fontFamily: "Outfit", fontWeight: 600, mb: 1, color: "text.secondary" }}>
