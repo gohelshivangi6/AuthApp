@@ -11,6 +11,7 @@ const {
   removeLoggedOutUser,
 } = require("../utils/websocket");
 const authService = require("../services/authService");
+const { revokeSessionToken } = require("../middleware/sessionToken");
 
 const COOKIE_OPTIONS = {
   httpOnly: true,
@@ -171,6 +172,7 @@ const resetPassword = async (req, res, next) => {
 };
 
 const logout = (req, res) => {
+  revokeSessionToken(req.headers['x-session-token']);
   removeLoggedOutUser(req.user.id);
   res.clearCookie("token", COOKIE_OPTIONS);
   res.status(200).json({

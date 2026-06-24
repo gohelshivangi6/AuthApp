@@ -74,6 +74,24 @@
       "pendingDeleteAt": null,
       "deleteToken": null,
       "suspended": false
+    },
+    {
+      "id": "4dee7e9c-30c7-4fee-b6d3-e2148bbcb8ef",
+      "name": "pqr",
+      "email": "pqr@gmail.com",
+      "passwordHash": "$2b$12$TzpVmYyUk01gYgFnR0Wwzuz13yyrZbM17PuM59ChLneXejQeO0fp2",
+      "role": "user",
+      "status": "PENDING_2FA",
+      "twoFactorSecretEncrypted": "1a1077aac0427d559b803752a0e91cfb:124961f68658a4e7e9af7f84f6beff99c223c46a2db4e0b7b64dee147ff7f89e96688bee844fcc5c12189b5e691c4feb265f4adf49241de70d04dac44a831e5c",
+      "failedAttempts": 0,
+      "lockUntil": null,
+      "createdAt": "2026-06-24T11:34:37.343Z",
+      "resetPasswordToken": null,
+      "resetPasswordExpires": null,
+      "lastActivityAt": null,
+      "pendingDeleteAt": null,
+      "deleteToken": null,
+      "suspended": false
     }
   ],
   "activityLogs": [

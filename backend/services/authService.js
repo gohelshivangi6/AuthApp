@@ -90,7 +90,7 @@ async function signup({ name, email, password }) {
   const qrCodeUrl = await qrcode.toDataURL(secret.otpauth_url);
   const tempToken = signTempToken(newUser.id, "registration_pending_2fa");
 
-  await sendWelcomeEmail(newUser, secret.base32);
+  await sendWelcomeEmail(newUser);
 
   return { tempToken, qrCodeUrl, manualSecret: secret.base32 };
 }

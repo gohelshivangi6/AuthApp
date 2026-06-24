@@ -87,7 +87,7 @@ router.post('/2fa/enable', requireAuth, validate2FA, handleValidationErrors, ena
 router.post('/2fa/disable', requireAuth, disable2FA);
 
 // --- Dev Utilities (Simulated Email Sandbox) ---
-router.get('/dev/emails', async (req, res, next) => {
+router.get('/dev/emails', requireAuth, async (req, res, next) => {
   try {
     const list = await getEmails();
     res.status(200).json({ success: true, emails: list });
@@ -96,7 +96,7 @@ router.get('/dev/emails', async (req, res, next) => {
   }
 });
 
-router.post('/dev/emails/clear', async (req, res, next) => {
+router.post('/dev/emails/clear', requireAuth, async (req, res, next) => {
   try {
     await clearEmails();
     res.status(200).json({ success: true, message: 'Simulated mailbox cleared.' });

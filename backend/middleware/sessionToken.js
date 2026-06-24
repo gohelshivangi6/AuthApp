@@ -2,9 +2,7 @@ const { decryptData } = require('./encryption');
 
 const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
-const validTokens = new Set();
 const blacklistedNonces = new Set();
-let currentToken = null;
 
 const TOKEN_TTL_MS = 24 * 60 * 60 * 1000;
 
@@ -45,4 +43,22 @@ function sessionToken(req, res, next) {
   next();
 }
 
-module.exports = { sessionToken };
+function revokeSessionToken(header) {
+  if (!header) return;
+
+  const parts = header.split(':');
+  if (parts.length !== 3) return;
+
+  const [iv, authTag, encryptedData] = parts;
+
+  try {
+    const payload = decryptData(encryptedData, iv, authTag);
+    if (payload && payload.nonce && uuidRegex.test(payload.nonce)) {
+      blacklistedNonces.add(payload.nonce);
+    }
+  } catch (_) {
+    // Invalid token, nothing to revoke
+  }
+}
+
+module.exports = { sessionToken, revokeSessionToken };

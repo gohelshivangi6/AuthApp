@@ -122,12 +122,12 @@ function sendPasswordChangedEmail(user) {
   });
 }
 
-function sendWelcomeEmail(user, secretBase32) {
+function sendWelcomeEmail(user) {
   return sendEmail({
     to: user.email,
     subject: "Welcome to SecureAuthApp - Finish 2FA Registration",
-    text: `Hello ${user.name},\n\nPlease complete your registration by configuring Two-Factor Authentication.\nYour 2FA manual entry code is: ${secretBase32}`,
-    html: `<p>Hello ${user.name},</p><p>Please complete your registration by configuring Two-Factor Authentication.</p><p>Your 2FA manual entry code is: <strong>${secretBase32}</strong></p>`,
+    text: `Hello ${user.name},\n\nPlease complete your registration by configuring Two-Factor Authentication. Log in to your account and follow the setup instructions to scan the QR code with your authenticator app.`,
+    html: `<p>Hello ${user.name},</p><p>Please complete your registration by configuring Two-Factor Authentication.</p><p>Log in to your account and follow the setup instructions to scan the QR code with your authenticator app.</p>`,
   });
 }
 

@@ -19,9 +19,14 @@ router.get('/:name', sessionToken, (req, res) => {
   if (!filename) {
     return res.status(404).json({ success: false, message: 'Dashboard not found' });
   }
-  const filePath = path.join(DATA_DIR, filename);
-  const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
-  res.json(encryptData(data));
+  try {
+    const filePath = path.join(DATA_DIR, filename);
+    const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+    res.json(encryptData(data));
+  } catch (err) {
+    console.error('Failed to read dashboard data:', err);
+    res.status(500).json({ success: false, message: 'Failed to load dashboard data' });
+  }
 });
 
 router.get('/:name/layout', sessionToken, async (req, res) => {

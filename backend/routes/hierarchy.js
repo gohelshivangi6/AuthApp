@@ -13,16 +13,26 @@ function readJSON(filename) {
 }
 
 router.get('/config', sessionToken, (req, res) => {
-  const data = readJSON('hierarchyConfig.json');
-  res.json(encryptData(data));
+  try {
+    const data = readJSON('hierarchyConfig.json');
+    res.json(encryptData(data));
+  } catch (err) {
+    console.error('Failed to read hierarchy config:', err);
+    res.status(500).json({ success: false, message: 'Failed to read hierarchy config' });
+  }
 });
 
 router.get('/data', sessionToken, (req, res) => {
-  const data = readJSON('hierarchyData.json');
-  res.json(encryptData(data));
+  try {
+    const data = readJSON('hierarchyData.json');
+    res.json(encryptData(data));
+  } catch (err) {
+    console.error('Failed to read hierarchy data:', err);
+    res.status(500).json({ success: false, message: 'Failed to read hierarchy data' });
+  }
 });
 
-router.post('/export/csv', (req, res) => {
+router.post('/export/csv', sessionToken, (req, res) => {
   const { data, columns } = req.body;
 
   if (!Array.isArray(data) || !Array.isArray(columns) || columns.length === 0) {

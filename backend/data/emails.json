@@ -1,5 +1,13 @@
 [
   {
+    "id": "mqrzxan4n7a",
+    "to": "pqr@gmail.com",
+    "subject": "Welcome to SecureAuthApp - Finish 2FA Registration",
+    "text": "Hello pqr,\n\nPlease complete your registration by configuring Two-Factor Authentication.\nYour 2FA manual entry code is: IM3WSZZKNNRTM22PJJSH2NLGJZWUQZJILJJCC4BYKZ3XC4BTHF4A",
+    "html": "<p>Hello pqr,</p><p>Please complete your registration by configuring Two-Factor Authentication.</p><p>Your 2FA manual entry code is: <strong>IM3WSZZKNNRTM22PJJSH2NLGJZWUQZJILJJCC4BYKZ3XC4BTHF4A</strong></p>",
+    "timestamp": "2026-06-24T11:34:37.601Z"
+  },
+  {
     "id": "mqrwuj9j9lo",
     "to": "shivangigohel18@gmail.com",
     "subject": "Are you still there?",
@@ -390,13 +398,5 @@
     "text": "Hello Shivangi Gohell,\n\nYou've been inactive for 15 minutes. If you want to stay logged in, click the link below within 2 minutes:\n\nhttp://localhost:5173/stay-active?token=b3b5b393-0e1b-4c2a-9b4a-e190415d8527&userId=d245ba97-136d-4224-97a3-e336ca431708\n\nIf you do not respond, you will be automatically logged out.",
     "html": "<p>Hello Shivangi Gohell,</p><p>You've been inactive for 15 minutes.</p><p><a href=\"http://localhost:5173/stay-active?token=b3b5b393-0e1b-4c2a-9b4a-e190415d8527&userId=d245ba97-136d-4224-97a3-e336ca431708\" style=\"display:inline-block;padding:12px 24px;background:#6366f1;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;\">Stay Active</a></p><p>If you do not respond within <strong>2 minutes</strong>, you will be automatically logged out.</p>",
     "timestamp": "2026-06-22T17:52:40.378Z"
-  },
-  {
-    "id": "mqpigjoeics",
-    "to": "shivangigohel18@gmail.com",
-    "subject": "Are you still there?",
-    "text": "Hello Shivangi Gohell,\n\nYou've been inactive for 15 minutes. If you want to stay logged in, click the link below within 2 minutes:\n\nhttp://localhost:5173/stay-active?token=714f1197-0a3f-4ca6-bb6b-848a7d826bbd&userId=d245ba97-136d-4224-97a3-e336ca431708\n\nIf you do not respond, you will be automatically logged out.",
-    "html": "<p>Hello Shivangi Gohell,</p><p>You've been inactive for 15 minutes.</p><p><a href=\"http://localhost:5173/stay-active?token=714f1197-0a3f-4ca6-bb6b-848a7d826bbd&userId=d245ba97-136d-4224-97a3-e336ca431708\" style=\"display:inline-block;padding:12px 24px;background:#6366f1;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;\">Stay Active</a></p><p>If you do not respond within <strong>2 minutes</strong>, you will be automatically logged out.</p>",
-    "timestamp": "2026-06-22T17:50:10.334Z"
   }
 ]
