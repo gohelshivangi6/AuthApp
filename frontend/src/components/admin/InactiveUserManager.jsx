@@ -104,7 +104,7 @@ export default function InactiveUserManager() {
 
   return (
     <Box>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }} mb={2}>
         <Typography variant="h6" sx={{ fontFamily: "Outfit", fontWeight: 700 }}>
           Currently Active Users
         </Typography>

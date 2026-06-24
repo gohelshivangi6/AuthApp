@@ -19,7 +19,9 @@ export default function StayActive() {
   const userId = searchParams.get("userId");
 
   const [loading, setLoading] = useState(!!(token && userId));
-  const [status, setStatus] = useState(!token || !userId ? "invalid" : "loading");
+  const [status, setStatus] = useState(
+    !token || !userId ? "invalid" : "loading",
+  );
   const [name, setName] = useState("");
   const [remainingMs, setRemainingMs] = useState(0);
   const [extending, setExtending] = useState(false);
@@ -59,7 +61,9 @@ export default function StayActive() {
         setLoading(false);
       });
 
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [token, userId]);
 
   useEffect(() => {
@@ -117,11 +121,13 @@ export default function StayActive() {
 
   return (
     <Box
-      display="flex"
-      justifyContent="center"
-      alignItems="center"
-      minHeight="100vh"
-      sx={{ px: 2 }}
+      sx={{
+        display: "flex",
+        justifyContent: "center",
+        minHeight: "100vh",
+        alignItems: "center",
+        px: 2,
+      }}
     >
       <Paper
         sx={{
@@ -138,17 +144,29 @@ export default function StayActive() {
         {status === "valid" && (
           <>
             <TouchAppIcon sx={{ fontSize: 56, color: "#f59e0b", mb: 2 }} />
-            <Typography variant="h5" sx={{ fontFamily: "Outfit", fontWeight: 700, mb: 1 }}>
+            <Typography
+              variant="h5"
+              sx={{ fontFamily: "Outfit", fontWeight: 700, mb: 1 }}
+            >
               Are you still there, {name}?
             </Typography>
             <Typography variant="body1" color="text.secondary" sx={{ mb: 1 }}>
               Your session will expire in:
             </Typography>
-            <Typography variant="h3" sx={{ fontFamily: "Outfit", fontWeight: 800, mb: 3, color: remainingMs > 30000 ? "#f59e0b" : "#ef4444" }}>
+            <Typography
+              variant="h3"
+              sx={{
+                fontFamily: "Outfit",
+                fontWeight: 800,
+                mb: 3,
+                color: remainingMs > 30000 ? "#f59e0b" : "#ef4444",
+              }}
+            >
               {formatTime(remainingMs)}
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-              Click below to stay logged in, or you'll be logged out automatically.
+              Click below to stay logged in, or you'll be logged out
+              automatically.
             </Typography>
             <Button
               variant="contained"
@@ -165,7 +183,10 @@ export default function StayActive() {
         {status === "active" && (
           <>
             <CheckCircleIcon sx={{ fontSize: 56, color: "#10b981", mb: 2 }} />
-            <Typography variant="h5" sx={{ fontFamily: "Outfit", fontWeight: 700, mb: 1 }}>
+            <Typography
+              variant="h5"
+              sx={{ fontFamily: "Outfit", fontWeight: 700, mb: 1 }}
+            >
               {message || "Your session is active"}
             </Typography>
             <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
@@ -184,7 +205,10 @@ export default function StayActive() {
         {(status === "expired" || status === "invalid") && (
           <>
             <ErrorIcon sx={{ fontSize: 56, color: "#ef4444", mb: 2 }} />
-            <Typography variant="h5" sx={{ fontFamily: "Outfit", fontWeight: 700, mb: 1 }}>
+            <Typography
+              variant="h5"
+              sx={{ fontFamily: "Outfit", fontWeight: 700, mb: 1 }}
+            >
               {status === "expired" ? "Session Expired" : "Invalid Link"}
             </Typography>
             <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>

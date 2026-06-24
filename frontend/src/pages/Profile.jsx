@@ -50,7 +50,11 @@ const Profile = () => {
   const [passwordSaving, setPasswordSaving] = useState(false);
   const [passwordError, setPasswordError] = useState("");
 
-  const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success",
+  });
 
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
@@ -63,10 +67,14 @@ const Profile = () => {
     try {
       const res = await updateProfile(name);
       dispatch(updateUser(res.data.user));
-      setSnackbar({ open: true, message: "Profile updated successfully.", severity: "success" });
+      setSnackbar({
+        open: true,
+        message: "Profile updated successfully.",
+        severity: "success",
+      });
     } catch (err) {
       setProfileError(
-        err.response?.data?.message || "Failed to update profile."
+        err.response?.data?.message || "Failed to update profile.",
       );
     } finally {
       setProfileSaving(false);
@@ -93,7 +101,11 @@ const Profile = () => {
     setPasswordSaving(true);
     try {
       await changePassword(currentPassword, newPassword);
-      setSnackbar({ open: true, message: "Password changed successfully.", severity: "success" });
+      setSnackbar({
+        open: true,
+        message: "Password changed successfully.",
+        severity: "success",
+      });
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
@@ -118,7 +130,9 @@ const Profile = () => {
       setTempToken(res.data.tempToken);
       setShow2FASetup(true);
     } catch (err) {
-      setEnableError(err.response?.data?.message || "Failed to generate 2FA setup.");
+      setEnableError(
+        err.response?.data?.message || "Failed to generate 2FA setup.",
+      );
     } finally {
       setGenerating(false);
     }
@@ -135,7 +149,11 @@ const Profile = () => {
     try {
       const res = await enable2FA(verifyCode, tempToken);
       dispatch(updateUser(res.data.user));
-      setSnackbar({ open: true, message: "Two-Factor Authentication enabled successfully.", severity: "success" });
+      setSnackbar({
+        open: true,
+        message: "Two-Factor Authentication enabled successfully.",
+        severity: "success",
+      });
       setShow2FASetup(false);
       setVerifyCode("");
       setQrCodeUrl("");
@@ -168,7 +186,11 @@ const Profile = () => {
     try {
       const res = await disable2FA(disablePassword);
       dispatch(updateUser(res.data.user));
-      setSnackbar({ open: true, message: "Two-Factor Authentication disabled successfully.", severity: "success" });
+      setSnackbar({
+        open: true,
+        message: "Two-Factor Authentication disabled successfully.",
+        severity: "success",
+      });
       setShow2FADisable(false);
       setDisablePassword("");
     } catch (err) {
@@ -216,7 +238,14 @@ const Profile = () => {
           borderRadius: 3,
         }}
       >
-        <Box display="flex" alignItems="center" gap={1.5} mb={3}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+          }}
+          gap={1.5}
+          mb={3}
+        >
           <PersonIcon sx={{ color: "#6366f1" }} />
           <Typography
             variant="h6"
@@ -276,7 +305,14 @@ const Profile = () => {
           borderRadius: 3,
         }}
       >
-        <Box display="flex" alignItems="center" gap={1.5} mb={3}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+          }}
+          gap={1.5}
+          mb={3}
+        >
           <LockIcon sx={{ color: "#6366f1" }} />
           <Typography
             variant="h6"
@@ -349,7 +385,14 @@ const Profile = () => {
           borderRadius: 3,
         }}
       >
-        <Box display="flex" alignItems="center" gap={1.5} mb={3}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+          }}
+          gap={1.5}
+          mb={3}
+        >
           <SecurityIcon sx={{ color: "#6366f1" }} />
           <Typography
             variant="h6"
@@ -397,7 +440,7 @@ const Profile = () => {
                   className="custom-textfield"
                   sx={{ mb: 2 }}
                 />
-                <Box display="flex" gap={2}>
+                <Box sx={{ display: "flex" }} gap={2}>
                   <Button
                     type="submit"
                     variant="contained"
@@ -426,7 +469,9 @@ const Profile = () => {
                 disabled={generating}
                 sx={{ mt: 1 }}
               >
-                {generating ? "Generating..." : "Enable Two-Factor Authentication"}
+                {generating
+                  ? "Generating..."
+                  : "Enable Two-Factor Authentication"}
               </Button>
             ) : (
               <Box>
@@ -464,7 +509,9 @@ const Profile = () => {
                 >
                   Or enter this key manually: <strong>{manualSecret}</strong>
                 </Typography>
-                <Divider sx={{ mb: 2, borderColor: "rgba(255,255,255,0.08)" }} />
+                <Divider
+                  sx={{ mb: 2, borderColor: "rgba(255,255,255,0.08)" }}
+                />
                 <Box
                   component="form"
                   onSubmit={handleEnable2FA}
@@ -475,7 +522,9 @@ const Profile = () => {
                     label="Verification Code"
                     value={verifyCode}
                     onChange={(e) =>
-                      setVerifyCode(e.target.value.replace(/\D/g, "").slice(0, 6))
+                      setVerifyCode(
+                        e.target.value.replace(/\D/g, "").slice(0, 6),
+                      )
                     }
                     margin="normal"
                     variant="outlined"
@@ -485,7 +534,7 @@ const Profile = () => {
                     helperText="Enter the 6-digit code from your authenticator app."
                     sx={{ mb: 0 }}
                   />
-                  <Box display="flex" gap={2}>
+                  <Box sx={{ display: "flex" }} gap={2}>
                     <Button
                       type="submit"
                       variant="contained"

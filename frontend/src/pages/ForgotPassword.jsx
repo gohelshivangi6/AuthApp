@@ -41,9 +41,14 @@ const ForgotPassword = () => {
   };
 
   return (
-    <Box display="flex" minHeight="90vh" alignItems="center" justifyContent="center">
+    <Box sx={{
+        display: "flex",
+        justifyContent: "center",
+        minHeight: "90vh",
+        alignItems: "center",
+      }}>
       <GlassCard>
-        <Box textAlign="center" mb={3}>
+        <Box sx={{ textAlign: "center" }} mb={3}>
           <ContactSupportIcon sx={{ fontSize: 40, color: '#6366f1', mb: 1 }} />
           <Typography variant="h5" sx={{ fontFamily: 'Outfit', fontWeight: 800 }}>
             Forgot Password?
@@ -93,7 +98,7 @@ const ForgotPassword = () => {
           </form>
         )}
 
-        <Box mt={2} textAlign="center">
+        <Box mt={2} sx={{ textAlign: "center" }}>
           <Typography variant="body2" color="textSecondary">
             Remember your credentials?{' '}
             <Link to="/login" style={{ color: '#6366f1', textDecoration: 'none', fontWeight: 'bold' }}>

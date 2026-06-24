@@ -49,7 +49,12 @@ export default function UserDashboard() {
 
   if (loading && departments.length === 0) {
     return (
-      <Box display="flex" minHeight="60vh" alignItems="center" justifyContent="center">
+      <Box sx={{
+          display: "flex",
+          justifyContent: "center",
+          minHeight: "60vh",
+          alignItems: "center",
+        }}>
         <CircularProgress />
       </Box>
     );
@@ -82,11 +87,11 @@ export default function UserDashboard() {
 
   return (
     <Box sx={{ py: 6, px: { xs: 2, md: 4 }, maxWidth: 1100, margin: "0 auto" }}>
-      <Box display="flex" alignItems="center" justifyContent="space-between" mb={1}>
+      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }} mb={1}>
         <Typography variant="h4" sx={{ fontFamily: "Outfit", fontWeight: 800 }}>
           My Dashboard
         </Typography>
-        <Box display="flex" gap={1}>
+        <Box sx={{ display: "flex" }} gap={1}>
           {hasDashboards && (
             <Button
               variant="outlined"
@@ -123,7 +128,7 @@ export default function UserDashboard() {
             borderRadius: "16px",
           }}
         >
-          <Box display="flex" alignItems="center" gap={1.5} mb={2}>
+          <Box sx={{ display: "flex", alignItems: "center" }} gap={1.5} mb={2}>
             <AccountTreeIcon sx={{ color: "#a855f7" }} />
             <Typography variant="h6" sx={{ fontFamily: "Outfit", fontWeight: 700 }}>
               {dept.name}

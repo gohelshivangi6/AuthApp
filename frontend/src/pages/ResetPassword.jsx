@@ -118,9 +118,14 @@ const ResetPassword = () => {
   );
 
   return (
-    <Box display="flex" minHeight="90vh" alignItems="center" justifyContent="center">
+    <Box sx={{
+          display: "flex",
+          justifyContent: "center",
+          minHeight: "90vh",
+          alignItems: "center",
+        }}>
       <GlassCard>
-        <Box textAlign="center" mb={3}>
+        <Box sx={{ textAlign: "center" }} mb={3}>
           <LockResetIcon sx={{ fontSize: 40, color: '#6366f1', mb: 1 }} />
           <Typography variant="h5" sx={{ fontFamily: 'Outfit', fontWeight: 800 }}>
             Reset Password
@@ -143,7 +148,7 @@ const ResetPassword = () => {
         )}
 
         {!token && (
-          <Box textAlign="center" mt={2}>
+          <Box sx={{ textAlign: "center" }} mt={2}>
             <Link to="/login" style={{ color: '#6366f1', textDecoration: 'none', fontWeight: 'bold' }}>
               Return to Login
             </Link>
@@ -163,15 +168,6 @@ const ResetPassword = () => {
               variant="outlined"
               className="custom-textfield"
               disabled={loading}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton onClick={() => setShowPassword(!showPassword)} edge="end" sx={{ color: '#94a3b8' }}>
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                )
-              }}
             />
 
             <TextField

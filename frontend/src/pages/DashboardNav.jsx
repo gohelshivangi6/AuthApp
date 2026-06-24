@@ -2,7 +2,12 @@ import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import {
-  Box, Typography, Paper, Grid, CircularProgress, Button,
+  Box,
+  Typography,
+  Paper,
+  Grid,
+  CircularProgress,
+  Button,
 } from "@mui/material";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import ShowChartIcon from "@mui/icons-material/ShowChart";
@@ -13,10 +18,18 @@ import { getUserSocket, emitEvent } from "../utils/websocket";
 import { getAllowedDashboards } from "../services/dashboardService";
 
 const DASHBOARD_ICONS = {
-  "revenue-ops-pulse": <ShowChartIcon sx={{ fontSize: 48, color: "#6366f1" }} />,
-  "leadership-command-center": <GroupIcon sx={{ fontSize: 48, color: "#a855f7" }} />,
-  "product-engagement-tracker": <TouchAppIcon sx={{ fontSize: 48, color: "#10b981" }} />,
-  "global-sales-cockpit": <PublicIcon sx={{ fontSize: 48, color: "#f59e0b" }} />,
+  "revenue-ops-pulse": (
+    <ShowChartIcon sx={{ fontSize: 48, color: "#6366f1" }} />
+  ),
+  "leadership-command-center": (
+    <GroupIcon sx={{ fontSize: 48, color: "#a855f7" }} />
+  ),
+  "product-engagement-tracker": (
+    <TouchAppIcon sx={{ fontSize: 48, color: "#10b981" }} />
+  ),
+  "global-sales-cockpit": (
+    <PublicIcon sx={{ fontSize: 48, color: "#f59e0b" }} />
+  ),
 };
 
 const DASHBOARD_COLORS = {
@@ -68,7 +81,14 @@ export default function DashboardNav() {
 
   if (loading) {
     return (
-      <Box display="flex" minHeight="60vh" alignItems="center" justifyContent="center">
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          minHeight: "60vh",
+          alignItems: "center",
+        }}
+      >
         <CircularProgress />
       </Box>
     );
@@ -79,11 +99,19 @@ export default function DashboardNav() {
       <Button
         startIcon={<DashboardIcon />}
         onClick={() => navigate("/dashboard")}
-        sx={{ mb: 2, textTransform: "none", fontFamily: "Outfit", fontWeight: 600 }}
+        sx={{
+          mb: 2,
+          textTransform: "none",
+          fontFamily: "Outfit",
+          fontWeight: 600,
+        }}
       >
         Back to My Dashboard
       </Button>
-      <Typography variant="h4" sx={{ fontFamily: "Outfit", fontWeight: 800, mb: 1 }}>
+      <Typography
+        variant="h4"
+        sx={{ fontFamily: "Outfit", fontWeight: 800, mb: 1 }}
+      >
         Dashboards
       </Typography>
       <Typography variant="body2" color="textSecondary" mb={4}>
@@ -101,7 +129,10 @@ export default function DashboardNav() {
             borderRadius: "16px",
           }}
         >
-          <Typography variant="h6" sx={{ fontFamily: "Outfit", fontWeight: 700, mb: 1 }}>
+          <Typography
+            variant="h6"
+            sx={{ fontFamily: "Outfit", fontWeight: 700, mb: 1 }}
+          >
             No Dashboards Available
           </Typography>
           <Typography variant="body2" color="textSecondary">
@@ -114,7 +145,10 @@ export default function DashboardNav() {
             <Grid size={{ xs: 12, sm: 6 }} key={db.id}>
               <Paper
                 onClick={() => {
-                  emitEvent("dashboard_click", { dashboard: db.name, path: db.path });
+                  emitEvent("dashboard_click", {
+                    dashboard: db.name,
+                    path: db.path,
+                  });
                   navigate(`/dashboards/${db.path}`);
                 }}
                 sx={{
@@ -132,9 +166,21 @@ export default function DashboardNav() {
                   },
                 }}
               >
-                <Box display="flex" alignItems="center" gap={2} mb={1}>
-                  {DASHBOARD_ICONS[db.path] || <ShowChartIcon sx={{ fontSize: 48, color: "#6366f1" }} />}
-                  <Typography variant="h6" sx={{ fontFamily: "Outfit", fontWeight: 700 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                  gap={2}
+                  mb={1}
+                >
+                  {DASHBOARD_ICONS[db.path] || (
+                    <ShowChartIcon sx={{ fontSize: 48, color: "#6366f1" }} />
+                  )}
+                  <Typography
+                    variant="h6"
+                    sx={{ fontFamily: "Outfit", fontWeight: 700 }}
+                  >
                     {db.name}
                   </Typography>
                 </Box>

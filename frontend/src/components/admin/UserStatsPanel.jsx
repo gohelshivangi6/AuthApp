@@ -57,12 +57,12 @@ export default function UserStatsPanel() {
       )}
 
       {selectedUserId && loading && (
-        <Box display="flex" justifyContent="center" py={4}><CircularProgress size={24} /></Box>
+        <Box sx={{ display: "flex", justifyContent: "center" }} py={4}><CircularProgress size={24} /></Box>
       )}
 
       {selectedUserId && userStats && !loading && (
-        <Box display="flex" flexDirection="column" gap={3}>
-          <Box display="flex" gap={2} flexWrap="wrap">
+        <Box sx={{ display: "flex", flexDirection: "column" }} gap={3}>
+          <Box sx={{ display: "flex" }} gap={2} flexWrap="wrap">
             <Paper sx={{ p: 2, flex: 1, minWidth: 140, textAlign: "center", background: "rgba(255,255,255,0.02)" }}>
               <Typography variant="h5" color="#6366f1" sx={{ fontFamily: "Outfit", fontWeight: 800 }}>
                 {userStats.totalSessions}

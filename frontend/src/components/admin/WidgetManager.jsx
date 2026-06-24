@@ -52,7 +52,7 @@ export default function WidgetManager() {
 
   return (
     <Box>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }} mb={2}>
         <Typography variant="h6" sx={{ fontFamily: "Outfit", fontWeight: 700 }}>
           Widget Registry ({widgets.length})
         </Typography>
@@ -108,7 +108,7 @@ export default function WidgetManager() {
       <Dialog open={open} onClose={() => setOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle>{editWidget ? "Edit Widget" : "Register Widget"}</DialogTitle>
         <DialogContent>
-          <Box display="flex" flexDirection="column" gap={2} mt={1}>
+          <Box sx={{ display="flex", flexDirection: "column" }} gap={2} mt={1}>
             <TextField
               label="Widget Name"
               value={form.name}

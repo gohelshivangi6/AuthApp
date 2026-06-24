@@ -1,4 +1,3 @@
-
 import { useSelector } from "react-redux";
 import { Box, CircularProgress } from "@mui/material";
 import AdminDashboard from "../components/AdminDashboard";
@@ -11,10 +10,12 @@ const Dashboard = () => {
   if (loading && !user) {
     return (
       <Box
-        display="flex"
-        minHeight="80vh"
-        alignItems="center"
-        justifyContent="center"
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          minHeight: "80vh",
+          alignItems: "center",
+        }}
       >
         <CircularProgress color="primary" />
       </Box>

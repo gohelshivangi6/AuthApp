@@ -81,9 +81,14 @@ const Setup2FA = () => {
   if (!tempToken) return null; // Avoid rendering content if redirecting
 
   return (
-    <Box display="flex" minHeight="90vh" alignItems="center" justifyContent="center">
+    <Box sx={{
+          display: "flex",
+          justifyContent: "center",
+          minHeight: "90vh",
+          alignItems: "center",
+        }}>
       <GlassCard>
-        <Box textAlign="center" mb={3}>
+        <Box sx={{ textAlign: "center" }} mb={3}>
           <ShieldIcon sx={{ fontSize: 40, color: '#10b981', mb: 1 }} />
           <Typography variant="h5" sx={{ fontFamily: 'Outfit', fontWeight: 800 }}>
             Enable 2FA
@@ -108,7 +113,7 @@ const Setup2FA = () => {
           </Alert>
         )}
 
-        <Box display="flex" flexDirection="column" alignItems="center" mb={3}>
+        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }} mb={3}>
           <Typography variant="body2" color="textSecondary" textAlign="center" mb={2}>
             Scan the QR code below using your Google Authenticator or Authy app:
           </Typography>

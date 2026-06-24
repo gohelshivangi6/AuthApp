@@ -42,7 +42,7 @@ export default function AdminDashboard() {
 
   return (
     <Box sx={{ py: 6, px: { xs: 2, md: 4 }, maxWidth: 1200, margin: "0 auto" }}>
-      <Box display="flex" alignItems="center" justifyContent="space-between" mb={3}>
+      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }} mb={3}>
         <Typography variant="h4" sx={{ fontFamily: "Outfit", fontWeight: 800 }}>
           Admin Dashboard
         </Typography>

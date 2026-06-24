@@ -80,11 +80,13 @@ export default function Reactivate() {
 
   return (
     <Box
-      display="flex"
-      minHeight="100vh"
-      alignItems="center"
-      justifyContent="center"
-      sx={{ px: 2 }}
+    sx={{
+        display: "flex",
+        justifyContent: "center",
+        minHeight: "100vh",
+        alignItems: "center",
+        px: 2
+      }}
     >
       <Paper
         sx={{

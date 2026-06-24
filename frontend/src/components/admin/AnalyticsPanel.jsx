@@ -53,7 +53,7 @@ export default function AnalyticsPanel() {
 
   if (loading && !stats) {
     return (
-      <Box display="flex" justifyContent="center" py={4}>
+      <Box sx={{ display: "flex", justifyContent: "center" }} py={4}>
         <CircularProgress />
       </Box>
     );
@@ -61,7 +61,7 @@ export default function AnalyticsPanel() {
 
   if (!stats) {
     return (
-      <Typography variant="body2" color="textSecondary" textAlign="center" py={4}>
+      <Typography variant="body2" color="textSecondary" py={4}>
         No stats available yet.
       </Typography>
     );

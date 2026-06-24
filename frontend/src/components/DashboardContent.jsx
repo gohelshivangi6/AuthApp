@@ -83,7 +83,7 @@ export default function DashboardContent({ data, hiddenSections = [], layout }) 
                   },
                 }}
               >
-                <Box display="flex" alignItems="flex-start" justifyContent="space-between" mb={1}>
+                <Box sx={{ display:"flex", alignItems: "center", justifyContent: "space-between" }} mb={1}>
                   <Typography variant="body2" color="textSecondary" sx={{ fontFamily: "Inter", fontWeight: 500 }}>
                     {kpi.title}
                   </Typography>

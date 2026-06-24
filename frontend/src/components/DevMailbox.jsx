@@ -53,13 +53,6 @@ const DevMailbox = () => {
     }
   };
 
-  // Poll for new emails every 5 seconds when drawer is open, or on mount for badge counts
-  // useEffect(() => {
-  //   fetchEmails();
-  //   const interval = setInterval(fetchEmails, 5000);
-  //   return () => clearInterval(interval);
-  // }, []);
-
   useEffect(() => {
   if (!isOpen) return;
 
@@ -125,7 +118,7 @@ const DevMailbox = () => {
           }
         }}
       >
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+        <Box sx={{ display:"flex", alignItems: "center", justifyContent: "space-between" }} mb={3}>
           <Box>
             <Typography variant="h6" sx={{ fontFamily: 'Outfit', fontWeight: 700 }}>
               Simulated Mailbox
@@ -139,7 +132,7 @@ const DevMailbox = () => {
           </IconButton>
         </Box>
 
-        <Box display="flex" gap={1} mb={2}>
+        <Box sx={{ display: "flex" }} gap={1} mb={2}>
           <Button
             startIcon={<RefreshIcon />}
             variant="outlined"
@@ -174,11 +167,11 @@ const DevMailbox = () => {
         <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.1)', mb: 2 }} />
 
         {loading ? (
-          <Box display="flex" justifyContent="center" py={4}>
+          <Box sx={{ display:"flex", justifyContent: "center" }} py={4}>
             <CircularProgress color="secondary" />
           </Box>
         ) : emails.length === 0 ? (
-          <Box py={8} textAlign="center">
+          <Box py={8} sx={{ textAlign: "center" }}>
             <MailIcon sx={{ fontSize: 48, color: '#334155', mb: 2 }} />
             <Typography variant="body2" color="textSecondary">
               No emails sent yet. Trigger signup or forgot-password to see verification links.
@@ -202,7 +195,7 @@ const DevMailbox = () => {
                     color: 'white'
                   }}
                 >
-                  <Box display="flex" justifyContent="space-between" width="100%" mb={1}>
+                  <Box sx={{ display: "flex", justifyContent: "space-between", width:"100%" }} mb={1}>
                     <Typography variant="caption" color="#10b981" fontWeight="bold">
                       To: {email.to}
                     </Typography>

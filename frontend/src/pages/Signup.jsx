@@ -19,13 +19,11 @@ import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutlined';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import GlassCard from '../components/GlassCard';
-import { useDispatch } from 'react-redux';
 import { loginStart } from '../redux/slices/authSlice';
 import { signup } from '../services/authService';
 
 const Signup = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -82,11 +80,8 @@ const Signup = () => {
     setLoading(true);
 
     try {
-      // dispatch(loginStart());
 
       const res = await signup(formData.name, formData.email, formData.password);
-
-      // dispatch(loginSuccess(res.data));
 
       if (res.data.success) {
         // Redirection to 2FA Setup
@@ -127,9 +122,14 @@ const Signup = () => {
   );
 
   return (
-    <Box display="flex" minHeight="90vh" alignItems="center" justifyContent="center">
+    <Box sx={{
+          display: "flex",
+          justifyContent: "center",
+          minHeight: "90vh",
+          alignItems: "center",
+        }}>
       <GlassCard>
-        <Box textAlign="center" mb={3}>
+        <Box sx={{ textAlign: "center" }} mb={3}>
           <LockOpenIcon sx={{ fontSize: 40, color: '#6366f1', mb: 1 }} />
           <Typography variant="h5" sx={{ fontFamily: 'Outfit', fontWeight: 800 }}>
             Create Account
@@ -246,7 +246,7 @@ const Signup = () => {
           </Button>
         </form>
 
-        <Box mt={2} textAlign="center">
+        <Box mt={2} sx={{ textAlign: "center" }}>
           <Typography variant="body2" color="textSecondary">
             Already have an account?{' '}
             <Link to="/login" style={{ color: '#6366f1', textDecoration: 'none', fontWeight: 'bold' }}>

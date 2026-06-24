@@ -3,7 +3,6 @@ import { useAuth } from "./AuthContext";
 import { useSelector } from "react-redux";
 
 const PublicRoute = () => {
-  // const { user, loading } = useAuth();
   const user = useSelector((state) => state.auth.user);
   const loading = useSelector((state) => state.auth.loading);
 

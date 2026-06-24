@@ -287,7 +287,7 @@ export default function DashboardLayoutEditor() {
       </Snackbar>
 
       {dataLoading ? (
-        <Box display="flex" justifyContent="center" py={4}>
+        <Box sx={{ display: "flex", justifyContent: "center" }} py={4}>
           <CircularProgress />
         </Box>
       ) : !dashboardData ? (
@@ -332,7 +332,7 @@ export default function DashboardLayoutEditor() {
             </SortableContext>
           </DndContext>
 
-          <Box display="flex" gap={2} mt={3}>
+          <Box sx={{ display: "flex" }} gap={2} mt={3}>
             <Button variant="outlined" onClick={handleReset}>
               Reset to Default
             </Button>

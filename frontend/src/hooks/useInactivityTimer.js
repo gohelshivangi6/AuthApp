@@ -7,8 +7,6 @@ import { disconnectSockets } from "../utils/websocket";
 import { clearSessionToken } from "../utils/sessionToken";
 import { logout as logoutApi } from "../services/authService";
 
-// const INACTIVITY_TIMEOUT_MS = import.meta.env.VITE_INACTIVITY_TIMEOUT_MS
-// const GRACE_PERIOD_SEC = import.meta.env.VITE_GRACE_PERIOD_SEC; 
 const HEARTBEAT_INTERVAL_MS = 60000; // heartbeat every 60s while active
 const INACTIVITY_TIMEOUT_MS = Number(
   import.meta.env.VITE_INACTIVITY_TIMEOUT_MS

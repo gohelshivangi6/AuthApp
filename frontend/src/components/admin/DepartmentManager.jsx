@@ -54,7 +54,7 @@ export default function DepartmentManager() {
 
   return (
     <Box>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }} mb={2}>
         <Typography variant="h6" sx={{ fontFamily: "Outfit", fontWeight: 700 }}>
           Departments ({departments.length})
         </Typography>
@@ -87,7 +87,7 @@ export default function DepartmentManager() {
             <ListItemText
               primary={dept.name}
               secondary={
-                <Box display="flex" gap={1} alignItems="center" mt={0.5}>
+                <Box sx={{ display: "flex", alignItems: "center" }} gap={1} mt={0.5}>
                   <Chip label={`${deptRoleCount(dept.id)} roles`} size="small" variant="outlined" />
                   {dept.description && (
                     <Typography variant="caption" color="textSecondary">
@@ -109,7 +109,7 @@ export default function DepartmentManager() {
       <Dialog open={open} onClose={() => setOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle>{editDept ? "Edit Department" : "Create Department"}</DialogTitle>
         <DialogContent>
-          <Box display="flex" flexDirection="column" gap={2} mt={1}>
+          <Box sx={{ display: "flex", flexDirection: "column" }} gap={2} mt={1}>
             <TextField
               label="Department Name"
               value={form.name}

@@ -48,7 +48,7 @@ export default function ActivityLogTable() {
         Activity Logs
       </Typography>
 
-      <Box display="flex" gap={2} mb={2}>
+      <Box sx={{ display: "flex" }} gap={2} mb={2}>
         <FormControl size="small" sx={{ minWidth: 140 }}>
           <InputLabel>Event Type</InputLabel>
           <Select value={typeFilter} label="Event Type" onChange={(e) => { setTypeFilter(e.target.value); setPage(0); }}>

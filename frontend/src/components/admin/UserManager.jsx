@@ -291,15 +291,13 @@ export default function UserManager() {
   return (
     <Box>
       <Box
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
+      sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
         mb={2}
       >
         <Typography variant="h6" sx={{ fontFamily: "Outfit", fontWeight: 700 }}>
           Users ({users.length})
         </Typography>
-        <Box display="flex" gap={1}>
+        <Box sx={{ display: "flex" }} gap={1}>
           <Button
             variant="contained"
             startIcon={<AddIcon />}
@@ -481,7 +479,7 @@ export default function UserManager() {
       >
         <DialogTitle>{editUser ? "Edit User" : "Create User"}</DialogTitle>
         <DialogContent>
-          <Box display="flex" flexDirection="column" gap={2} mt={1}>
+          <Box sx={{ display: "flex", flexDirection: "column" }} gap={2} mt={1}>
             <TextField
               label="Name"
               value={userForm.name}
@@ -531,7 +529,7 @@ export default function UserManager() {
           {assignTarget?.name}
         </DialogTitle>
         <DialogContent>
-          <Box display="flex" flexDirection="column" gap={2} mt={2}>
+          <Box sx={{ display: "flex", flexDirection: "column" }} gap={2} mt={2}>
             <FormControl fullWidth>
               <InputLabel>Department</InputLabel>
               <Select
@@ -600,7 +598,7 @@ export default function UserManager() {
       >
         <DialogTitle>Import Users from CSV</DialogTitle>
         <DialogContent>
-          <Box display="flex" flexDirection="column" gap={2} mt={1}>
+          <Box sx={{ display: "flex", flexDirection: "column" }} gap={2} mt={1}>
             <Typography variant="body2" color="textSecondary">
               CSV must have columns: <strong>name, email, password</strong>.
               Optional: <strong>department, role</strong>.

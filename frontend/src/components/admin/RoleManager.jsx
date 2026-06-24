@@ -78,11 +78,11 @@ export default function RoleManager() {
 
   return (
     <Box>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }} mb={2}>
         <Typography variant="h6" sx={{ fontFamily: "Outfit", fontWeight: 700 }}>
           Roles ({roles.length})
         </Typography>
-        <Box display="flex" gap={1}>
+        <Box sx={{ display: "flex" }} gap={1}>
           <FormControl size="small" sx={{ minWidth: 160 }}>
             <InputLabel>Filter by Dept</InputLabel>
             <Select
@@ -144,7 +144,7 @@ export default function RoleManager() {
       <Dialog open={open} onClose={() => setOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle>{editRole ? "Edit Role" : "Create Role"}</DialogTitle>
         <DialogContent>
-          <Box display="flex" flexDirection="column" gap={2} mt={1}>
+          <Box sx={{ display: "flex", flexDirection: "column" }} gap={2} mt={1}>
             <FormControl fullWidth>
               <InputLabel>Department</InputLabel>
               <Select
@@ -176,7 +176,7 @@ export default function RoleManager() {
       <Dialog open={cloneOpen} onClose={() => setCloneOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle>Clone Role — {cloneSource?.name}</DialogTitle>
         <DialogContent>
-          <Box display="flex" flexDirection="column" gap={2} mt={1}>
+          <Box sx={{ display: "flex", flexDirection: "column" }} gap={2} mt={1}>
             <TextField
               label="New Role Name"
               value={cloneName}
