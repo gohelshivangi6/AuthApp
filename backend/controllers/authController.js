@@ -17,7 +17,7 @@ const COOKIE_OPTIONS = {
   httpOnly: true,
   secure: process.env.NODE_ENV === "production",
   sameSite: "strict",
-  maxAge: 365 * 24 * 60 * 60 * 1000,
+  maxAge: 24 * 60 * 60 * 1000,
 };
 
 const JWT_SECRET =

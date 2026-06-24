@@ -104,7 +104,7 @@ async function clearEmails() {
 }
 
 function sendPasswordResetEmail(user, resetToken) {
-  const resetLink = `${FRONTEND_URL}/reset-password?token=${resetToken}`;
+  const resetLink = `${FRONTEND_URL}/reset-password/${resetToken}`;
   return sendEmail({
     to: user.email,
     subject: "SecureAuthApp - Password Reset Request",
