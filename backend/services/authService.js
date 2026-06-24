@@ -45,15 +45,18 @@ async function signup({ name, email, password }) {
 
   const existingUser = findUserByEmail(db, email);
   if (existingUser) {
-    if (existingUser.status === "VERIFIED") {
+    if (existingUser.deletedAt) {
+      db.users = db.users.filter((u) => u.email !== email);
+    } else if (existingUser.status === "VERIFIED") {
       const err = new Error("An account with this email address already exists.");
       err.status = 400;
       throw err;
+    } else {
+      console.log(
+        `[Signup] Overriding unverified pending registration for email: ${email}`,
+      );
+      db.users = db.users.filter((u) => u.email !== email);
     }
-    console.log(
-      `[Signup] Overriding unverified pending registration for email: ${email}`,
-    );
-    db.users = db.users.filter((u) => u.email !== email);
   }
 
   const hashedPassword = await hashPassword(password);
@@ -169,6 +172,12 @@ async function login({ email, password }) {
   if (!user) {
     const err = new Error("Invalid email or password.");
     err.status = 401;
+    throw err;
+  }
+
+  if (user.deletedAt) {
+    const err = new Error("This account has been deleted. Contact your administrator.");
+    err.status = 403;
     throw err;
   }
 
@@ -324,7 +333,7 @@ async function forgotPassword({ email }) {
   const db = await readDB();
 
   const user = findUserByEmail(db, email);
-  if (!user || user.status !== "VERIFIED") {
+  if (!user || user.status !== "VERIFIED" || user.deletedAt) {
     console.log(
       `[Forgot Password] Requested for non-existent or unverified email: ${email}`,
     );
@@ -400,7 +409,7 @@ async function checkStatus({ token }) {
 
   const db = await readDB();
   const user = getUserById(db, decoded.userId);
-  if (!user || user.status !== "VERIFIED") {
+  if (!user || user.status !== "VERIFIED" || user.deletedAt) {
     const err = new Error("Account status invalid.");
     err.status = 401;
     throw err;

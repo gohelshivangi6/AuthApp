@@ -213,7 +213,7 @@ const requireAuth = async (req, res, next) => {
     const db = await readDB();
     const user = getUserById(db, decoded.userId);
 
-    if (!user || user.status !== "VERIFIED" || user.suspended) {
+    if (!user || user.status !== "VERIFIED" || user.suspended || user.deletedAt) {
       return res
         .status(401)
         .json({ success: false, message: "Authentication required." });

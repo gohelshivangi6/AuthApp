@@ -18,7 +18,7 @@ async function getUsers() {
   const roles = db.roles || [];
   const departments = db.departments || [];
   const users = db.users
-    .filter((u) => u.role !== "admin")
+    .filter((u) => u.role !== "admin" && !u.deletedAt)
     .map((u) => {
       const userAssignments = assignments.filter((a) => a.userId === u.id);
       const assignedRole = roles.find((r) => r.id === u.roleId);
@@ -47,7 +47,7 @@ async function getUsers() {
 async function createUser({ name, email, password, role, roleId }) {
   const db = await readDB();
 
-  if (db.users.find((u) => u.email === email)) {
+  if (db.users.find((u) => u.email === email && !u.deletedAt)) {
     return { error: "Email already in use.", statusCode: 400 };
   }
 
@@ -70,6 +70,7 @@ async function createUser({ name, email, password, role, roleId }) {
     pendingDeleteAt: null,
     deleteToken: null,
     suspended: false,
+    deletedAt: null,
   };
 
   db.users.push(newUser);
@@ -111,11 +112,14 @@ async function deleteUser(id) {
     return { error: "User not found.", statusCode: 404 };
   }
 
-  db.users.splice(idx, 1);
+  db.users[idx].deletedAt = new Date().toISOString();
   db.userAssignments = (db.userAssignments || []).filter((a) => a.userId !== id);
   db.permissions = (db.permissions || []).filter((p) => p.userId !== id);
 
   await writeDB(db);
+
+  try { forceDisconnectUser(id); } catch (_) {}
+
   return { success: true, message: "User deleted." };
 }
 
@@ -758,7 +762,7 @@ async function getStats() {
   const adminIds = new Set(db.users.filter((u) => u.role === "admin").map((u) => u.id));
   const logs = (db.activityLogs || []).filter((l) => !adminIds.has(l.userId));
 
-  const totalUsers = db.users.filter((u) => !adminIds.has(u.id)).length;
+  const totalUsers = db.users.filter((u) => !adminIds.has(u.id) && !u.deletedAt).length;
   const totalSessions = logs.filter((l) => l.type === "session_start").length;
   const totalEvents = logs.filter((l) => l.type === "event").length;
 
@@ -908,7 +912,7 @@ async function bulkCreateUsers({ users }) {
       continue;
     }
 
-    if (db.users.find((x) => x.email === u.email)) {
+    if (db.users.find((x) => x.email === u.email && !x.deletedAt)) {
       errors.push({ row, email: u.email, message: "Email already exists" });
       continue;
     }
@@ -1062,13 +1066,20 @@ async function bulkDeleteUsers({ userIds }) {
   const db = await readDB();
   const idSet = new Set(userIds);
 
-  db.users = db.users.filter((u) => !idSet.has(u.id));
+  const now = new Date().toISOString();
+  for (const id of userIds) {
+    const user = db.users.find((u) => u.id === id);
+    if (user) user.deletedAt = now;
+  }
   db.userAssignments = (db.userAssignments || []).filter((a) => !idSet.has(a.userId));
   db.permissions = (db.permissions || []).filter((p) => !idSet.has(p.userId));
 
   await writeDB(db);
 
   try { emitBulkPermissionUpdate(userIds, { type: "user", action: "bulk-deleted" }); } catch (_) {}
+  for (const id of userIds) {
+    try { forceDisconnectUser(id); } catch (_) {}
+  }
 
   return { success: true, message: `${userIds.length} user(s) deleted.` };
 }
