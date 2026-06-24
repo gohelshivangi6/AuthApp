@@ -23,7 +23,7 @@ import {
 import LogoutIcon from "@mui/icons-material/Logout";
 import CircleIcon from "@mui/icons-material/Circle";
 import { getAdminSocket } from "../../utils/websocket";
-import { fetchActiveUsers, forceLogoutUser } from "../../redux/slices/adminSlice";
+import { fetchActiveUsers, forceLogoutUser, updateUserStatusLocally } from "../../redux/slices/adminSlice";
 
 function formatDuration(sec) {
   if (!sec && sec !== 0) return "—";
@@ -62,15 +62,27 @@ export default function InactiveUserManager() {
     const socket = getAdminSocket();
     if (!socket) return;
 
-    const handler = () => refreshRef.current?.();
-    socket.on("deletion-update", handler);
-    return () => { socket.off("deletion-update", handler); };
-  }, []);
-
-  useEffect(() => {
-    const timer = setInterval(() => refreshRef.current?.(), 5000);
-    return () => clearInterval(timer);
-  }, []);
+    const deletionHandler = () => refreshRef.current?.();
+    const statusHandler = (data) => {
+      if (data && data.userId) {
+        dispatch(updateUserStatusLocally(data));
+        
+        // If it's a new active user and we didn't get their data, fetch the full list just in case
+        if (data.status === "active" && !data.user) {
+           refreshRef.current?.();
+        }
+      } else {
+        refreshRef.current?.();
+      }
+    };
+    
+    socket.on("deletion-update", deletionHandler);
+    socket.on("user-status-changed", statusHandler);
+    return () => { 
+      socket.off("deletion-update", deletionHandler); 
+      socket.off("user-status-changed", statusHandler);
+    };
+  }, [dispatch]);
 
   const handleForceLogout = async (id) => {
     try {

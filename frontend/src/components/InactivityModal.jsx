@@ -1,6 +1,3 @@
-import { useState, useEffect, useCallback, useRef } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import {
   Dialog,
   DialogTitle,
@@ -14,99 +11,16 @@ import {
 } from "@mui/material";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import CloseIcon from "@mui/icons-material/Close";
-import { getUserSocket } from "../utils/websocket";
-import { logout } from "../redux/slices/authSlice";
-import { disconnectSockets } from "../utils/websocket";
-import { clearSessionToken } from "../utils/sessionToken";
-import { ping } from "../services/authService";
-
-let lastInactivityEvent = 0;
+import useInactivityTimer from "../hooks/useInactivityTimer";
 
 export default function InactivityModal() {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
-  const user = useSelector((state) => state.auth.user);
-  const [open, setOpen] = useState(false);
-  const [countdown, setCountdown] = useState(120);
-  const [extending, setExtending] = useState(false);
-  const timerRef = useRef(null);
-
-  const handleAutoLogout = useCallback(() => {
-    setOpen(false);
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
-      timerRef.current = null;
-    }
-    dispatch(logout());
-    disconnectSockets();
-    clearSessionToken();
-    navigate("/login", { replace: true });
-  }, [dispatch, navigate]);
-
-  useEffect(() => {
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!isAuthenticated || !user) return;
-
-    const socket = getUserSocket();
-    if (!socket) return;
-
-    const handler = (data) => {
-      if (data.userId !== user.id) return;
-
-      const now = Date.now();
-      if (now - lastInactivityEvent < 5000) return;
-      lastInactivityEvent = now;
-
-      if (timerRef.current) clearInterval(timerRef.current);
-
-      setCountdown(120);
-      setOpen(true);
-
-      timerRef.current = setInterval(() => {
-        setCountdown((prev) => {
-          if (prev <= 1) {
-            clearInterval(timerRef.current);
-            timerRef.current = null;
-            handleAutoLogout();
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    };
-
-    socket.on("inactivity-warning", handler);
-    return () => {
-      socket.off("inactivity-warning", handler);
-    };
-  }, [isAuthenticated, user, handleAutoLogout]);
-
-  const handleStayActive = async () => {
-    setExtending(true);
-    try {
-      await ping();
-      setOpen(false);
-      setCountdown(0);
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
-      }
-    } catch {
-      handleAutoLogout();
-    } finally {
-      setExtending(false);
-    }
-  };
-
-  const handleDismiss = () => {
-    setOpen(false);
-  };
+  const {
+    warningOpen,
+    countdown,
+    extending,
+    handleStayActive,
+    handleDismiss,
+  } = useInactivityTimer();
 
   const formatTime = (s) => {
     const m = Math.floor(s / 60);
@@ -116,7 +30,7 @@ export default function InactivityModal() {
 
   return (
     <Dialog
-      open={open}
+      open={warningOpen}
       onClose={handleDismiss}
       maxWidth="sm"
       fullWidth
@@ -194,3 +108,4 @@ export default function InactivityModal() {
     </Dialog>
   );
 }
+

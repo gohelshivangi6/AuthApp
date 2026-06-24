@@ -2,6 +2,7 @@ const { Server } = require("socket.io");
 const jwt = require("jsonwebtoken");
 const { v4: uuidv4 } = require("uuid");
 const { readDB, writeDB } = require("./dbHelper");
+const { sendInactivityWarningEmail } = require("../services/emailService");
 
 const JWT_SECRET = process.env.JWT_SECRET || "fallback_jwt_secret_for_development_purposes";
 
@@ -50,6 +51,8 @@ function initWebSocket(httpServer) {
     logActivity(userId, "session_start", { sessionId, ip: socket.handshake.address });
 
     socket.join(`user:${userId}`);
+
+    emitAdminUserStatus(userId, "active");
 
     (async () => {
       try {
@@ -155,6 +158,55 @@ function initWebSocket(httpServer) {
       }
     });
 
+    socket.on("inactivity-warning-triggered", async () => {
+      try {
+        const db = await readDB();
+        const user = db.users.find((u) => u.id === userId);
+        if (user) {
+          const token = uuidv4();
+          user.pendingInactivityLogout = new Date(Date.now() + 2 * 60 * 1000).toISOString();
+          user.inactivityToken = token;
+          await writeDB(db);
+          await sendInactivityWarningEmail(user, token);
+          emitAdminUserStatus(userId, "warning");
+        }
+      } catch (err) {
+        console.error("[WS] inactivity-warning-triggered error:", err.message);
+      }
+    });
+
+    socket.on("stayed-active", async () => {
+      try {
+        const db = await readDB();
+        const user = db.users.find((u) => u.id === userId);
+        if (user) {
+          user.pendingInactivityLogout = null;
+          user.inactivityToken = null;
+          user.lastActivityAt = new Date().toISOString();
+          await writeDB(db);
+          emitAdminUserStatus(userId, "active");
+        }
+      } catch (err) {
+        console.error("[WS] stayed-active error:", err.message);
+      }
+    });
+
+    socket.on("inactivity-logout", async () => {
+      try {
+        const db = await readDB();
+        const user = db.users.find((u) => u.id === userId);
+        if (user) {
+          user.adminForceLoggedOutAt = new Date().toISOString();
+          user.pendingInactivityLogout = null;
+          user.inactivityToken = null;
+          await writeDB(db);
+          emitAdminUserStatus(userId, "logged-out");
+        }
+      } catch (err) {
+        console.error("[WS] inactivity-logout error:", err.message);
+      }
+    });
+
     socket.on("disconnect", async () => {
       const meta = socketMetadata.get(socket.id);
       if (meta) {
@@ -172,6 +224,11 @@ function initWebSocket(httpServer) {
       }
       // Don't delete userId from userSockets — user stays "logged in" even without WS connection.
       // Only remove on explicit logout via removeLoggedOutUser().
+      
+      // Tell admin they disconnected (but may still be authenticated)
+      if (!userSockets.get(userId) || userSockets.get(userId).size === 0) {
+        emitAdminUserStatus(userId, "offline");
+      }
 
       meta.sessionStart = Date.now();
     });
@@ -264,6 +321,37 @@ function emitDeletionUpdate(data = {}) {
   io.of("/admin").to("admin").emit("deletion-update", data);
 }
 
+async function emitAdminUserStatus(userId, status) {
+  if (!io) return;
+  
+  let userData = null;
+  if (status === "active" || status === "warning") {
+    try {
+      const { readDB } = require("./dbHelper");
+      const db = await readDB();
+      const user = db.users.find(u => u.id === userId);
+      if (user) {
+        const now = Date.now();
+        const lastActive = user.lastActivityAt ? new Date(user.lastActivityAt).getTime() : null;
+        const sessionDuration = lastActive ? Math.floor((now - lastActive) / 1000) : 0;
+        userData = {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role || "user",
+          lastActivityAt: user.lastActivityAt,
+          sessionDurationSec: sessionDuration,
+          hasInactivityWarning: !!user.pendingInactivityLogout,
+        };
+      }
+    } catch (err) {
+      console.error("[WS] emitAdminUserStatus error:", err.message);
+    }
+  }
+  
+  io.of("/admin").to("admin").emit("user-status-changed", { userId, status, user: userData });
+}
+
 function emitWorkspaceMessage(workspaceId, data = {}) {
   if (!io) return;
   io.of("/user").to(`workspace:${workspaceId}`).emit("workspace-message", data);
@@ -325,6 +413,7 @@ function removeLoggedOutUser(userId) {
     }
   }
   userSockets.delete(userId);
+  emitAdminUserStatus(userId, "logged-out");
 }
 
 async function updateLastActivity(userId) {
@@ -377,4 +466,5 @@ module.exports = {
   removeLoggedOutUser,
   emitInactivityWarning,
   forceDisconnectUser,
+  emitAdminUserStatus,
 };

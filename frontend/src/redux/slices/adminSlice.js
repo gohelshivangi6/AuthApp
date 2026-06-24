@@ -233,6 +233,23 @@ const adminSlice = createSlice({
     clearUserStats(state) {
       state.userStats = null;
     },
+    updateUserStatusLocally(state, action) {
+      const { userId, status, user } = action.payload;
+      if (status === "offline" || status === "logged-out") {
+        state.activeUsers = state.activeUsers.filter((u) => u.id !== userId);
+      } else {
+        const idx = state.activeUsers.findIndex((u) => u.id === userId);
+        if (idx >= 0) {
+          if (user) {
+            state.activeUsers[idx] = user;
+          } else {
+            state.activeUsers[idx].hasInactivityWarning = (status === "warning");
+          }
+        } else if (user) {
+          state.activeUsers.push(user);
+        }
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -340,5 +357,5 @@ const adminSlice = createSlice({
   },
 });
 
-export const { setSelectedUserId, clearUserStats } = adminSlice.actions;
+export const { setSelectedUserId, clearUserStats, updateUserStatusLocally } = adminSlice.actions;
 export default adminSlice.reducer;

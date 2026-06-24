@@ -14,13 +14,13 @@
       "resetPasswordToken": null,
       "resetPasswordExpires": null,
       "adminForceLoggedOutAt": null,
-      "lastActivityAt": "2026-06-23T05:57:07.335Z",
+      "lastActivityAt": "2026-06-24T05:41:43.555Z",
       "pendingDeleteAt": null,
       "deleteToken": null
     },
     {
       "id": "d245ba97-136d-4224-97a3-e336ca431708",
-      "name": "Shivangi Gohel",
+      "name": "Shivangi Gohell",
       "email": "shivangigohel18@gmail.com",
       "passwordHash": "$2b$12$fM3c3ZNIY.0KmzTtHwjsRuNWOoApv.R09T3RSVQuWihHMReILzclC",
       "role": "user",
@@ -31,12 +31,12 @@
       "createdAt": "2026-06-22T10:09:35.485Z",
       "resetPasswordToken": null,
       "resetPasswordExpires": null,
-      "lastActivityAt": "2026-06-23T05:58:01.319Z",
+      "lastActivityAt": "2026-06-24T06:19:13.056Z",
       "pendingDeleteAt": null,
       "deleteToken": null,
       "suspended": false,
       "pendingInactivityLogout": null,
-      "inactivityToken": "698d1cdb-a997-4f56-840e-eedeb3f1b45a",
+      "inactivityToken": null,
       "adminForceLoggedOutAt": null
     }
   ],
@@ -4045,6 +4045,797 @@
       "metadata": {
         "sessionId": "517f5d70-032e-4fd3-8452-c7132c077154",
         "eventType": "activity"
+      }
+    },
+    {
+      "id": "ae3c4678-4ea0-4f08-a0dc-c3439ff91de8",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "event",
+      "timestamp": "2026-06-24T05:21:29.481Z",
+      "metadata": {
+        "sessionId": "0c56dbe3-0889-4846-8622-9f69af820414",
+        "eventType": "dashboard_list_view"
+      }
+    },
+    {
+      "id": "fc01d627-e7d4-4a1c-9f39-ac7353f76cb3",
+      "userId": "b12bf9c8-987e-42ed-b105-e2f6429962c8",
+      "type": "session_start",
+      "timestamp": "2026-06-24T05:40:34.798Z",
+      "metadata": {
+        "sessionId": "d62882c0-183f-40b8-897e-0f6192fd8604",
+        "ip": "::ffff:127.0.0.1"
+      }
+    },
+    {
+      "id": "2204348b-ec51-4358-9ad5-2917cf93839b",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "session_start",
+      "timestamp": "2026-06-24T05:40:37.506Z",
+      "metadata": {
+        "sessionId": "44083cc3-2232-4cae-91a7-076b896ef4d0",
+        "ip": "::1"
+      }
+    },
+    {
+      "id": "acf43a70-6302-4315-a109-7a63c17e2739",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "session_end",
+      "timestamp": "2026-06-24T05:40:42.587Z",
+      "metadata": {
+        "sessionId": "44083cc3-2232-4cae-91a7-076b896ef4d0",
+        "durationMs": 5079
+      }
+    },
+    {
+      "id": "5614dba0-983f-40a2-8ba4-5ed2f751896c",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "session_start",
+      "timestamp": "2026-06-24T05:40:45.856Z",
+      "metadata": {
+        "sessionId": "244b384b-a5ee-4427-98a3-8f9f55140828",
+        "ip": "::1"
+      }
+    },
+    {
+      "id": "e2a42a0d-9f28-4873-81ee-2d94bd80fbab",
+      "userId": "b12bf9c8-987e-42ed-b105-e2f6429962c8",
+      "type": "session_end",
+      "timestamp": "2026-06-24T05:40:49.652Z",
+      "metadata": {
+        "sessionId": "d62882c0-183f-40b8-897e-0f6192fd8604",
+        "durationMs": 14850
+      }
+    },
+    {
+      "id": "0e9b0de1-7af8-4d44-b9c5-fa05ccd5cac1",
+      "userId": "b12bf9c8-987e-42ed-b105-e2f6429962c8",
+      "type": "session_start",
+      "timestamp": "2026-06-24T05:40:50.818Z",
+      "metadata": {
+        "sessionId": "3d6ed7a1-ebbd-4329-9bba-a09f9fe62df6",
+        "ip": "::1"
+      }
+    },
+    {
+      "id": "7939abb5-3149-49d3-a069-7c44d2371ca7",
+      "userId": "b12bf9c8-987e-42ed-b105-e2f6429962c8",
+      "type": "session_end",
+      "timestamp": "2026-06-24T05:40:55.352Z",
+      "metadata": {
+        "sessionId": "3d6ed7a1-ebbd-4329-9bba-a09f9fe62df6",
+        "durationMs": 4527
+      }
+    },
+    {
+      "id": "802847aa-620f-4c12-b6d0-5e0278b03987",
+      "userId": "b12bf9c8-987e-42ed-b105-e2f6429962c8",
+      "type": "session_start",
+      "timestamp": "2026-06-24T05:40:56.168Z",
+      "metadata": {
+        "sessionId": "deb09967-c885-4597-b9ea-e7fac3f254c2",
+        "ip": "::1"
+      }
+    },
+    {
+      "id": "e6dcc2fb-5b46-4565-82d4-f7d2aab6589a",
+      "userId": "b12bf9c8-987e-42ed-b105-e2f6429962c8",
+      "type": "session_end",
+      "timestamp": "2026-06-24T05:41:00.574Z",
+      "metadata": {
+        "sessionId": "deb09967-c885-4597-b9ea-e7fac3f254c2",
+        "durationMs": 4404
+      }
+    },
+    {
+      "id": "8ef0f8c1-2777-4a8d-b188-c02f2adf3934",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "session_end",
+      "timestamp": "2026-06-24T05:41:03.553Z",
+      "metadata": {
+        "sessionId": "244b384b-a5ee-4427-98a3-8f9f55140828",
+        "durationMs": 17693
+      }
+    },
+    {
+      "id": "9a738c57-2ab5-4bd6-9a24-c73a3b1b0686",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "session_start",
+      "timestamp": "2026-06-24T05:41:09.613Z",
+      "metadata": {
+        "sessionId": "1454a395-e66e-4c3b-8aa7-bd49f354dcf3",
+        "ip": "::1"
+      }
+    },
+    {
+      "id": "af62683f-2bc4-4217-bf2c-1837425fea33",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "event",
+      "timestamp": "2026-06-24T05:41:09.770Z",
+      "metadata": {
+        "sessionId": "1454a395-e66e-4c3b-8aa7-bd49f354dcf3",
+        "eventType": "dashboard_list_view"
+      }
+    },
+    {
+      "id": "5161d723-7a47-44ad-9e05-271d7e446074",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "session_end",
+      "timestamp": "2026-06-24T05:41:15.116Z",
+      "metadata": {
+        "sessionId": "1454a395-e66e-4c3b-8aa7-bd49f354dcf3",
+        "durationMs": 5499
+      }
+    },
+    {
+      "id": "b426e9ce-f32d-4f68-95a3-df9e4bdbfbb9",
+      "userId": "b12bf9c8-987e-42ed-b105-e2f6429962c8",
+      "type": "session_start",
+      "timestamp": "2026-06-24T05:41:43.673Z",
+      "metadata": {
+        "sessionId": "5c43219f-d265-4092-9fff-a9dad28c9b19",
+        "ip": "::1"
+      }
+    },
+    {
+      "id": "f938d5b5-fa65-4c06-bf15-db1fe82e266e",
+      "userId": "b12bf9c8-987e-42ed-b105-e2f6429962c8",
+      "type": "event",
+      "timestamp": "2026-06-24T05:41:43.710Z",
+      "metadata": {
+        "sessionId": "5c43219f-d265-4092-9fff-a9dad28c9b19",
+        "eventType": "dashboard_list_view"
+      }
+    },
+    {
+      "id": "d0fa0414-2566-43a2-b2f2-5d95d41cab38",
+      "userId": "b12bf9c8-987e-42ed-b105-e2f6429962c8",
+      "type": "session_end",
+      "timestamp": "2026-06-24T05:41:47.980Z",
+      "metadata": {
+        "sessionId": "5c43219f-d265-4092-9fff-a9dad28c9b19",
+        "durationMs": 4311
+      }
+    },
+    {
+      "id": "cda7066d-c04f-41e7-961c-431e9d2bd136",
+      "userId": "b12bf9c8-987e-42ed-b105-e2f6429962c8",
+      "type": "session_start",
+      "timestamp": "2026-06-24T05:41:48.498Z",
+      "metadata": {
+        "sessionId": "8313498f-1f3d-4832-9d01-57fdd6160749",
+        "ip": "::1"
+      }
+    },
+    {
+      "id": "9499d8fb-81ce-453c-b09a-2b51a88de2ab",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "session_start",
+      "timestamp": "2026-06-24T05:42:00.730Z",
+      "metadata": {
+        "sessionId": "65c282c7-f2fb-4ec9-9352-b1771f08686a",
+        "ip": "::1"
+      }
+    },
+    {
+      "id": "a8870aea-b8e5-44db-881f-01f53835ba91",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "event",
+      "timestamp": "2026-06-24T05:42:00.817Z",
+      "metadata": {
+        "sessionId": "65c282c7-f2fb-4ec9-9352-b1771f08686a",
+        "eventType": "dashboard_list_view"
+      }
+    },
+    {
+      "id": "e5234bfd-ea6b-485c-97ad-63565432fe32",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "event",
+      "timestamp": "2026-06-24T05:42:35.390Z",
+      "metadata": {
+        "sessionId": "65c282c7-f2fb-4ec9-9352-b1771f08686a",
+        "eventType": "dashboard_list_view"
+      }
+    },
+    {
+      "id": "e240422b-2ee1-4373-8c1a-239ada03b383",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "event",
+      "timestamp": "2026-06-24T05:43:37.360Z",
+      "metadata": {
+        "sessionId": "65c282c7-f2fb-4ec9-9352-b1771f08686a",
+        "eventType": "heartbeat"
+      }
+    },
+    {
+      "id": "5e21c104-0d7f-469b-8b3e-8df90952a65f",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "event",
+      "timestamp": "2026-06-24T05:44:37.363Z",
+      "metadata": {
+        "sessionId": "65c282c7-f2fb-4ec9-9352-b1771f08686a",
+        "eventType": "heartbeat"
+      }
+    },
+    {
+      "id": "177aada5-60fc-4511-b205-781657696e51",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "event",
+      "timestamp": "2026-06-24T05:45:37.376Z",
+      "metadata": {
+        "sessionId": "65c282c7-f2fb-4ec9-9352-b1771f08686a",
+        "eventType": "heartbeat"
+      }
+    },
+    {
+      "id": "8257e9e4-c5f8-4bba-a81c-cad64155de97",
+      "userId": "b12bf9c8-987e-42ed-b105-e2f6429962c8",
+      "type": "session_end",
+      "timestamp": "2026-06-24T05:46:17.815Z",
+      "metadata": {
+        "sessionId": "8313498f-1f3d-4832-9d01-57fdd6160749",
+        "durationMs": 269322
+      }
+    },
+    {
+      "id": "f521b7b5-0b48-47de-9441-aae2432191b2",
+      "userId": "b12bf9c8-987e-42ed-b105-e2f6429962c8",
+      "type": "session_start",
+      "timestamp": "2026-06-24T05:46:21.829Z",
+      "metadata": {
+        "sessionId": "500ec2b8-b784-4680-8377-d5cc58f01549",
+        "ip": "::1"
+      }
+    },
+    {
+      "id": "ba83f186-fa7a-4279-a3a7-5e1facf507de",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "event",
+      "timestamp": "2026-06-24T05:46:27.492Z",
+      "metadata": {
+        "dashboard": "revenue-ops-pulse",
+        "sessionId": "6b35e604-07cc-4a89-a606-702ce16a9193",
+        "eventType": "dashboard_view"
+      }
+    },
+    {
+      "id": "88ab85aa-0f62-4546-bb34-4e073476f6fe",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "event",
+      "timestamp": "2026-06-24T05:47:27.379Z",
+      "metadata": {
+        "sessionId": "6b35e604-07cc-4a89-a606-702ce16a9193",
+        "eventType": "heartbeat"
+      }
+    },
+    {
+      "id": "5c5e4e85-c12c-40b3-aa92-d70c46452458",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "event",
+      "timestamp": "2026-06-24T05:48:03.084Z",
+      "metadata": {
+        "dashboard": "Revenue Operations Pulse",
+        "path": "revenue-ops-pulse",
+        "sessionId": "6b35e604-07cc-4a89-a606-702ce16a9193",
+        "eventType": "dashboard_click"
+      }
+    },
+    {
+      "id": "1aa45382-4bc9-4491-b0c4-1584f5afc789",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "event",
+      "timestamp": "2026-06-24T05:49:32.413Z",
+      "metadata": {
+        "sessionId": "6b35e604-07cc-4a89-a606-702ce16a9193",
+        "eventType": "dashboard_list_view"
+      }
+    },
+    {
+      "id": "53669525-c25f-4a95-9f59-6719112e48e3",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "event",
+      "timestamp": "2026-06-24T05:50:44.784Z",
+      "metadata": {
+        "sessionId": "6b35e604-07cc-4a89-a606-702ce16a9193",
+        "eventType": "heartbeat"
+      }
+    },
+    {
+      "id": "cdc7ab93-8e44-47e5-8584-20450a96895d",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "event",
+      "timestamp": "2026-06-24T05:51:45.355Z",
+      "metadata": {
+        "sessionId": "6b35e604-07cc-4a89-a606-702ce16a9193",
+        "eventType": "heartbeat"
+      }
+    },
+    {
+      "id": "e76c416d-dbde-4c5c-9507-def66ecb9fb1",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "session_end",
+      "timestamp": "2026-06-24T05:53:39.594Z",
+      "metadata": {
+        "sessionId": "6b35e604-07cc-4a89-a606-702ce16a9193",
+        "durationMs": 432156
+      }
+    },
+    {
+      "id": "9888b0ca-c955-4150-b2fe-901a0930366b",
+      "userId": "b12bf9c8-987e-42ed-b105-e2f6429962c8",
+      "type": "session_end",
+      "timestamp": "2026-06-24T05:56:10.799Z",
+      "metadata": {
+        "sessionId": "500ec2b8-b784-4680-8377-d5cc58f01549",
+        "durationMs": 588985
+      }
+    },
+    {
+      "id": "0e4a05bb-c533-4b0d-9ca0-3bd93869414a",
+      "userId": "b12bf9c8-987e-42ed-b105-e2f6429962c8",
+      "type": "session_start",
+      "timestamp": "2026-06-24T05:56:12.155Z",
+      "metadata": {
+        "sessionId": "978eba5a-b307-4ff4-9e68-c4f9743bf466",
+        "ip": "::1"
+      }
+    },
+    {
+      "id": "259e289d-0521-4768-9c35-a60742b11c40",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "event",
+      "timestamp": "2026-06-24T05:56:24.836Z",
+      "metadata": {
+        "sessionId": "2d006153-6619-4a43-8f37-0809af19c519",
+        "eventType": "dashboard_list_view"
+      }
+    },
+    {
+      "id": "11f612a8-5c77-47d3-ad84-15addbd73e88",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "event",
+      "timestamp": "2026-06-24T05:57:05.365Z",
+      "metadata": {
+        "dashboard": "leadership-command-center",
+        "sessionId": "2d006153-6619-4a43-8f37-0809af19c519",
+        "eventType": "dashboard_view"
+      }
+    },
+    {
+      "id": "af00da17-14b4-46d8-b613-1ed614e606ac",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "event",
+      "timestamp": "2026-06-24T05:58:05.349Z",
+      "metadata": {
+        "sessionId": "2d006153-6619-4a43-8f37-0809af19c519",
+        "eventType": "heartbeat"
+      }
+    },
+    {
+      "id": "0d59daf2-bf05-4df5-8a4e-698c23b68809",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "session_end",
+      "timestamp": "2026-06-24T05:58:23.314Z",
+      "metadata": {
+        "sessionId": "2d006153-6619-4a43-8f37-0809af19c519",
+        "durationMs": 118523
+      }
+    },
+    {
+      "id": "74d2895f-4665-4228-8678-b297e28d2466",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "session_start",
+      "timestamp": "2026-06-24T05:58:26.547Z",
+      "metadata": {
+        "sessionId": "3e5eb343-11a9-4c1f-8983-b97b46704477",
+        "ip": "::1"
+      }
+    },
+    {
+      "id": "c59f1378-49d7-42d0-916b-8578f9e42a03",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "event",
+      "timestamp": "2026-06-24T05:58:26.588Z",
+      "metadata": {
+        "dashboard": "leadership-command-center",
+        "sessionId": "3e5eb343-11a9-4c1f-8983-b97b46704477",
+        "eventType": "dashboard_view"
+      }
+    },
+    {
+      "id": "674cb4f5-0ea9-4b77-a14a-c9512908f69a",
+      "userId": "b12bf9c8-987e-42ed-b105-e2f6429962c8",
+      "type": "session_start",
+      "timestamp": "2026-06-24T05:58:27.549Z",
+      "metadata": {
+        "sessionId": "8f519a9f-5eac-4f51-9a29-650ead7c7225",
+        "ip": "::1"
+      }
+    },
+    {
+      "id": "17613041-456e-49c4-8f2c-f4ba8e295a71",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "session_end",
+      "timestamp": "2026-06-24T06:00:48.154Z",
+      "metadata": {
+        "sessionId": "3e5eb343-11a9-4c1f-8983-b97b46704477",
+        "durationMs": 141582
+      }
+    },
+    {
+      "id": "e18ff578-0bd9-40a0-9862-5731f314bab7",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "event",
+      "timestamp": "2026-06-24T06:00:51.183Z",
+      "metadata": {
+        "dashboard": "leadership-command-center",
+        "sessionId": "dcbe8f2b-d4da-469b-9c94-270df107c28e",
+        "eventType": "dashboard_view"
+      }
+    },
+    {
+      "id": "4bdbe177-eb61-4a93-8ea8-25394a6f7971",
+      "userId": "b12bf9c8-987e-42ed-b105-e2f6429962c8",
+      "type": "session_start",
+      "timestamp": "2026-06-24T06:00:56.208Z",
+      "metadata": {
+        "sessionId": "e5456172-e859-4227-b79d-06c831e94baa",
+        "ip": "::1"
+      }
+    },
+    {
+      "id": "a6c022be-20a4-4e8d-a908-658622741e6d",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "event",
+      "timestamp": "2026-06-24T06:01:50.910Z",
+      "metadata": {
+        "sessionId": "dcbe8f2b-d4da-469b-9c94-270df107c28e",
+        "eventType": "heartbeat"
+      }
+    },
+    {
+      "id": "9e2b84da-6c4f-45d3-ac93-c181c78260c0",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "session_start",
+      "timestamp": "2026-06-24T06:02:57.936Z",
+      "metadata": {
+        "sessionId": "2624771d-d83f-4af6-ae62-348a62327458",
+        "ip": "::1"
+      }
+    },
+    {
+      "id": "84a2b5a7-5f6b-4eac-82bd-69144124c32c",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "event",
+      "timestamp": "2026-06-24T06:02:58.031Z",
+      "metadata": {
+        "sessionId": "2624771d-d83f-4af6-ae62-348a62327458",
+        "eventType": "dashboard_list_view"
+      }
+    },
+    {
+      "id": "5a3762f7-a57e-416a-b068-b737d3105076",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "event",
+      "timestamp": "2026-06-24T06:03:58.030Z",
+      "metadata": {
+        "sessionId": "2624771d-d83f-4af6-ae62-348a62327458",
+        "eventType": "heartbeat"
+      }
+    },
+    {
+      "id": "7f284dd1-ea13-402d-8d8d-13b2a035fcf3",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "session_start",
+      "timestamp": "2026-06-24T06:04:06.154Z",
+      "metadata": {
+        "sessionId": "40360000-c310-4afb-9b92-9c0052edc229",
+        "ip": "::1"
+      }
+    },
+    {
+      "id": "7c99052c-1a33-4b80-8741-e5f191d3c6c0",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "session_end",
+      "timestamp": "2026-06-24T06:04:57.369Z",
+      "metadata": {
+        "sessionId": "2624771d-d83f-4af6-ae62-348a62327458",
+        "durationMs": 119425
+      }
+    },
+    {
+      "id": "49c793fa-63db-4ac0-bb19-080f9399c0f8",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "session_start",
+      "timestamp": "2026-06-24T06:05:05.629Z",
+      "metadata": {
+        "sessionId": "743cfb4b-b34a-4bee-b986-3a6174c35c2b",
+        "ip": "::1"
+      }
+    },
+    {
+      "id": "71510158-4d71-425a-8e34-92901319f06c",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "event",
+      "timestamp": "2026-06-24T06:05:05.754Z",
+      "metadata": {
+        "sessionId": "743cfb4b-b34a-4bee-b986-3a6174c35c2b",
+        "eventType": "dashboard_list_view"
+      }
+    },
+    {
+      "id": "4ae7f7e0-e7b9-452e-9ac5-178ba623b243",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "session_end",
+      "timestamp": "2026-06-24T06:05:56.481Z",
+      "metadata": {
+        "sessionId": "40360000-c310-4afb-9b92-9c0052edc229",
+        "durationMs": 110287
+      }
+    },
+    {
+      "id": "9c5eac6e-de4a-4f3d-a409-5580353ad8bf",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "session_end",
+      "timestamp": "2026-06-24T06:06:02.519Z",
+      "metadata": {
+        "sessionId": "743cfb4b-b34a-4bee-b986-3a6174c35c2b",
+        "durationMs": 56887
+      }
+    },
+    {
+      "id": "a77b431b-2781-4b3c-888e-97c095a78fde",
+      "userId": "b12bf9c8-987e-42ed-b105-e2f6429962c8",
+      "type": "session_end",
+      "timestamp": "2026-06-24T06:06:25.534Z",
+      "metadata": {
+        "sessionId": "e5456172-e859-4227-b79d-06c831e94baa",
+        "durationMs": 329327
+      }
+    },
+    {
+      "id": "82d70538-4d31-4e9a-9816-c82d26c3d1f9",
+      "userId": "b12bf9c8-987e-42ed-b105-e2f6429962c8",
+      "type": "session_start",
+      "timestamp": "2026-06-24T06:06:26.511Z",
+      "metadata": {
+        "sessionId": "af65ec45-e3bb-4195-8699-387b8aed7eda",
+        "ip": "::1"
+      }
+    },
+    {
+      "id": "c21d0a99-5c63-48cb-8859-05761e55115b",
+      "userId": "b12bf9c8-987e-42ed-b105-e2f6429962c8",
+      "type": "session_end",
+      "timestamp": "2026-06-24T06:14:26.345Z",
+      "metadata": {
+        "sessionId": "af65ec45-e3bb-4195-8699-387b8aed7eda",
+        "durationMs": 479713
+      }
+    },
+    {
+      "id": "43abd9d0-b75c-4cd7-8939-17ff0064c070",
+      "userId": "b12bf9c8-987e-42ed-b105-e2f6429962c8",
+      "type": "session_start",
+      "timestamp": "2026-06-24T06:14:32.135Z",
+      "metadata": {
+        "sessionId": "ba583de2-5698-4a34-9723-af1c351f20da",
+        "ip": "::1"
+      }
+    },
+    {
+      "id": "809d9819-d940-47d9-999c-ef55cc558929",
+      "userId": "b12bf9c8-987e-42ed-b105-e2f6429962c8",
+      "type": "session_end",
+      "timestamp": "2026-06-24T06:14:38.505Z",
+      "metadata": {
+        "sessionId": "ba583de2-5698-4a34-9723-af1c351f20da",
+        "durationMs": 6333
+      }
+    },
+    {
+      "id": "60e176ac-4114-4e18-9931-a401cee5db1d",
+      "userId": "b12bf9c8-987e-42ed-b105-e2f6429962c8",
+      "type": "session_start",
+      "timestamp": "2026-06-24T06:14:42.513Z",
+      "metadata": {
+        "sessionId": "aa0c7738-cf19-4ea6-963e-2c63ab6ed2e9",
+        "ip": "::1"
+      }
+    },
+    {
+      "id": "d9b16958-1e40-494f-b737-b02f6b82008f",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "session_start",
+      "timestamp": "2026-06-24T06:15:14.070Z",
+      "metadata": {
+        "sessionId": "58335458-ad37-4e37-b0bc-bba497ba14b7",
+        "ip": "::1"
+      }
+    },
+    {
+      "id": "b485f772-4920-4f5f-931f-0b85e625f535",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "event",
+      "timestamp": "2026-06-24T06:15:14.138Z",
+      "metadata": {
+        "sessionId": "58335458-ad37-4e37-b0bc-bba497ba14b7",
+        "eventType": "dashboard_list_view"
+      }
+    },
+    {
+      "id": "4bd2ee2b-307e-47c9-bb39-ba9d371e3e8b",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "session_start",
+      "timestamp": "2026-06-24T06:15:25.775Z",
+      "metadata": {
+        "sessionId": "eed27648-a376-4c72-83aa-c82ea1dba5cb",
+        "ip": "::1"
+      }
+    },
+    {
+      "id": "73c301ea-1e0b-40ec-9d87-47164c85969a",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "session_end",
+      "timestamp": "2026-06-24T06:15:59.065Z",
+      "metadata": {
+        "sessionId": "58335458-ad37-4e37-b0bc-bba497ba14b7",
+        "durationMs": 44992
+      }
+    },
+    {
+      "id": "a69d105e-78e9-4878-bf5e-be39a0c6fba7",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "event",
+      "timestamp": "2026-06-24T06:16:13.273Z",
+      "metadata": {
+        "dashboard": "Revenue Operations Pulse",
+        "path": "revenue-ops-pulse",
+        "sessionId": "eed27648-a376-4c72-83aa-c82ea1dba5cb",
+        "eventType": "dashboard_click"
+      }
+    },
+    {
+      "id": "e07dd476-29db-4cb8-a672-57961befb896",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "event",
+      "timestamp": "2026-06-24T06:16:48.510Z",
+      "metadata": {
+        "dashboard": "Revenue Operations Pulse",
+        "path": "revenue-ops-pulse",
+        "sessionId": "eed27648-a376-4c72-83aa-c82ea1dba5cb",
+        "eventType": "dashboard_click"
+      }
+    },
+    {
+      "id": "5ab0b61b-67a0-4e0c-ab73-7292ee028b10",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "session_start",
+      "timestamp": "2026-06-24T06:16:58.333Z",
+      "metadata": {
+        "sessionId": "a428c10e-0800-4ac2-a27b-391b0681bade",
+        "ip": "::1"
+      }
+    },
+    {
+      "id": "5141e807-7792-48b4-8e98-de4b235c21f8",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "session_start",
+      "timestamp": "2026-06-24T06:17:04.124Z",
+      "metadata": {
+        "sessionId": "1f513bd0-6a30-4295-877e-94de9d8f62d9",
+        "ip": "::1"
+      }
+    },
+    {
+      "id": "19ab62a9-8181-4e0d-bd71-1311ddc752d4",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "session_end",
+      "timestamp": "2026-06-24T06:17:25.267Z",
+      "metadata": {
+        "sessionId": "1f513bd0-6a30-4295-877e-94de9d8f62d9",
+        "durationMs": 21151
+      }
+    },
+    {
+      "id": "253a886a-f8dc-43f8-9b84-23483f28ef1b",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "event",
+      "timestamp": "2026-06-24T06:17:49.362Z",
+      "metadata": {
+        "sessionId": "eed27648-a376-4c72-83aa-c82ea1dba5cb",
+        "eventType": "heartbeat"
+      }
+    },
+    {
+      "id": "9f3c2c71-f481-4847-8323-09a95e939c9e",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "session_end",
+      "timestamp": "2026-06-24T06:18:02.092Z",
+      "metadata": {
+        "sessionId": "eed27648-a376-4c72-83aa-c82ea1dba5cb",
+        "durationMs": 156318
+      }
+    },
+    {
+      "id": "a28e43eb-8d44-42df-a400-1b43e766d568",
+      "userId": "b12bf9c8-987e-42ed-b105-e2f6429962c8",
+      "type": "session_end",
+      "timestamp": "2026-06-24T06:18:02.125Z",
+      "metadata": {
+        "sessionId": "aa0c7738-cf19-4ea6-963e-2c63ab6ed2e9",
+        "durationMs": 199611
+      }
+    },
+    {
+      "id": "df3a3371-8637-4e02-a55f-dd5b6f84ba03",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "session_start",
+      "timestamp": "2026-06-24T06:18:08.226Z",
+      "metadata": {
+        "sessionId": "206e4ee6-29ad-4f57-bcac-945c00d2e4a3",
+        "ip": "::1"
+      }
+    },
+    {
+      "id": "d3084ff4-1248-4d17-893c-aa3736c9be4f",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "event",
+      "timestamp": "2026-06-24T06:18:08.314Z",
+      "metadata": {
+        "dashboard": "revenue-ops-pulse",
+        "sessionId": "206e4ee6-29ad-4f57-bcac-945c00d2e4a3",
+        "eventType": "dashboard_view"
+      }
+    },
+    {
+      "id": "f1909789-33c8-428d-a82d-426ce3ab56d2",
+      "userId": "b12bf9c8-987e-42ed-b105-e2f6429962c8",
+      "type": "session_start",
+      "timestamp": "2026-06-24T06:18:10.129Z",
+      "metadata": {
+        "sessionId": "dba87edb-b4d2-43f5-bf0b-91dc7f963073",
+        "ip": "::1"
+      }
+    },
+    {
+      "id": "316fbb3f-d360-40c8-9d82-08ed3b9988bc",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "event",
+      "timestamp": "2026-06-24T06:19:07.986Z",
+      "metadata": {
+        "sessionId": "206e4ee6-29ad-4f57-bcac-945c00d2e4a3",
+        "eventType": "heartbeat"
+      }
+    },
+    {
+      "id": "ccb92cb6-251b-4fc0-b3cd-c2e6608265a3",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "session_end",
+      "timestamp": "2026-06-24T06:19:32.741Z",
+      "metadata": {
+        "sessionId": "206e4ee6-29ad-4f57-bcac-945c00d2e4a3",
+        "durationMs": 84586
       }
     }
   ],

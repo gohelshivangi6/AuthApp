@@ -119,41 +119,6 @@ export function WebSocketProvider({ children }) {
     };
   }, [dispatch, isAuthenticated, user?.role]);
 
-  const activityRef = useRef({ lastEmit: 0, hasActivity: false });
-
-  useEffect(() => {
-    if (!isAuthenticated) return;
-
-    const handleActivity = () => {
-      activityRef.current.hasActivity = true;
-    };
-
-    window.addEventListener("mousemove", handleActivity);
-    window.addEventListener("keydown", handleActivity);
-    window.addEventListener("click", handleActivity);
-
-    const interval = setInterval(() => {
-      if (activityRef.current.hasActivity) {
-        const now = Date.now();
-        if (now - activityRef.current.lastEmit >= 10000) {
-          const sock = getUserSocket();
-          if (sock?.connected) {
-            sock.emit("event", { eventType: "activity" });
-            activityRef.current.lastEmit = now;
-            activityRef.current.hasActivity = false;
-          }
-        }
-      }
-    }, 5000);
-
-    return () => {
-      window.removeEventListener("mousemove", handleActivity);
-      window.removeEventListener("keydown", handleActivity);
-      window.removeEventListener("click", handleActivity);
-      clearInterval(interval);
-    };
-  }, [isAuthenticated]);
-
   return (
     <WebSocketContext.Provider value={{}}>
       {children}

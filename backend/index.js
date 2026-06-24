@@ -13,7 +13,6 @@ const { globalLimiter } = require('./middleware/rateLimit');
 const { sessionToken } = require('./middleware/sessionToken');
 const errorHandler = require('./middleware/errorHandler');
 const { initCleanupTask } = require('./utils/cleanup');
-const { initInactivityMonitor } = require('./utils/inactivityMonitor');
 const { seed } = require('./utils/seed');
 const { verifyTransporter } = require('./services/emailService');
 const { setIO } = require('./services/activityService');
@@ -78,9 +77,6 @@ const server = app.listen(PORT, () => {
 // Initialize WebSocket
 const io = initWebSocket(server);
 setIO(io);
-
-// Start inactivity monitor for session tracking (AFTER WebSocket so io is ready)
-initInactivityMonitor();
 
 // Run seed data (admin account + default widgets)
 seed().catch((err) => console.error('[Seed] Error:', err));
