@@ -449,11 +449,11 @@ export default function HierarchyTable() {
   const dragStartY = useRef(0);
   const dragStartIdx = useRef(null);
   const levelItemRefs = useRef({});
+  const prevConfigRef = useRef(null);
+  const prevDataRef = useRef(null);
 
   useEffect(() => {
     let cancelled = false;
-    let prevConfigStr = null;
-    let prevDataStr = null;
 
     const fetchAll = async (isPoll = false) => {
       try {
@@ -465,19 +465,19 @@ export default function HierarchyTable() {
         console.log("dataStr", dataStr);
 
         if (isPoll) {
-          if (configStr !== prevConfigStr) {
+          if (configStr !== prevConfigRef.current) {
             setConfig(parseCompressedConfig(configStr));
-            prevConfigStr = configStr;
+            prevConfigRef.current = configStr;
           }
-          if (dataStr !== prevDataStr) {
+          if (dataStr !== prevDataRef.current) {
             setRawData(dataStr);
-            prevDataStr = dataStr;
+            prevDataRef.current = dataStr;
           }
         } else {
           setConfig(parseCompressedConfig(configStr));
           setRawData(dataStr);
-          prevConfigStr = configStr;
-          prevDataStr = dataStr;
+          prevConfigRef.current = configStr;
+          prevDataRef.current = dataStr;
         }
       } catch (err) {
         if (!cancelled)
@@ -490,7 +490,6 @@ export default function HierarchyTable() {
     fetchAll(false);
 
     const interval = setInterval(() => fetchAll(true), 50000);
-    console.log("data ", rawData);
 
     return () => {
       cancelled = true;

@@ -101,7 +101,7 @@ function App() {
             <InactivityModal />
             <Routes>
               <Route path="/" element={<Navigate to="/dashboards" replace />} />
-              {/* <Route element={<PublicRoute />}> */}
+              <Route element={<PublicRoute />}>
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -110,7 +110,7 @@ function App() {
                 <Route path="/stay-active" element={<StayActive />} />
                 <Route path="/verify-2fa" element={<Verify2FA />} />
                 <Route path="/setup-2fa" element={<Setup2FA />} />
-              {/* </Route> */}
+              </Route>
 
               <Route element={<ProtectedRoute />}>
                 <Route path="/profile" element={<Profile />} />

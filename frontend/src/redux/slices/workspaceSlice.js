@@ -86,7 +86,7 @@ const workspaceSlice = createSlice({
         state.messages[workspaceId] = state.messages[workspaceId].filter((m) => m.id !== messageId);
       }
     },
-    receiveMemberAdded() {},
+    receiveMemberAdded(state, action) { const { workspaceId, member } = action.payload; if (!state.members[workspaceId]) state.members[workspaceId] = []; if (!state.members[workspaceId].some((m) => m.userId === member.userId)) { state.members[workspaceId].push(member); } },
     receiveMemberRemoved(state, action) {
       const { workspaceId, userId } = action.payload;
       if (state.members[workspaceId]) {
@@ -158,3 +158,4 @@ const workspaceSlice = createSlice({
 
 export const { receiveMessage, receiveEditedMessage, receiveDeletedMessage, receiveMemberAdded, receiveMemberRemoved } = workspaceSlice.actions;
 export default workspaceSlice.reducer;
+

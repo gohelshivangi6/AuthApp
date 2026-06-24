@@ -198,7 +198,7 @@ export const bulkDeleteUsers = createAsyncThunk("admin/bulkDeleteUsers", async (
 
 export const bulkSuspendUsers = createAsyncThunk("admin/bulkSuspendUsers", async ({ userIds, suspended }) => {
   await adminService.bulkSuspendUsers(userIds, suspended);
-  return { userIds: new Set(userIds), suspended };
+  return { userIds, suspended };
 });
 
 export const cloneRole = createAsyncThunk("admin/cloneRole", async ({ id, ...data }) => {
@@ -338,8 +338,9 @@ const adminSlice = createSlice({
       })
       .addCase(bulkSuspendUsers.fulfilled, (state, action) => {
         const { userIds, suspended } = action.payload;
+        const idSet = new Set(userIds);
         state.users.forEach((u) => {
-          if (userIds.has(u.id)) u.suspended = suspended;
+          if (idSet.has(u.id)) u.suspended = suspended;
         });
       })
       .addCase(cloneRole.fulfilled, (state, action) => {
@@ -359,3 +360,8 @@ const adminSlice = createSlice({
 
 export const { setSelectedUserId, clearUserStats, updateUserStatusLocally } = adminSlice.actions;
 export default adminSlice.reducer;
+
+
+
+
+

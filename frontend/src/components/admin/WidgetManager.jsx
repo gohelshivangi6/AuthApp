@@ -108,7 +108,7 @@ export default function WidgetManager() {
       <Dialog open={open} onClose={() => setOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle>{editWidget ? "Edit Widget" : "Register Widget"}</DialogTitle>
         <DialogContent>
-          <Box sx={{ display="flex", flexDirection: "column" }} gap={2} mt={1}>
+          <Box sx={{ display: "flex", flexDirection: "column" }} gap={2} mt={1}>
             <TextField
               label="Widget Name"
               value={form.name}
@@ -142,3 +142,5 @@ export default function WidgetManager() {
     </Box>
   );
 }
+
+

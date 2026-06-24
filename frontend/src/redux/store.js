@@ -21,6 +21,7 @@ const storage = storageModule.default || storageModule;
 const persistConfig = {
   key: 'root',
   storage,
+  whitelist: ['user'],
 };
 
 const persistedReducer = persistReducer(

@@ -40,9 +40,11 @@ const BarChart = ({ data }) => {
       .domain([0, d3.max(chartData, (d) => d.value)])
       .range([height - 40, 20]);
 
+    d3.select("body").selectAll(".bar-chart-tooltip").remove();
     const tooltip = d3
       .select("body")
       .append("div")
+      .attr("class", "bar-chart-tooltip")
       .style("position", "absolute")
       .style("visibility", "hidden")
       .style("background", "#1e293b")
@@ -114,3 +116,4 @@ const BarChart = ({ data }) => {
 };
 
 export default BarChart;
+

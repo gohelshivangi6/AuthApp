@@ -60,9 +60,13 @@ const dashboardSlice = createSlice({
       })
       .addCase(fetchSectionPermissions.fulfilled, (state, action) => {
         state.sectionPermissions = action.payload;
+      })
+      .addCase(fetchSectionPermissions.rejected, (state, action) => {
+        state.error = action.error.message;
       });
   },
 });
 
 export const { setSectionPermissions, upsertSectionPermission, removeSectionPermission, setLayoutForSlug } = dashboardSlice.actions;
 export default dashboardSlice.reducer;
+

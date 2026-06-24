@@ -175,15 +175,15 @@ const Login = () => {
             className="custom-textfield"
             disabled={loading}
             autoComplete="current-password"
-            // InputProps={{
-            //   endAdornment: (
-            //     <InputAdornment position="end">
-            //       <IconButton onClick={() => setShowPassword(!showPassword)} edge="end" sx={{ color: '#94a3b8' }}>
-            //         {showPassword ? <VisibilityOff /> : <Visibility />}
-            //       </IconButton>
-            //     </InputAdornment>
-            //   )
-            // }}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton onClick={() => setShowPassword(!showPassword)} edge="end" sx={{ color: '#94a3b8' }}>
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              )
+            }}
           />
 
           <Box

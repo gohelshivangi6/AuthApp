@@ -24,9 +24,11 @@ const ScatterPlot = ({ data }) => {
       .style("width", "100%")
       .style("height", "auto");
 
+    d3.select("body").selectAll(".scatter-chart-tooltip").remove();
     const tooltip = d3
       .select("body")
       .append("div")
+      .attr("class", "scatter-chart-tooltip")
       .style("position", "absolute")
       .style("visibility", "hidden")
       .style("padding", "8px")
@@ -83,3 +85,4 @@ const ScatterPlot = ({ data }) => {
 };
 
 export default ScatterPlot;
+

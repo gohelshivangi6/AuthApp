@@ -21,9 +21,11 @@ const DonutChart = ({ data }) => {
 
     const svg = d3.select(svgRef.current);
 
+    d3.select("body").selectAll(".donut-chart-tooltip").remove();
     const tooltip = d3
       .select("body")
       .append("div")
+      .attr("class", "donut-chart-tooltip")
       .style("position", "absolute")
       .style("visibility", "hidden")
       .style("background", "#1e293b")
@@ -109,3 +111,4 @@ const DonutChart = ({ data }) => {
 };
 
 export default DonutChart;
+

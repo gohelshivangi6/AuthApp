@@ -8,13 +8,9 @@ import { clearSessionToken } from "../utils/sessionToken";
 import { logout as logoutApi } from "../services/authService";
 
 const HEARTBEAT_INTERVAL_MS = 60000; // heartbeat every 60s while active
-const INACTIVITY_TIMEOUT_MS = Number(
-  import.meta.env.VITE_INACTIVITY_TIMEOUT_MS
-);
+const INACTIVITY_TIMEOUT_MS = Number(import.meta.env.VITE_INACTIVITY_TIMEOUT_MS) || 300000;
 
-const GRACE_PERIOD_SEC = Number(
-  import.meta.env.VITE_GRACE_PERIOD_SEC
-);
+const GRACE_PERIOD_SEC = Number(import.meta.env.VITE_GRACE_PERIOD_SEC) || 120;
 console.log("inac", INACTIVITY_TIMEOUT_MS);
 console.log("gra", GRACE_PERIOD_SEC);
 
@@ -207,3 +203,4 @@ export default function useInactivityTimer() {
     handleDismiss,
   };
 }
+

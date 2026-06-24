@@ -22,9 +22,11 @@ const LineChart = ({ data }) => {
 
     const svg = d3.select(svgRef.current);
 
+    d3.select("body").selectAll(".line-chart-tooltip").remove();
     const tooltip = d3
       .select("body")
       .append("div")
+      .attr("class", "line-chart-tooltip")
       .style("position", "absolute")
       .style("visibility", "hidden")
       .style("background", "#111827")
@@ -131,3 +133,4 @@ const LineChart = ({ data }) => {
 };
 
 export default LineChart;
+
