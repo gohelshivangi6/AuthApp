@@ -10,5 +10,6 @@ router.post("/conversations", ctrl.createConversation);
 router.get("/conversations", ctrl.getConversations);
 router.get("/conversations/:id/messages", ctrl.getMessages);
 router.post("/conversations/:id/messages", ctrl.sendMessage);
+router.delete("/conversations/:id/messages/:msgId", ctrl.deleteMessage);
 
 module.exports = router;

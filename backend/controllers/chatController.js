@@ -37,10 +37,20 @@ async function sendMessage(req, res, next) {
   } catch (err) { next(err); }
 }
 
+async function deleteMessage(req, res, next) {
+  try {
+    const result = await chatService.deleteMessage(
+      req.params.id, req.params.msgId, req.user.id, req.body.deleteFrom
+    );
+    res.json({ success: true, ...result });
+  } catch (err) { next(err); }
+}
+
 module.exports = {
   getChatUsers,
   createConversation,
   getConversations,
   getMessages,
   sendMessage,
+  deleteMessage,
 };

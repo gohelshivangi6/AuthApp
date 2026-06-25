@@ -26,6 +26,11 @@ export const sendMessage = createAsyncThunk("chat/sendMessage", async ({ convers
   return { conversationId, message: res.data.message };
 });
 
+export const deleteMessage = createAsyncThunk("chat/deleteMessage", async ({ conversationId, msgId, deleteFrom }) => {
+  await chatService.deleteMessage(conversationId, msgId, deleteFrom);
+  return { conversationId, msgId, deleteFrom };
+});
+
 const chatSlice = createSlice({
   name: "chat",
   initialState: {
@@ -44,6 +49,12 @@ const chatSlice = createSlice({
       if (!state.messages[conversationId]) state.messages[conversationId] = [];
       if (!state.messages[conversationId].some((m) => m.id === message.id)) {
         state.messages[conversationId].push(message);
+      }
+    },
+    receiveDeletedDirectMessage(state, action) {
+      const { conversationId, messageId } = action.payload;
+      if (state.messages[conversationId]) {
+        state.messages[conversationId] = state.messages[conversationId].filter((m) => m.id !== messageId);
       }
     },
     clearChat(state) {
@@ -70,6 +81,12 @@ const chatSlice = createSlice({
           state.messages[conversationId].push(message);
         }
       })
+      .addCase(deleteMessage.fulfilled, (state, action) => {
+        const { conversationId, msgId } = action.payload;
+        if (state.messages[conversationId]) {
+          state.messages[conversationId] = state.messages[conversationId].filter((m) => m.id !== msgId);
+        }
+      })
       .addMatcher(
         (action) => action.type.startsWith("chat/") && action.type.endsWith("/pending"),
         (state, action) => {
@@ -91,5 +108,5 @@ const chatSlice = createSlice({
   },
 });
 
-export const { receiveDirectMessage, clearChat } = chatSlice.actions;
+export const { receiveDirectMessage, receiveDeletedDirectMessage, clearChat } = chatSlice.actions;
 export default chatSlice.reducer;

@@ -3,10 +3,12 @@ import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import {
   Box, Typography, Button, TextField, CircularProgress, Paper, Avatar,
+  Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions,
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { fetchMessages, sendMessage } from "../../redux/slices/chatSlice";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { fetchMessages, sendMessage, deleteMessage } from "../../redux/slices/chatSlice";
 
 function formatTime(ts) {
   const d = new Date(ts);
@@ -34,6 +36,7 @@ export default function DirectChatView({ conversationId }) {
   const chatMessages = messages[conversationId] || [];
 
   const [input, setInput] = useState("");
+  const [deleteDialog, setDeleteDialog] = useState({ open: false, msgId: null });
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
@@ -58,6 +61,20 @@ export default function DirectChatView({ conversationId }) {
       e.preventDefault();
       handleSend();
     }
+  };
+
+  const handleDeleteOwn = (msgId) => {
+    setDeleteDialog({ open: true, msgId });
+  };
+
+  const confirmDeleteFromMe = async () => {
+    await dispatch(deleteMessage({ conversationId, msgId: deleteDialog.msgId, deleteFrom: "me" }));
+    setDeleteDialog({ open: false, msgId: null });
+  };
+
+  const confirmDeleteFromBoth = async () => {
+    await dispatch(deleteMessage({ conversationId, msgId: deleteDialog.msgId, deleteFrom: "both" }));
+    setDeleteDialog({ open: false, msgId: null });
   };
 
   const grouped = {};
@@ -173,10 +190,19 @@ export default function DirectChatView({ conversationId }) {
                       </Typography>
                     )}
                     <Typography variant="body2">{msg.content}</Typography>
-                    <Box display="flex" justifyContent="flex-end" mt={0.5}>
+                    <Box display="flex" justifyContent="flex-end" alignItems="center" gap={0.5} mt={0.5}>
                       <Typography variant="caption" color="textSecondary" sx={{ opacity: 0.6, fontSize: 10 }}>
                         {formatTime(msg.createdAt)}
                       </Typography>
+                      {isOwn && (
+                        <Button
+                          size="small"
+                          onClick={() => handleDeleteOwn(msg.id)}
+                          sx={{ minWidth: 20, p: 0, color: "text.secondary", opacity: 0.4, "&:hover": { opacity: 1 } }}
+                        >
+                          <DeleteIcon sx={{ fontSize: 12 }} />
+                        </Button>
+                      )}
                     </Box>
                   </Box>
                 </Box>
@@ -220,6 +246,32 @@ export default function DirectChatView({ conversationId }) {
           <SendIcon />
         </Button>
       </Paper>
+      <Dialog open={deleteDialog.open} onClose={() => setDeleteDialog({ open: false, msgId: null })}>
+        <DialogTitle sx={{ fontFamily: "Outfit", fontWeight: 700 }}>Delete Message</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            How would you like to delete this message?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button
+            variant="outlined"
+            color="inherit"
+            onClick={confirmDeleteFromMe}
+            sx={{ textTransform: "none", fontFamily: "Outfit" }}
+          >
+            Delete from me
+          </Button>
+          <Button
+            variant="contained"
+            color="error"
+            onClick={confirmDeleteFromBoth}
+            sx={{ textTransform: "none", fontFamily: "Outfit" }}
+          >
+            Delete from both
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }

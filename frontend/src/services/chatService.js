@@ -21,3 +21,7 @@ export function getMessages(id, params) {
 export function sendMessage(id, content) {
   return api.post(`${BASE}/conversations/${id}/messages`, { content });
 }
+
+export function deleteMessage(id, msgId, deleteFrom) {
+  return api.delete(`${BASE}/conversations/${id}/messages/${msgId}`, { data: { deleteFrom } });
+}

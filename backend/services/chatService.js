@@ -180,10 +180,46 @@ async function sendMessage(conversationId, currentUserId, content, userName, use
   return enriched;
 }
 
+async function deleteMessage(conversationId, msgId, currentUserId, deleteFrom) {
+  const db = await readDB();
+
+  const message = (db.directMessages || []).find(
+    (m) => m.id === msgId && m.conversationId === conversationId
+  );
+  if (!message) {
+    const err = new Error("Message not found.");
+    err.status = 404;
+    throw err;
+  }
+
+  if (message.userId !== currentUserId) {
+    const err = new Error("You can only delete your own messages.");
+    err.status = 403;
+    throw err;
+  }
+
+  if (deleteFrom === "me") {
+    if (!message.deletedFor) message.deletedFor = [];
+    if (!message.deletedFor.includes(currentUserId)) {
+      message.deletedFor.push(currentUserId);
+    }
+    await writeDB(db);
+    return { message: "Message deleted from your view." };
+  }
+
+  message.deletedAt = new Date().toISOString();
+  await writeDB(db);
+
+  try { emitDirectMessage(conversationId, { type: "deleted", messageId: msgId, conversationId }); } catch (_) {}
+
+  return { message: "Message deleted." };
+}
+
 module.exports = {
   getChatUsers,
   findOrCreateConversation,
   getConversations,
   getMessages,
   sendMessage,
+  deleteMessage,
 };

@@ -10,7 +10,7 @@ import { updateUser, logout } from "../redux/slices/authSlice";
 import { fetchDashboardData, fetchSectionPermissions, setLayoutForSlug } from "../redux/slices/dashboardSlice";
 import { fetchStats } from "../redux/slices/adminSlice";
 import { receiveMessage, receiveEditedMessage, receiveDeletedMessage } from "../redux/slices/workspaceSlice";
-import { receiveDirectMessage } from "../redux/slices/chatSlice";
+import { receiveDirectMessage, receiveDeletedDirectMessage } from "../redux/slices/chatSlice";
 import { clearSessionToken } from "../utils/sessionToken";
 import { checkStatus } from "../services/authService";
 import { getDashboardLayout } from "../services/dashboardService";
@@ -106,6 +106,8 @@ export function WebSocketProvider({ children }) {
     const handleDirectMessage = (data) => {
       if (data.type === "new" && data.message) {
         dispatch(receiveDirectMessage({ conversationId: data.message.conversationId, message: data.message }));
+      } else if (data.type === "deleted") {
+        dispatch(receiveDeletedDirectMessage({ conversationId: data.conversationId, messageId: data.messageId }));
       }
     };
 

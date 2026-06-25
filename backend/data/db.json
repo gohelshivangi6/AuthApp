@@ -31,7 +31,7 @@
       "createdAt": "2026-06-22T10:09:35.485Z",
       "resetPasswordToken": null,
       "resetPasswordExpires": null,
-      "lastActivityAt": "2026-06-25T11:21:49.951Z",
+      "lastActivityAt": "2026-06-25T11:29:51.964Z",
       "pendingDeleteAt": null,
       "deleteToken": null,
       "suspended": false,
@@ -9524,6 +9524,116 @@
         "sessionId": "dd061ec9-1b7f-41ac-a52a-6d196f4f65d3",
         "eventType": "heartbeat"
       }
+    },
+    {
+      "id": "6ce59f96-66b1-4c11-8e3e-d9d311640fc7",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "event",
+      "timestamp": "2026-06-25T11:22:49.954Z",
+      "metadata": {
+        "sessionId": "dd061ec9-1b7f-41ac-a52a-6d196f4f65d3",
+        "eventType": "heartbeat"
+      }
+    },
+    {
+      "id": "49f19766-981e-444e-89ba-8e1f42a37962",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "event",
+      "timestamp": "2026-06-25T11:23:49.942Z",
+      "metadata": {
+        "sessionId": "dd061ec9-1b7f-41ac-a52a-6d196f4f65d3",
+        "eventType": "heartbeat"
+      }
+    },
+    {
+      "id": "d7603ac3-7ca2-419f-a71d-f74dbf11a01e",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "event",
+      "timestamp": "2026-06-25T11:24:49.952Z",
+      "metadata": {
+        "sessionId": "dd061ec9-1b7f-41ac-a52a-6d196f4f65d3",
+        "eventType": "heartbeat"
+      }
+    },
+    {
+      "id": "4c462c6a-a3da-40a2-973b-293f3fcf047b",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "session_end",
+      "timestamp": "2026-06-25T11:25:32.381Z",
+      "metadata": {
+        "sessionId": "dd061ec9-1b7f-41ac-a52a-6d196f4f65d3",
+        "durationMs": 409653
+      }
+    },
+    {
+      "id": "90650392-0e1e-4111-95c4-bc2b6af28925",
+      "userId": "b12bf9c8-987e-42ed-b105-e2f6429962c8",
+      "type": "session_start",
+      "timestamp": "2026-06-25T11:25:42.298Z",
+      "metadata": {
+        "sessionId": "97ead818-7948-4438-babc-00a09756a4a2",
+        "ip": "::1"
+      }
+    },
+    {
+      "id": "d2079fd1-cf6a-413a-afca-44f401e3426f",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "event",
+      "timestamp": "2026-06-25T11:26:53.957Z",
+      "metadata": {
+        "sessionId": "18ed74e5-2103-4020-b6b7-c1c034ae611d",
+        "eventType": "heartbeat"
+      }
+    },
+    {
+      "id": "fcb1ef14-e977-4428-8dff-3c377906ab2a",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "session_end",
+      "timestamp": "2026-06-25T11:27:34.576Z",
+      "metadata": {
+        "sessionId": "18ed74e5-2103-4020-b6b7-c1c034ae611d",
+        "durationMs": 112299
+      }
+    },
+    {
+      "id": "026aec57-c957-4a8b-9ead-b2894a84ed5d",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "session_start",
+      "timestamp": "2026-06-25T11:27:37.884Z",
+      "metadata": {
+        "sessionId": "c27bbc54-2a43-4978-a403-954303773558",
+        "ip": "::1"
+      }
+    },
+    {
+      "id": "215b4f22-b2b1-43e4-b392-71397196b0dc",
+      "userId": "b12bf9c8-987e-42ed-b105-e2f6429962c8",
+      "type": "session_start",
+      "timestamp": "2026-06-25T11:27:42.795Z",
+      "metadata": {
+        "sessionId": "ff4ec2e9-98d1-4e35-b76c-4d06f00f3e12",
+        "ip": "::1"
+      }
+    },
+    {
+      "id": "9ee2fc0d-d865-4e0f-a031-8b1fff1f8373",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "event",
+      "timestamp": "2026-06-25T11:28:37.945Z",
+      "metadata": {
+        "sessionId": "c27bbc54-2a43-4978-a403-954303773558",
+        "eventType": "heartbeat"
+      }
+    },
+    {
+      "id": "c4d781e1-d84b-4c05-8704-ff45219bc65c",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "type": "event",
+      "timestamp": "2026-06-25T11:29:51.964Z",
+      "metadata": {
+        "sessionId": "c27bbc54-2a43-4978-a403-954303773558",
+        "eventType": "heartbeat"
+      }
     }
   ],
   "departments": [
@@ -9770,7 +9880,19 @@
       "content": "bdf",
       "createdAt": "2026-06-25T11:20:58.557Z",
       "editedAt": null,
-      "deletedAt": null
+      "deletedAt": "2026-06-25T11:28:03.916Z"
+    },
+    {
+      "id": "5e9962ae-3f4b-4738-b4ff-16df75ff986f",
+      "conversationId": "bedc720e-d4d2-49cc-af5a-e579eb8fefb5",
+      "userId": "d245ba97-136d-4224-97a3-e336ca431708",
+      "content": "khi",
+      "createdAt": "2026-06-25T11:28:15.769Z",
+      "editedAt": null,
+      "deletedAt": null,
+      "deletedFor": [
+        "d245ba97-136d-4224-97a3-e336ca431708"
+      ]
     }
   ]
 }
