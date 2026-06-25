@@ -84,7 +84,7 @@ const Login = () => {
           dispatch(
             loginSuccess({ user: res.data.user, token: res.data.token }),
           );
-          navigate("/dashboards");
+          navigate("/dashboard");
         }
       }
     } catch (err) {

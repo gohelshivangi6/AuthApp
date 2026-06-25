@@ -2,6 +2,7 @@ import { useSelector } from "react-redux";
 import { Box, CircularProgress } from "@mui/material";
 import AdminDashboard from "../components/AdminDashboard";
 import UserDashboard from "../components/UserDashboard";
+import DashboardNav from "./DashboardNav";
 
 const Dashboard = () => {
   const user = useSelector((state) => state.auth.user);
@@ -26,7 +27,8 @@ const Dashboard = () => {
     return <AdminDashboard />;
   }
 
-  return <UserDashboard />;
+  // return <UserDashboard />;
+  return <DashboardNav />
 };
 
 export default Dashboard;

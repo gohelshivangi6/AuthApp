@@ -96,7 +96,7 @@ export default function DashboardNav() {
 
   return (
     <Box sx={{ py: 6, px: { xs: 2, md: 4 }, maxWidth: 1000, margin: "0 auto" }}>
-      <Button
+      {/* <Button
         startIcon={<DashboardIcon />}
         onClick={() => navigate("/dashboard")}
         sx={{
@@ -107,6 +107,19 @@ export default function DashboardNav() {
         }}
       >
         Back to My Dashboard
+      </Button> */}
+      <Button
+        startIcon={<GroupIcon />}
+        onClick={() => navigate("/workspaces")}
+        sx={{
+          mb: 2,
+          ml: 2,
+          textTransform: "none",
+          fontFamily: "Outfit",
+          fontWeight: 600,
+        }}
+      >
+        Go to Workspaces
       </Button>
       <Typography
         variant="h4"
