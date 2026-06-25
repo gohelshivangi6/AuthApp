@@ -56,6 +56,11 @@ export const deleteMessage = createAsyncThunk("workspace/deleteMessage", async (
   return { workspaceId, msgId, deleteFrom };
 });
 
+export const leaveWorkspace = createAsyncThunk("workspace/leaveWorkspace", async ({ workspaceId }) => {
+  await workspaceService.leaveWorkspace(workspaceId);
+  return { workspaceId };
+});
+
 const workspaceSlice = createSlice({
   name: "workspace",
   initialState: {
@@ -146,6 +151,13 @@ const workspaceSlice = createSlice({
         if (state.messages[workspaceId]) {
           state.messages[workspaceId] = state.messages[workspaceId].filter((m) => m.id !== msgId);
         }
+      })
+      .addCase(leaveWorkspace.fulfilled, (state, action) => {
+        const { workspaceId } = action.payload;
+        delete state.members[workspaceId];
+        delete state.messages[workspaceId];
+        delete state.messagesTotal[workspaceId];
+        state.workspaces = state.workspaces.filter((w) => w.id !== workspaceId);
       })
       .addMatcher(
         (action) => action.type.startsWith("workspace/") && action.type.endsWith("/pending"),

@@ -44,8 +44,15 @@ async function addMember(req, res, next) {
 
 async function removeMember(req, res, next) {
   try {
-    await workspaceService.removeMember(req.params.id, req.params.userId);
-    res.json({ success: true, message: "Member removed." });
+    const result = await workspaceService.removeMember(req.params.id, req.params.userId, req.user);
+    res.json({ success: true, ...result });
+  } catch (err) { next(err); }
+}
+
+async function leaveWorkspace(req, res, next) {
+  try {
+    const result = await workspaceService.leaveWorkspace(req.params.id, req.user.id, req.user.name);
+    res.json({ success: true, ...result });
   } catch (err) { next(err); }
 }
 
@@ -96,6 +103,7 @@ module.exports = {
   getMembers,
   addMember,
   removeMember,
+  leaveWorkspace,
   getMessages,
   sendMessage,
   editMessage,

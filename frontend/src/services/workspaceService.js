@@ -45,3 +45,7 @@ export function editMessage(id, msgId, content) {
 export function deleteMessage(id, msgId, deleteFrom) {
   return api.delete(`${BASE}/${id}/messages/${msgId}`, { data: { deleteFrom } });
 }
+
+export function leaveWorkspace(id) {
+  return api.post(`${BASE}/${id}/leave`);
+}

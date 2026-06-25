@@ -17,6 +17,7 @@ router.delete("/:id", requireAdmin, ctrl.deleteWorkspace);
 router.get("/:id/members", ctrl.getMembers);
 router.post("/:id/members", requireAdmin, ctrl.addMember);
 router.delete("/:id/members/:userId", requireAdmin, ctrl.removeMember);
+router.post("/:id/leave", ctrl.leaveWorkspace);
 
 // Messages
 router.get("/:id/messages", ctrl.getMessages);

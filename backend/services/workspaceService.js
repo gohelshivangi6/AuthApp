@@ -170,7 +170,7 @@ async function addMember(id, userIdToAdd) {
   return enriched;
 }
 
-async function removeMember(id, userIdToRemove) {
+async function removeMember(id, userIdToRemove, requester) {
   const db = await readDB();
 
   const idx = (db.workspaceMembers || []).findIndex(
@@ -183,10 +183,72 @@ async function removeMember(id, userIdToRemove) {
   }
 
   db.workspaceMembers.splice(idx, 1);
+
+  const user = getUserById(db, userIdToRemove);
+  if (!db.workspaceMessages) db.workspaceMessages = [];
+  db.workspaceMessages.push({
+    id: uuidv4(),
+    workspaceId: id,
+    userId: userIdToRemove,
+    content: "was removed from the workspace",
+    createdAt: new Date().toISOString(),
+    editedAt: null,
+    deletedAt: null,
+    type: "system",
+  });
+  if (db.workspaceMessages.length > 5000) {
+    db.workspaceMessages = db.workspaceMessages.slice(-5000);
+  }
+
   await writeDB(db);
 
+  const systemMsg = db.workspaceMessages[db.workspaceMessages.length - 1];
+  const enrichedMsg = { ...systemMsg, userName: user?.name || "Unknown", userEmail: user?.email || "" };
+  try { emitWorkspaceMessage(id, { type: "new", message: enrichedMsg }); } catch (_) {}
   try { emitWorkspaceMessage(id, { type: "member-removed", userId: userIdToRemove }); } catch (_) {}
   try { await removeUserFromWorkspaceRoom(userIdToRemove, id); } catch (_) {}
+
+  return { message: "Member removed." };
+}
+
+async function leaveWorkspace(id, userId, userName) {
+  const db = await readDB();
+
+  const idx = (db.workspaceMembers || []).findIndex(
+    (m) => m.workspaceId === id && m.userId === userId
+  );
+  if (idx === -1) {
+    const err = new Error("You are not a member of this workspace.");
+    err.status = 404;
+    throw err;
+  }
+
+  db.workspaceMembers.splice(idx, 1);
+
+  if (!db.workspaceMessages) db.workspaceMessages = [];
+  db.workspaceMessages.push({
+    id: uuidv4(),
+    workspaceId: id,
+    userId,
+    content: "left the workspace",
+    createdAt: new Date().toISOString(),
+    editedAt: null,
+    deletedAt: null,
+    type: "system",
+  });
+  if (db.workspaceMessages.length > 5000) {
+    db.workspaceMessages = db.workspaceMessages.slice(-5000);
+  }
+
+  await writeDB(db);
+
+  const systemMsg = db.workspaceMessages[db.workspaceMessages.length - 1];
+  const enrichedMsg = { ...systemMsg, userName, userEmail: "" };
+  try { emitWorkspaceMessage(id, { type: "new", message: enrichedMsg }); } catch (_) {}
+  try { emitWorkspaceMessage(id, { type: "member-removed", userId }); } catch (_) {}
+  try { await removeUserFromWorkspaceRoom(userId, id); } catch (_) {}
+
+  return { message: "You left the workspace." };
 }
 
 async function getMessages(id, userId, userRole, page = 1, limit = 50) {
@@ -340,6 +402,7 @@ module.exports = {
   getMembers,
   addMember,
   removeMember,
+  leaveWorkspace,
   getMessages,
   sendMessage,
   editMessage,

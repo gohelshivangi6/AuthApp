@@ -1,15 +1,18 @@
 import { useEffect, useState, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import {
   Box, Typography, Button, IconButton, TextField, CircularProgress, Paper,
   Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions,
+  Menu, MenuItem,
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import PeopleIcon from "@mui/icons-material/People";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 import {
-  sendMessage, editMessage, deleteMessage,
+  sendMessage, editMessage, deleteMessage, leaveWorkspace,
 } from "../../redux/slices/workspaceSlice";
 import MemberManager from "./MemberManager";
 
@@ -30,6 +33,7 @@ function formatDate(ts) {
 
 export default function WorkspaceView({ workspaceId }) {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { workspaces, members, messages, loading } = useSelector((state) => state.workspace);
   const user = useSelector((state) => state.auth.user);
   const isAdmin = user?.role === "admin";
@@ -43,7 +47,21 @@ export default function WorkspaceView({ workspaceId }) {
   const [editingId, setEditingId] = useState(null);
   const [editInput, setEditInput] = useState("");
   const [deleteDialog, setDeleteDialog] = useState({ open: false, msgId: null });
+  const [menuAnchor, setMenuAnchor] = useState(null);
   const messagesEndRef = useRef(null);
+  const isMember = workspaceMembers.some((m) => m.userId === user?.id);
+
+  useEffect(() => {
+    if (!isAdmin && !isMember && workspaceId) {
+      navigate("/workspaces", { replace: true });
+    }
+  }, [isAdmin, isMember, workspaceId, navigate]);
+
+  const handleLeave = async () => {
+    setMenuAnchor(null);
+    await dispatch(leaveWorkspace({ workspaceId }));
+    navigate("/workspaces", { replace: true });
+  };
 
   const messageCount = workspaceMessages.length;
   useEffect(() => {
@@ -92,8 +110,6 @@ export default function WorkspaceView({ workspaceId }) {
     setEditingId(msg.id);
     setEditInput(msg.content);
   };
-
-  const isMember = workspaceMembers.some((m) => m.userId === user?.id);
 
   const grouped = {};
   for (const msg of workspaceMessages) {
@@ -151,6 +167,33 @@ export default function WorkspaceView({ workspaceId }) {
         >
           {workspaceMembers.length}
         </Button>
+        {!isAdmin && (
+          <>
+            <IconButton size="small" onClick={(e) => setMenuAnchor(e.currentTarget)}>
+              <MoreVertIcon />
+            </IconButton>
+            <Menu
+              anchorEl={menuAnchor}
+              open={!!menuAnchor}
+              onClose={() => setMenuAnchor(null)}
+              slotProps={{
+                paper: {
+                  sx: {
+                    background: "rgba(18, 18, 43, 0.95)",
+                    backdropFilter: "blur(16px)",
+                    border: "1px solid rgba(255,255,255,0.08)",
+                    borderRadius: 2,
+                    minWidth: 160,
+                  },
+                },
+              }}
+            >
+              <MenuItem onClick={handleLeave} sx={{ color: "#ef4444" }}>
+                Leave Workspace
+              </MenuItem>
+            </Menu>
+          </>
+        )}
       </Paper>
 
       {/* Messages */}
@@ -175,6 +218,15 @@ export default function WorkspaceView({ workspaceId }) {
               {dateKey}
             </Typography>
             {msgs.map((msg) => {
+              if (msg.type === "system") {
+                return (
+                  <Box key={msg.id} sx={{ textAlign: "center", my: 1.5 }}>
+                    <Typography variant="caption" color="textSecondary" sx={{ fontStyle: "italic", opacity: 0.6 }}>
+                      {msg.userName} {msg.content}
+                    </Typography>
+                  </Box>
+                );
+              }
               const isOwn = msg.userId === user?.id;
               return (
                 <Box
