@@ -183,6 +183,13 @@ async function sendMessage(conversationId, currentUserId, content, userName, use
 async function deleteMessage(conversationId, msgId, currentUserId, deleteFrom) {
   const db = await readDB();
 
+  const conversation = (db.directConversations || []).find((c) => c.id === conversationId);
+  if (!conversation) {
+    const err = new Error("Conversation not found.");
+    err.status = 404;
+    throw err;
+  }
+
   const message = (db.directMessages || []).find(
     (m) => m.id === msgId && m.conversationId === conversationId
   );
@@ -192,8 +199,8 @@ async function deleteMessage(conversationId, msgId, currentUserId, deleteFrom) {
     throw err;
   }
 
-  if (message.userId !== currentUserId) {
-    const err = new Error("You can only delete your own messages.");
+  if (!conversation.participants.includes(currentUserId)) {
+    const err = new Error("Access denied.");
     err.status = 403;
     throw err;
   }

@@ -8,7 +8,6 @@ import {
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
 import PeopleIcon from "@mui/icons-material/People";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import {
@@ -46,8 +45,9 @@ export default function WorkspaceView({ workspaceId }) {
   const [memberOpen, setMemberOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [editInput, setEditInput] = useState("");
-  const [deleteDialog, setDeleteDialog] = useState({ open: false, msgId: null });
   const [menuAnchor, setMenuAnchor] = useState(null);
+  const [selectedMessages, setSelectedMessages] = useState(new Set());
+  const [bulkDeleteDialog, setBulkDeleteDialog] = useState({ open: false, type: null });
   const messagesEndRef = useRef(null);
   const isMember = workspaceMembers.some((m) => m.userId === user?.id);
 
@@ -88,27 +88,36 @@ export default function WorkspaceView({ workspaceId }) {
     setEditInput("");
   };
 
-  const handleDeleteOwn = (msgId) => {
-    setDeleteDialog({ open: true, msgId });
-  };
-
-  const handleDeleteOther = async (msgId) => {
-    await dispatch(deleteMessage({ workspaceId, msgId, deleteFrom: "all" }));
-  };
-
-  const confirmDeleteFromMe = async () => {
-    await dispatch(deleteMessage({ workspaceId, msgId: deleteDialog.msgId, deleteFrom: "me" }));
-    setDeleteDialog({ open: false, msgId: null });
-  };
-
-  const confirmDeleteFromAll = async () => {
-    await dispatch(deleteMessage({ workspaceId, msgId: deleteDialog.msgId, deleteFrom: "all" }));
-    setDeleteDialog({ open: false, msgId: null });
-  };
-
   const startEdit = (msg) => {
     setEditingId(msg.id);
     setEditInput(msg.content);
+  };
+
+  const toggleSelectMessage = (msgId) => {
+    setSelectedMessages((prev) => {
+      const next = new Set(prev);
+      if (next.has(msgId)) next.delete(msgId);
+      else next.add(msgId);
+      return next;
+    });
+  };
+
+  const clearSelection = () => setSelectedMessages(new Set());
+
+  const handleBulkDeleteClick = () => {
+    const hasOther = [...selectedMessages].some((msgId) => {
+      const msg = workspaceMessages.find((m) => m.id === msgId);
+      return msg && msg.userId !== user?.id;
+    });
+    setBulkDeleteDialog({ open: true, type: hasOther ? "confirm" : "choice" });
+  };
+
+  const confirmBulkDelete = async (deleteFrom) => {
+    for (const msgId of selectedMessages) {
+      await dispatch(deleteMessage({ workspaceId, msgId, deleteFrom }));
+    }
+    setSelectedMessages(new Set());
+    setBulkDeleteDialog({ open: false, type: null });
   };
 
   const grouped = {};
@@ -228,6 +237,7 @@ export default function WorkspaceView({ workspaceId }) {
                 );
               }
               const isOwn = msg.userId === user?.id;
+              const isSelected = selectedMessages.has(msg.id);
               return (
                 <Box
                   key={msg.id}
@@ -238,6 +248,7 @@ export default function WorkspaceView({ workspaceId }) {
                   }}
                 >
                   <Box
+                    onClick={() => toggleSelectMessage(msg.id)}
                     sx={{
                       maxWidth: "70%",
                       bgcolor: isOwn ? "primary.dark" : "rgba(255,255,255,0.05)",
@@ -247,6 +258,9 @@ export default function WorkspaceView({ workspaceId }) {
                       px: 2,
                       py: 1,
                       position: "relative",
+                      cursor: "pointer",
+                      outline: isSelected ? "2px solid" : "none",
+                      outlineColor: "primary.main",
                     }}
                   >
                     {!isOwn && (
@@ -284,18 +298,12 @@ export default function WorkspaceView({ workspaceId }) {
                         {msg.editedAt && " (edited)"}
                       </Typography>
                       {isOwn && editingId !== msg.id && (
-                        <>
-                          <IconButton size="small" sx={{ opacity: 0.4 }} onClick={() => startEdit(msg)}>
-                            <EditIcon sx={{ fontSize: 12 }} />
-                          </IconButton>
-                          <IconButton size="small" sx={{ opacity: 0.4 }} onClick={() => handleDeleteOwn(msg.id)}>
-                            <DeleteIcon sx={{ fontSize: 12 }} />
-                          </IconButton>
-                        </>
-                      )}
-                      {!isOwn && isAdmin && (
-                        <IconButton size="small" sx={{ opacity: 0.4 }} onClick={() => handleDeleteOther(msg.id)}>
-                          <DeleteIcon sx={{ fontSize: 12 }} />
+                        <IconButton
+                          size="small"
+                          sx={{ opacity: 0.4 }}
+                          onClick={(e) => { e.stopPropagation(); startEdit(msg); }}
+                        >
+                          <EditIcon sx={{ fontSize: 12 }} />
                         </IconButton>
                       )}
                     </Box>
@@ -307,6 +315,34 @@ export default function WorkspaceView({ workspaceId }) {
         ))}
         <div ref={messagesEndRef} />
       </Box>
+
+      {/* Floating selection bar */}
+      {selectedMessages.size > 0 && (
+        <Paper
+          sx={{
+            p: 1.5,
+            display: "flex",
+            alignItems: "center",
+            gap: 2,
+            justifyContent: "center",
+            background: "rgba(18,18,38,0.95)",
+            backdropFilter: "blur(16px)",
+            borderTop: "1px solid rgba(255,255,255,0.08)",
+            borderRadius: 0,
+            boxShadow: "none",
+          }}
+        >
+          <Typography variant="body2" sx={{ fontFamily: "Outfit" }}>
+            {selectedMessages.size} message(s) selected
+          </Typography>
+          <Button size="small" variant="contained" color="error" onClick={handleBulkDeleteClick}>
+            Delete Selected
+          </Button>
+          <Button size="small" onClick={clearSelection} sx={{ textTransform: "none" }}>
+            Clear
+          </Button>
+        </Paper>
+      )}
 
       {/* Input */}
       <Paper
@@ -345,31 +381,61 @@ export default function WorkspaceView({ workspaceId }) {
 
       <MemberManager workspaceId={workspaceId} open={memberOpen} onClose={() => setMemberOpen(false)} />
 
-      <Dialog open={deleteDialog.open} onClose={() => setDeleteDialog({ open: false, msgId: null })}>
-        <DialogTitle sx={{ fontFamily: "Outfit", fontWeight: 700 }}>Delete Message</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            How would you like to delete this message?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions sx={{ px: 3, pb: 2 }}>
-          <Button
-            variant="outlined"
-            color="inherit"
-            onClick={confirmDeleteFromMe}
-            sx={{ textTransform: "none", fontFamily: "Outfit" }}
-          >
-            Delete from me
-          </Button>
-          <Button
-            variant="contained"
-            color="error"
-            onClick={confirmDeleteFromAll}
-            sx={{ textTransform: "none", fontFamily: "Outfit" }}
-          >
-            Delete from all
-          </Button>
-        </DialogActions>
+      <Dialog open={bulkDeleteDialog.open} onClose={() => setBulkDeleteDialog({ open: false, type: null })}>
+        {bulkDeleteDialog.type === "choice" ? (
+          <>
+            <DialogTitle sx={{ fontFamily: "Outfit", fontWeight: 700 }}>Delete Messages</DialogTitle>
+            <DialogContent>
+              <DialogContentText>How would you like to delete these messages?</DialogContentText>
+            </DialogContent>
+            <DialogActions sx={{ px: 3, pb: 2 }}>
+              <Button
+                variant="outlined"
+                color="inherit"
+                onClick={() => confirmBulkDelete("me")}
+                sx={{ textTransform: "none", fontFamily: "Outfit" }}
+              >
+                Delete from me
+              </Button>
+              <Button
+                variant="contained"
+                color="error"
+                onClick={() => confirmBulkDelete("all")}
+                sx={{ textTransform: "none", fontFamily: "Outfit" }}
+              >
+                Delete for everyone
+              </Button>
+            </DialogActions>
+          </>
+        ) : (
+          <>
+            <DialogTitle sx={{ fontFamily: "Outfit", fontWeight: 700 }}>Delete Messages</DialogTitle>
+            <DialogContent>
+              <DialogContentText>
+                Are you sure you want to delete these {selectedMessages.size} messages?
+                This will delete them from your view only.
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions sx={{ px: 3, pb: 2 }}>
+              <Button
+                variant="outlined"
+                color="inherit"
+                onClick={() => setBulkDeleteDialog({ open: false, type: null })}
+                sx={{ textTransform: "none", fontFamily: "Outfit" }}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="contained"
+                color="error"
+                onClick={() => confirmBulkDelete("me")}
+                sx={{ textTransform: "none", fontFamily: "Outfit" }}
+              >
+                Delete from me
+              </Button>
+            </DialogActions>
+          </>
+        )}
       </Dialog>
     </Box>
   );

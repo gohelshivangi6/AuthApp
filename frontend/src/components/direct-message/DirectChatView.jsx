@@ -7,7 +7,6 @@ import {
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import DeleteIcon from "@mui/icons-material/Delete";
 import { fetchMessages, sendMessage, deleteMessage } from "../../redux/slices/chatSlice";
 
 function formatTime(ts) {
@@ -36,7 +35,8 @@ export default function DirectChatView({ conversationId }) {
   const chatMessages = messages[conversationId] || [];
 
   const [input, setInput] = useState("");
-  const [deleteDialog, setDeleteDialog] = useState({ open: false, msgId: null });
+  const [selectedMessages, setSelectedMessages] = useState(new Set());
+  const [bulkDeleteDialog, setBulkDeleteDialog] = useState({ open: false, type: null });
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
@@ -63,18 +63,31 @@ export default function DirectChatView({ conversationId }) {
     }
   };
 
-  const handleDeleteOwn = (msgId) => {
-    setDeleteDialog({ open: true, msgId });
+  const toggleSelectMessage = (msgId) => {
+    setSelectedMessages((prev) => {
+      const next = new Set(prev);
+      if (next.has(msgId)) next.delete(msgId);
+      else next.add(msgId);
+      return next;
+    });
   };
 
-  const confirmDeleteFromMe = async () => {
-    await dispatch(deleteMessage({ conversationId, msgId: deleteDialog.msgId, deleteFrom: "me" }));
-    setDeleteDialog({ open: false, msgId: null });
+  const clearSelection = () => setSelectedMessages(new Set());
+
+  const handleBulkDeleteClick = () => {
+    const hasOther = [...selectedMessages].some((msgId) => {
+      const msg = chatMessages.find((m) => m.id === msgId);
+      return msg && msg.userId !== user?.id;
+    });
+    setBulkDeleteDialog({ open: true, type: hasOther ? "confirm" : "choice" });
   };
 
-  const confirmDeleteFromBoth = async () => {
-    await dispatch(deleteMessage({ conversationId, msgId: deleteDialog.msgId, deleteFrom: "both" }));
-    setDeleteDialog({ open: false, msgId: null });
+  const confirmBulkDelete = async (deleteFrom) => {
+    for (const msgId of selectedMessages) {
+      await dispatch(deleteMessage({ conversationId, msgId, deleteFrom }));
+    }
+    setSelectedMessages(new Set());
+    setBulkDeleteDialog({ open: false, type: null });
   };
 
   const grouped = {};
@@ -164,6 +177,7 @@ export default function DirectChatView({ conversationId }) {
             </Typography>
             {msgs.map((msg) => {
               const isOwn = msg.userId === user?.id;
+              const isSelected = selectedMessages.has(msg.id);
               return (
                 <Box
                   key={msg.id}
@@ -174,6 +188,7 @@ export default function DirectChatView({ conversationId }) {
                   }}
                 >
                   <Box
+                    onClick={() => toggleSelectMessage(msg.id)}
                     sx={{
                       maxWidth: "70%",
                       bgcolor: isOwn ? "primary.dark" : "rgba(255,255,255,0.05)",
@@ -182,6 +197,9 @@ export default function DirectChatView({ conversationId }) {
                       borderBottomLeftRadius: isOwn ? "12px" : "4px",
                       px: 2,
                       py: 1,
+                      cursor: "pointer",
+                      outline: isSelected ? "2px solid" : "none",
+                      outlineColor: "primary.main",
                     }}
                   >
                     {!isOwn && (
@@ -190,19 +208,10 @@ export default function DirectChatView({ conversationId }) {
                       </Typography>
                     )}
                     <Typography variant="body2">{msg.content}</Typography>
-                    <Box display="flex" justifyContent="flex-end" alignItems="center" gap={0.5} mt={0.5}>
+                    <Box display="flex" justifyContent="flex-end" mt={0.5}>
                       <Typography variant="caption" color="textSecondary" sx={{ opacity: 0.6, fontSize: 10 }}>
                         {formatTime(msg.createdAt)}
                       </Typography>
-                      {isOwn && (
-                        <Button
-                          size="small"
-                          onClick={() => handleDeleteOwn(msg.id)}
-                          sx={{ minWidth: 20, p: 0, color: "text.secondary", opacity: 0.4, "&:hover": { opacity: 1 } }}
-                        >
-                          <DeleteIcon sx={{ fontSize: 12 }} />
-                        </Button>
-                      )}
                     </Box>
                   </Box>
                 </Box>
@@ -212,6 +221,34 @@ export default function DirectChatView({ conversationId }) {
         ))}
         <div ref={messagesEndRef} />
       </Box>
+
+      {/* Floating selection bar */}
+      {selectedMessages.size > 0 && (
+        <Paper
+          sx={{
+            p: 1.5,
+            display: "flex",
+            alignItems: "center",
+            gap: 2,
+            justifyContent: "center",
+            background: "rgba(18,18,38,0.95)",
+            backdropFilter: "blur(16px)",
+            borderTop: "1px solid rgba(255,255,255,0.08)",
+            borderRadius: 0,
+            boxShadow: "none",
+          }}
+        >
+          <Typography variant="body2" sx={{ fontFamily: "Outfit" }}>
+            {selectedMessages.size} message(s) selected
+          </Typography>
+          <Button size="small" variant="contained" color="error" onClick={handleBulkDeleteClick}>
+            Delete Selected
+          </Button>
+          <Button size="small" onClick={clearSelection} sx={{ textTransform: "none" }}>
+            Clear
+          </Button>
+        </Paper>
+      )}
 
       {/* Input */}
       <Paper
@@ -246,31 +283,62 @@ export default function DirectChatView({ conversationId }) {
           <SendIcon />
         </Button>
       </Paper>
-      <Dialog open={deleteDialog.open} onClose={() => setDeleteDialog({ open: false, msgId: null })}>
-        <DialogTitle sx={{ fontFamily: "Outfit", fontWeight: 700 }}>Delete Message</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            How would you like to delete this message?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions sx={{ px: 3, pb: 2 }}>
-          <Button
-            variant="outlined"
-            color="inherit"
-            onClick={confirmDeleteFromMe}
-            sx={{ textTransform: "none", fontFamily: "Outfit" }}
-          >
-            Delete from me
-          </Button>
-          <Button
-            variant="contained"
-            color="error"
-            onClick={confirmDeleteFromBoth}
-            sx={{ textTransform: "none", fontFamily: "Outfit" }}
-          >
-            Delete from both
-          </Button>
-        </DialogActions>
+
+      <Dialog open={bulkDeleteDialog.open} onClose={() => setBulkDeleteDialog({ open: false, type: null })}>
+        {bulkDeleteDialog.type === "choice" ? (
+          <>
+            <DialogTitle sx={{ fontFamily: "Outfit", fontWeight: 700 }}>Delete Messages</DialogTitle>
+            <DialogContent>
+              <DialogContentText>How would you like to delete these messages?</DialogContentText>
+            </DialogContent>
+            <DialogActions sx={{ px: 3, pb: 2 }}>
+              <Button
+                variant="outlined"
+                color="inherit"
+                onClick={() => confirmBulkDelete("me")}
+                sx={{ textTransform: "none", fontFamily: "Outfit" }}
+              >
+                Delete from me
+              </Button>
+              <Button
+                variant="contained"
+                color="error"
+                onClick={() => confirmBulkDelete("both")}
+                sx={{ textTransform: "none", fontFamily: "Outfit" }}
+              >
+                Delete for both
+              </Button>
+            </DialogActions>
+          </>
+        ) : (
+          <>
+            <DialogTitle sx={{ fontFamily: "Outfit", fontWeight: 700 }}>Delete Messages</DialogTitle>
+            <DialogContent>
+              <DialogContentText>
+                Are you sure you want to delete these {selectedMessages.size} messages?
+                This will delete them from your view only.
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions sx={{ px: 3, pb: 2 }}>
+              <Button
+                variant="outlined"
+                color="inherit"
+                onClick={() => setBulkDeleteDialog({ open: false, type: null })}
+                sx={{ textTransform: "none", fontFamily: "Outfit" }}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="contained"
+                color="error"
+                onClick={() => confirmBulkDelete("me")}
+                sx={{ textTransform: "none", fontFamily: "Outfit" }}
+              >
+                Delete from me
+              </Button>
+            </DialogActions>
+          </>
+        )}
       </Dialog>
     </Box>
   );

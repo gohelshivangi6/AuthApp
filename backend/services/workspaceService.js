@@ -161,9 +161,28 @@ async function addMember(id, userIdToAdd) {
   };
   db.workspaceMembers.push(member);
 
+  if (!db.workspaceMessages) db.workspaceMessages = [];
+  db.workspaceMessages.push({
+    id: uuidv4(),
+    workspaceId: id,
+    userId: userIdToAdd,
+    content: "joined the workspace",
+    createdAt: new Date().toISOString(),
+    editedAt: null,
+    deletedAt: null,
+    type: "system",
+  });
+  if (db.workspaceMessages.length > 5000) {
+    db.workspaceMessages = db.workspaceMessages.slice(-5000);
+  }
+
   await writeDB(db);
 
   const enriched = { ...member, name: user.name, email: user.email };
+
+  const systemMsg = db.workspaceMessages[db.workspaceMessages.length - 1];
+  const enrichedMsg = { ...systemMsg, userName: user.name || "Unknown", userEmail: user.email || "" };
+  try { emitWorkspaceMessage(id, { type: "new", message: enrichedMsg }); } catch (_) {}
   try { emitWorkspaceMessage(id, { type: "member-added", userId: userIdToAdd }); } catch (_) {}
   try { await joinUserWorkspaceRooms(userIdToAdd); } catch (_) {}
 
@@ -371,13 +390,16 @@ async function deleteMessage(id, msgId, userId, userRole, deleteFrom) {
     throw err;
   }
 
-  if (message.userId !== userId && userRole !== "admin") {
+  const isMember = (db.workspaceMembers || []).some(
+    (m) => m.workspaceId === id && m.userId === userId
+  );
+  if (userRole !== "admin" && !isMember) {
     const err = new Error("Access denied.");
     err.status = 403;
     throw err;
   }
 
-  if (message.userId === userId && deleteFrom === "me") {
+  if (deleteFrom === "me") {
     if (!message.deletedFor) message.deletedFor = [];
     if (!message.deletedFor.includes(userId)) {
       message.deletedFor.push(userId);
