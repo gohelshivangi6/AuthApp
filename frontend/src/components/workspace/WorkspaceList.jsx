@@ -2,15 +2,26 @@ import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import {
-  Box, Typography, Button, Avatar,
-  CircularProgress, List, ListItem, ListItemAvatar,
-  ListItemText, Divider,
+  Box,
+  Typography,
+  Button,
+  Avatar,
+  CircularProgress,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  Divider,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import ForumIcon from "@mui/icons-material/Forum";
 import WorkspaceView from "./WorkspaceView";
 import WorkspaceCreateDialog from "./WorkspaceCreateDialog";
-import { fetchWorkspaces, fetchMembers, fetchMessages } from "../../redux/slices/workspaceSlice";
+import {
+  fetchWorkspaces,
+  fetchMembers,
+  fetchMessages,
+} from "../../redux/slices/workspaceSlice";
 
 function EmptyState() {
   return (
@@ -54,7 +65,15 @@ export default function WorkspaceList() {
   }, [id, dispatch]);
 
   return (
-    <Box sx={{ display: "flex", height: "calc(100vh - 80px)", width: "100%", mt: 2, gap: 2 }}>
+    <Box
+      sx={{
+        display: "flex",
+        height: "calc(100vh - 80px)",
+        width: "100%",
+        mt: 2,
+        gap: 2,
+      }}
+    >
       {/* Left sidebar */}
       <Box
         sx={{
@@ -70,8 +89,17 @@ export default function WorkspaceList() {
           overflow: "hidden",
         }}
       >
-        <Box display="flex" alignItems="center" justifyContent="space-between" px={2} py={1.5}>
-          <Typography variant="h6" sx={{ fontFamily: "Outfit", fontWeight: 700, fontSize: "1rem" }}>
+        <Box
+          display="flex"
+          alignItems="center"
+          justifyContent="space-between"
+          px={2}
+          py={1.5}
+        >
+          <Typography
+            variant="h6"
+            sx={{ fontFamily: "Outfit", fontWeight: 700, fontSize: "1rem" }}
+          >
             Workspaces
           </Typography>
           {isAdmin && (
@@ -88,10 +116,17 @@ export default function WorkspaceList() {
         <Divider sx={{ borderColor: "rgba(255,255,255,0.05)" }} />
         <Box sx={{ flex: 1, overflow: "auto", py: 1 }}>
           {loading && workspaces.length === 0 && (
-            <Box textAlign="center" py={4}><CircularProgress size={24} /></Box>
+            <Box textAlign="center" py={4}>
+              <CircularProgress size={24} />
+            </Box>
           )}
           {!loading && workspaces.length === 0 && (
-            <Typography variant="body2" color="textSecondary" textAlign="center" py={4}>
+            <Typography
+              variant="body2"
+              color="textSecondary"
+              textAlign="center"
+              py={4}
+            >
               No workspaces yet.
             </Typography>
           )}
@@ -115,15 +150,31 @@ export default function WorkspaceList() {
                   }}
                 >
                   <ListItemAvatar>
-                    <Avatar sx={{ bgcolor: selected ? "primary.dark" : "rgba(255,255,255,0.1)", width: 36, height: 36 }}>
+                    <Avatar
+                      sx={{
+                        bgcolor: selected
+                          ? "primary.dark"
+                          : "rgba(255,255,255,0.1)",
+                        width: 36,
+                        height: 36,
+                      }}
+                    >
                       <ForumIcon sx={{ fontSize: 18 }} />
                     </Avatar>
                   </ListItemAvatar>
                   <ListItemText
                     primary={w.name}
                     secondary={w.description || ""}
-                    primaryTypographyProps={{ variant: "body2", fontWeight: 600, noWrap: true }}
-                    secondaryTypographyProps={{ variant: "caption", noWrap: true, color: "textSecondary" }}
+                    primaryTypographyProps={{
+                      variant: "body2",
+                      fontWeight: 600,
+                      noWrap: true,
+                    }}
+                    secondaryTypographyProps={{
+                      variant: "caption",
+                      noWrap: true,
+                      color: "textSecondary",
+                    }}
                   />
                 </ListItem>
               );
@@ -153,7 +204,10 @@ export default function WorkspaceList() {
         )}
       </Box>
 
-      <WorkspaceCreateDialog open={createOpen} onClose={() => setCreateOpen(false)} />
+      <WorkspaceCreateDialog
+        open={createOpen}
+        onClose={() => setCreateOpen(false)}
+      />
     </Box>
   );
 }

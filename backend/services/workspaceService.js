@@ -202,7 +202,7 @@ async function getMessages(id, userId, userRole, page = 1, limit = 50) {
   }
 
   let messages = (db.workspaceMessages || [])
-    .filter((m) => m.workspaceId === id && !(m.deletedFor || []).includes(userId))
+    .filter((m) => m.workspaceId === id && !(m.deletedFor || []).includes(userId) && !m.deletedAt)
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
   const total = messages.length;
@@ -325,7 +325,6 @@ async function deleteMessage(id, msgId, userId, userRole, deleteFrom) {
   }
 
   message.deletedAt = new Date().toISOString();
-  message.content = "";
   await writeDB(db);
 
   try { emitWorkspaceMessage(id, { type: "deleted", messageId: msgId, workspaceId: id }); } catch (_) {}
