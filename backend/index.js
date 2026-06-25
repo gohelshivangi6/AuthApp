@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
 require('dotenv').config();
 
@@ -22,6 +23,9 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 console.log(`[Server] Starting Secure Auth backend in ${process.env.NODE_ENV} mode...`);
+
+// Set security headers (CSP, X-Frame-Options, HSTS, etc.)
+app.use(helmet());
 
 // Enable CORS for frontend development server with cookie credentials allowed
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
