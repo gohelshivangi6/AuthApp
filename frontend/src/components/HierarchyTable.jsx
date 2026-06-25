@@ -462,7 +462,6 @@ export default function HierarchyTable() {
 
         const configStr = await decryptData(res.data.config);
         const dataStr = await decryptData(res.data.data);
-        console.log("dataStr", dataStr);
 
         if (isPoll) {
           if (configStr !== prevConfigRef.current) {
@@ -499,7 +498,6 @@ export default function HierarchyTable() {
 
   const configLevels = useMemo(() => {
     if (!config) return [];
-    console.log("config.... ", config);
     return config.levels.map((l) => ({
       ...l,
       icon: ICON_MAP[l.icon] || <GroupsIcon />,
@@ -512,11 +510,9 @@ export default function HierarchyTable() {
   }, [levelOrder, configLevels]);
 
   const levels = useMemo(() => {
-    console.log("config level ", configLevels);
     const map = Object.fromEntries(configLevels.map((l) => [l.key, l]));
     return effectiveLevelOrder.map((key) => map[key]).filter(Boolean);
   }, [configLevels, effectiveLevelOrder]);
-  console.log("base level", levels);
 
   const columns = useMemo(() => config?.columns || {}, [config]);
   const tableConfig = useMemo(() => config?.table || {}, [config]);

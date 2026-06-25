@@ -72,7 +72,9 @@ async function sendEmail({ to, subject, text, html }) {
     const transport = getTransporter();
     if (transport) {
       const from = process.env.SMTP_FROM || process.env.SMTP_USER || 'noreply@authapp.com';
-      transport.sendMail({ from, to, subject, text, html }).catch(() => {});
+      transport.sendMail({ from, to, subject, text, html }).catch((err) => {
+        console.error(`[EmailService] Failed to send real email to ${to}:`, err.message);
+      });
     }
 
     return true;

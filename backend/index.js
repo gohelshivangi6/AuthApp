@@ -37,7 +37,7 @@ app.use(cors({
 }));
 
 // Body parsing middleware
-app.use(express.json({ limit: '10kb' })); // Limit body size to protect against body bloating attacks
+app.use(express.json({ limit: '1MB' })); // Limit body size to protect against body bloating attacks
 app.use(cookieParser());
 
 // Global Rate Limiting

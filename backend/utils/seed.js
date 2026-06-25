@@ -2,9 +2,9 @@ const { v4: uuidv4 } = require("uuid");
 const { readDB, writeDB } = require("./dbHelper");
 const { hashPassword } = require("./cryptoHelper");
 
-const ADMIN_EMAIL = "admin@authapp.com";
-const ADMIN_PASSWORD = "Admin@123";
-const ADMIN_NAME = "Super Admin";
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+const ADMIN_NAME = process.env.ADMIN_NAME;
 
 const DEFAULT_WIDGETS = [
   { componentName: "BarChart", name: "Bar Chart", description: "D3 bar chart visualization", defaultEnabled: true },

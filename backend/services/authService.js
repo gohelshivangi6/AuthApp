@@ -342,7 +342,7 @@ async function forgotPassword({ email }) {
 
   const resetToken = crypto.randomBytes(32).toString("hex");
   const hashedToken = crypto
-    .createHash("sha256")
+    .createHmac("sha256", JWT_SECRET)
     .update(resetToken)
     .digest("hex");
 

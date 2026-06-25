@@ -107,6 +107,55 @@ Sets X-Frame-Options, X-Content-Type-Options, Strict-Transport-Security, CSP, an
 
 ---
 
+### H12. Duplicate mailer implementations
+**Fixed:** Deleted `backend/utils/mailer.js` and `backend/utils/realMailer.js`
+Both files were dead code — nothing imported them. `emailService.js` was already the sole active email module with its own nodemailer integration, simulated email writes to `emails.json`, and the full email template library.
+
+---
+
+### H13. SHA-256 reset token without salt
+**Fixed:** `backend/services/authService.js:344`
+```js
+// Before: crypto.createHash("sha256").update(resetToken)
+// After:  crypto.createHmac("sha256", JWT_SECRET).update(resetToken)
+```
+Changed from plain `createHash` to `createHmac` using `JWT_SECRET` as the key. Even if the database is stolen, the attacker can't verify guessed tokens without also knowing `JWT_SECRET`.
+
+---
+
+### H15. `transport.sendMail` silently swallows errors
+**Fixed:** `backend/services/emailService.js:75`
+```js
+// Before: transport.sendMail({...}).catch(() => {});
+// After:  transport.sendMail({...}).catch((err) => {
+//           console.error('[EmailService] Failed to send real email:', err.message);
+//         });
+```
+Now logs the SMTP error message instead of silently discarding it.
+
+---
+
+### H17. `receiveMemberAdded` reducer missing dedup
+**Fixed:** `frontend/src/redux/slices/workspaceSlice.js:113-120`
+```js
+.addCase(addMember.fulfilled, (state, action) => {
+  const { workspaceId, member } = action.payload;
+  if (!state.members[workspaceId]) state.members[workspaceId] = [];
+  if (!state.members[workspaceId].some((m) => m.userId === member.userId)) {
+    state.members[workspaceId].push(member);  // ← now has dedup check
+  }
+})
+```
+Added `.some()` check to `addMember.fulfilled` so that when both the API response and WebSocket event arrive for the same member addition, they don't push a duplicate.
+
+---
+
+### H18. Stale closure + debug logs in HierarchyTable polling
+**Fixed:** `frontend/src/components/HierarchyTable.jsx:465,502,514-515,519`
+The stale closure was already fixed (used `useRef` for `prevConfigRef`/`prevDataRef`). Removed 4 leftover `console.log` statements that were cluttering browser dev tools.
+
+---
+
 ## Remaining Bug Fixes (Future Sessions)
 
 ### CRITICAL
@@ -178,13 +227,8 @@ Sets X-Frame-Options, X-Content-Type-Options, Strict-Transport-Security, CSP, an
 | ID | Issue | File | Fix |
 |----|-------|------|-----|
 | H11 | Admin seed password hardcoded | `backend/utils/seed.js:6` | Use env vars, skip seed in production |
-| H12 | Duplicate mailer implementations | `backend/utils/mailer.js` + `services/emailService.js` | Remove `mailer.js`, consolidate |
-| H13 | SHA-256 reset token without salt | `backend/services/authService.js:344-346` | Use `crypto.createHmac` or bcrypt |
 | H14 | Body size limit 10kb too restrictive | `backend/index.js:36` | Increase to 100kb–1mb |
-| H15 | `transport.sendMail` silently swallows errors | `backend/services/emailService.js:74,75` | Log the error instead of `.catch(() => {})` |
 | H16 | No input rate limiting on WebSocket events | `backend/utils/websocket.js:80-161` | Add per-user rate limiting |
-| H17 | `receiveMemberAdded` reducer missing dedup | `frontend/src/redux/slices/workspaceSlice.js:89` | Implement proper dedup logic |
-| H18 | Stale closure in HierarchyTable polling | `frontend/src/components/HierarcyTable.jsx:452-478` | Replace local vars with `useRef` |
 
 ---
 

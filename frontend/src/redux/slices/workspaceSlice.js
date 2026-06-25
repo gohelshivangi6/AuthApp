@@ -113,7 +113,9 @@ const workspaceSlice = createSlice({
       .addCase(addMember.fulfilled, (state, action) => {
         const { workspaceId, member } = action.payload;
         if (!state.members[workspaceId]) state.members[workspaceId] = [];
-        state.members[workspaceId].push(member);
+        if (!state.members[workspaceId].some((m) => m.userId === member.userId)) {
+          state.members[workspaceId].push(member);
+        }
       })
       .addCase(removeMember.fulfilled, (state, action) => {
         const { workspaceId, userId } = action.payload;
