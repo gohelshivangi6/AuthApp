@@ -10,6 +10,7 @@ import { updateUser, logout } from "../redux/slices/authSlice";
 import { fetchDashboardData, fetchSectionPermissions, setLayoutForSlug } from "../redux/slices/dashboardSlice";
 import { fetchStats } from "../redux/slices/adminSlice";
 import { receiveMessage, receiveEditedMessage, receiveDeletedMessage } from "../redux/slices/workspaceSlice";
+import { receiveDirectMessage } from "../redux/slices/chatSlice";
 import { clearSessionToken } from "../utils/sessionToken";
 import { checkStatus } from "../services/authService";
 import { getDashboardLayout } from "../services/dashboardService";
@@ -102,6 +103,14 @@ export function WebSocketProvider({ children }) {
 
     socket.on("workspace-message", handleWorkspaceMessage);
 
+    const handleDirectMessage = (data) => {
+      if (data.type === "new" && data.message) {
+        dispatch(receiveDirectMessage({ conversationId: data.message.conversationId, message: data.message }));
+      }
+    };
+
+    socket.on("direct-message", handleDirectMessage);
+
     const handleForceLogout = () => {
       dispatch(logout());
       disconnectSockets();
@@ -115,6 +124,7 @@ export function WebSocketProvider({ children }) {
       socket.off("stats-updated", handleStatsUpdate);
       socket.off("layout-updated", handleLayoutUpdate);
       socket.off("workspace-message", handleWorkspaceMessage);
+      socket.off("direct-message", handleDirectMessage);
       socket.off("force-logout", handleForceLogout);
     };
   }, [dispatch, isAuthenticated, user?.role]);

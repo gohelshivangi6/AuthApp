@@ -9,9 +9,9 @@ import {
   CircularProgress,
   Button,
 } from "@mui/material";
-import DashboardIcon from "@mui/icons-material/Dashboard";
 import ShowChartIcon from "@mui/icons-material/ShowChart";
 import GroupIcon from "@mui/icons-material/Group";
+import ChatIcon from "@mui/icons-material/Chat";
 import TouchAppIcon from "@mui/icons-material/TouchApp";
 import PublicIcon from "@mui/icons-material/Public";
 import { getUserSocket, emitEvent } from "../utils/websocket";
@@ -108,6 +108,19 @@ export default function DashboardNav() {
       >
         Back to My Dashboard
       </Button> */}
+      <Button
+        startIcon={<ChatIcon />}
+        onClick={() => navigate("/direct-messages")}
+        sx={{
+          mb: 2,
+          ml: 2,
+          textTransform: "none",
+          fontFamily: "Outfit",
+          fontWeight: 600,
+        }}
+      >
+        Direct Messages
+      </Button>
       <Button
         startIcon={<GroupIcon />}
         onClick={() => navigate("/workspaces")}

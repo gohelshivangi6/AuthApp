@@ -24,6 +24,7 @@ import HierarchyTable from "./components/HierarchyTable";
 import PublicRoute from "./routes/PublicRoute";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import WorkspaceList from "./components/workspace/WorkspaceList";
+import DirectMessagePage from "./pages/DirectMessagePage";
 import { WebSocketProvider } from "./components/WebSocketProvider";
 import InactivityModal from "./components/InactivityModal";
 
@@ -134,6 +135,8 @@ function App() {
                 />
                 <Route path="/workspaces" element={<WorkspaceList />} />
                 <Route path="/workspaces/:id" element={<WorkspaceList />} />
+                <Route path="/direct-messages" element={<DirectMessagePage />} />
+                <Route path="/direct-messages/:conversationId" element={<DirectMessagePage />} />
                 <Route
                   path="/hierarchy"
                   element={

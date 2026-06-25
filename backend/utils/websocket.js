@@ -64,6 +64,13 @@ function initWebSocket(httpServer) {
           socket.join(`workspace:${wid}`);
         }
 
+        const conversationIds = (db.directConversations || [])
+          .filter((c) => c.participants.includes(userId))
+          .map((c) => c.id);
+        for (const cid of conversationIds) {
+          socket.join(`conversation:${cid}`);
+        }
+
         const user = db.users.find((u) => u.id === userId);
         if (user && user.pendingInactivityLogout) {
           const now = Date.now();
@@ -361,6 +368,34 @@ function emitWorkspaceMessage(workspaceId, data = {}) {
   io.of("/user").to(`workspace:${workspaceId}`).emit("workspace-message", data);
 }
 
+function emitDirectMessage(conversationId, data = {}) {
+  if (!io) return;
+  io.of("/user").to(`conversation:${conversationId}`).emit("direct-message", data);
+}
+
+async function joinUserConversationRooms(userId) {
+  if (!io) return;
+  try {
+    const db = await readDB();
+    const conversationIds = (db.directConversations || [])
+      .filter((c) => c.participants.includes(userId))
+      .map((c) => c.id);
+    const sockets = userSockets.get(userId);
+    if (sockets) {
+      for (const socketId of sockets) {
+        const socket = io.of("/user").sockets?.get(socketId);
+        if (socket) {
+          for (const cid of conversationIds) {
+            socket.join(`conversation:${cid}`);
+          }
+        }
+      }
+    }
+  } catch (err) {
+    console.error("[WS] joinUserConversationRooms error:", err.message);
+  }
+}
+
 async function joinUserWorkspaceRooms(userId) {
   if (!io) return;
   try {
@@ -467,7 +502,9 @@ module.exports = {
   emitLayoutUpdate,
   emitDeletionUpdate,
   emitWorkspaceMessage,
+  emitDirectMessage,
   joinUserWorkspaceRooms,
+  joinUserConversationRooms,
   removeUserFromWorkspaceRoom,
   getActiveUsersCount,
   getActiveUserIds,

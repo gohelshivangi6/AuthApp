@@ -12,6 +12,7 @@ import authReducer from './slices/authSlice';
 import adminReducer from './slices/adminSlice';
 import dashboardReducer from './slices/dashboardSlice';
 import workspaceReducer from './slices/workspaceSlice';
+import chatReducer from './slices/chatSlice';
 
 import storageModule from 'redux-persist/lib/storage';
 import { persistReducer, persistStore } from 'redux-persist';
@@ -35,6 +36,7 @@ export const store = configureStore({
     admin: adminReducer,
     dashboard: dashboardReducer,
     workspace: workspaceReducer,
+    chat: chatReducer,
   },
    middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

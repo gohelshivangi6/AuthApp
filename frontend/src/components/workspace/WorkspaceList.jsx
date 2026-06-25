@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import ForumIcon from "@mui/icons-material/Forum";
+import DashboardIcon from "@mui/icons-material/Dashboard";
 import WorkspaceView from "./WorkspaceView";
 import WorkspaceCreateDialog from "./WorkspaceCreateDialog";
 import {
@@ -65,15 +66,23 @@ export default function WorkspaceList() {
   }, [id, dispatch]);
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        height: "calc(100vh - 80px)",
-        width: "100%",
-        mt: 2,
-        gap: 2,
-      }}
-    >
+    <>
+      <Button
+        startIcon={<DashboardIcon />}
+        onClick={() => navigate("/dashboard")}
+        sx={{ mt: 2, mb: -1, ml: 2, textTransform: "none", fontFamily: "Outfit", fontWeight: 600, alignSelf: "flex-start" }}
+      >
+        Back to Dashboard
+      </Button>
+      <Box
+        sx={{
+          display: "flex",
+          height: "calc(100vh - 80px)",
+          width: "100%",
+          mt: 2,
+          gap: 2,
+        }}
+      >
       {/* Left sidebar */}
       <Box
         sx={{
@@ -209,5 +218,6 @@ export default function WorkspaceList() {
         onClose={() => setCreateOpen(false)}
       />
     </Box>
+    </>
   );
 }

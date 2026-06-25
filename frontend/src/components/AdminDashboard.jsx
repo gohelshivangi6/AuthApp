@@ -1,13 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  Box,
-  Typography,
-  Tabs,
-  Tab,
-  Paper,
-  Button,
-} from "@mui/material";
+import { Box, Typography, Tabs, Tab, Paper, Button } from "@mui/material";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import PeopleIcon from "@mui/icons-material/People";
 import BusinessIcon from "@mui/icons-material/Business";
@@ -28,12 +21,32 @@ import InactiveUserManager from "./admin/InactiveUserManager";
 const TABS = [
   { label: "Overview", icon: <DashboardIcon />, component: <AnalyticsPanel /> },
   { label: "Users", icon: <PeopleIcon />, component: <UserManager /> },
-  { label: "Active Users", icon: <PersonOffIcon />, component: <InactiveUserManager /> },
-  { label: "Departments", icon: <BusinessIcon />, component: <DepartmentManager /> },
+  {
+    label: "Active Users",
+    icon: <PersonOffIcon />,
+    component: <InactiveUserManager />,
+  },
+  {
+    label: "Departments",
+    icon: <BusinessIcon />,
+    component: <DepartmentManager />,
+  },
   { label: "Roles", icon: <BadgeIcon />, component: <RoleManager /> },
-  { label: "Permissions", icon: <SecurityIcon />, component: <PermissionManager /> },
-  { label: "User Stats", icon: <TimelineIcon />, component: <UserStatsPanel /> },
-  { label: "Layouts", icon: <ViewQuiltIcon />, component: <DashboardLayoutEditor /> },
+  {
+    label: "Permissions",
+    icon: <SecurityIcon />,
+    component: <PermissionManager />,
+  },
+  {
+    label: "User Stats",
+    icon: <TimelineIcon />,
+    component: <UserStatsPanel />,
+  },
+  {
+    label: "Layouts",
+    icon: <ViewQuiltIcon />,
+    component: <DashboardLayoutEditor />,
+  },
 ];
 
 export default function AdminDashboard() {
@@ -42,17 +55,41 @@ export default function AdminDashboard() {
 
   return (
     <Box sx={{ py: 6, px: { xs: 2, md: 4 }, maxWidth: 1200, margin: "0 auto" }}>
-      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }} mb={3}>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+        mb={3}
+      >
         <Typography variant="h4" sx={{ fontFamily: "Outfit", fontWeight: 800 }}>
           Admin Dashboard
         </Typography>
-        <Button
-          variant="outlined"
-          onClick={() => navigate("/workspaces")}
-          sx={{ textTransform: "none", fontFamily: "Outfit", fontWeight: 600 }}
-        >
-          Go to Workspaces
-        </Button>
+        <Box sx={{ display: "flex", gap: 2 }}>
+          <Button
+            variant="outlined"
+            onClick={() => navigate("/direct-messages")}
+            sx={{
+              textTransform: "none",
+              fontFamily: "Outfit",
+              fontWeight: 600,
+            }}
+          >
+            Direct message
+          </Button>
+          <Button
+            variant="outlined"
+            onClick={() => navigate("/workspaces")}
+            sx={{
+              textTransform: "none",
+              fontFamily: "Outfit",
+              fontWeight: 600,
+            }}
+          >
+            Go to Workspaces
+          </Button>
+        </Box>
       </Box>
 
       <Paper
@@ -71,7 +108,12 @@ export default function AdminDashboard() {
           variant="scrollable"
           scrollButtons="auto"
           sx={{
-            "& .MuiTab-root": { textTransform: "none", fontFamily: "Outfit", fontWeight: 600, mx: 0.2 },
+            "& .MuiTab-root": {
+              textTransform: "none",
+              fontFamily: "Outfit",
+              fontWeight: 600,
+              mx: 0.2,
+            },
           }}
         >
           {TABS.map((t, i) => (
