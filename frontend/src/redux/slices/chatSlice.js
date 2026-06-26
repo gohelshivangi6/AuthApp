@@ -6,6 +6,11 @@ export const fetchUsers = createAsyncThunk("chat/fetchUsers", async () => {
   return res.data.users;
 });
 
+export const fetchOnlineUsers = createAsyncThunk("chat/fetchOnlineUsers", async () => {
+  const res = await chatService.getOnlineUsers();
+  return res.data.onlineUserIds;
+});
+
 export const createConversation = createAsyncThunk("chat/createConversation", async (participantId) => {
   const res = await chatService.createConversation(participantId);
   return res.data.conversation;
@@ -38,6 +43,7 @@ const chatSlice = createSlice({
     conversations: [],
     messages: {},
     messagesTotal: {},
+    onlineUserIds: [],
     loadingUsers: false,
     loadingConversations: false,
     loadingMessages: false,
@@ -57,6 +63,18 @@ const chatSlice = createSlice({
         state.messages[conversationId] = state.messages[conversationId].filter((m) => m.id !== messageId);
       }
     },
+    setOnlineUsers(state, action) {
+      state.onlineUserIds = action.payload;
+    },
+    addOnlineUser(state, action) {
+      const id = action.payload;
+      if (!state.onlineUserIds.includes(id)) {
+        state.onlineUserIds.push(id);
+      }
+    },
+    removeOnlineUser(state, action) {
+      state.onlineUserIds = state.onlineUserIds.filter((id) => id !== action.payload);
+    },
     clearChat(state) {
       state.messages = {};
       state.messagesTotal = {};
@@ -65,6 +83,7 @@ const chatSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchUsers.fulfilled, (state, action) => { state.users = action.payload; })
+      .addCase(fetchOnlineUsers.fulfilled, (state, action) => { state.onlineUserIds = action.payload; })
       .addCase(fetchConversations.fulfilled, (state, action) => { state.conversations = action.payload; })
       .addCase(createConversation.fulfilled, (state, action) => {
         const exists = state.conversations.find((c) => c.id === action.payload.id);
@@ -108,5 +127,5 @@ const chatSlice = createSlice({
   },
 });
 
-export const { receiveDirectMessage, receiveDeletedDirectMessage, clearChat } = chatSlice.actions;
+export const { receiveDirectMessage, receiveDeletedDirectMessage, setOnlineUsers, addOnlineUser, removeOnlineUser, clearChat } = chatSlice.actions;
 export default chatSlice.reducer;

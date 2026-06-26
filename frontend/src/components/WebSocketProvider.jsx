@@ -10,7 +10,7 @@ import { updateUser, logout } from "../redux/slices/authSlice";
 import { fetchDashboardData, fetchSectionPermissions, setLayoutForSlug } from "../redux/slices/dashboardSlice";
 import { fetchStats } from "../redux/slices/adminSlice";
 import { receiveMessage, receiveEditedMessage, receiveDeletedMessage } from "../redux/slices/workspaceSlice";
-import { receiveDirectMessage, receiveDeletedDirectMessage } from "../redux/slices/chatSlice";
+import { receiveDirectMessage, receiveDeletedDirectMessage, setOnlineUsers, addOnlineUser, removeOnlineUser } from "../redux/slices/chatSlice";
 import { clearSessionToken } from "../utils/sessionToken";
 import { checkStatus } from "../services/authService";
 import { getDashboardLayout } from "../services/dashboardService";
@@ -103,6 +103,30 @@ export function WebSocketProvider({ children }) {
 
     socket.on("workspace-message", handleWorkspaceMessage);
 
+    const handlePresenceInit = (data) => {
+      if (data.onlineUserIds) {
+        dispatch(setOnlineUsers(data.onlineUserIds));
+      }
+    };
+
+    socket.on("presence-init", handlePresenceInit);
+
+    const handleUserOnline = (data) => {
+      if (data.userId) {
+        dispatch(addOnlineUser(data.userId));
+      }
+    };
+
+    socket.on("user-online", handleUserOnline);
+
+    const handleUserOffline = (data) => {
+      if (data.userId) {
+        dispatch(removeOnlineUser(data.userId));
+      }
+    };
+
+    socket.on("user-offline", handleUserOffline);
+
     const handleDirectMessage = (data) => {
       if (data.type === "new" && data.message) {
         dispatch(receiveDirectMessage({ conversationId: data.message.conversationId, message: data.message }));
@@ -128,6 +152,9 @@ export function WebSocketProvider({ children }) {
       socket.off("workspace-message", handleWorkspaceMessage);
       socket.off("direct-message", handleDirectMessage);
       socket.off("force-logout", handleForceLogout);
+      socket.off("presence-init", handlePresenceInit);
+      socket.off("user-online", handleUserOnline);
+      socket.off("user-offline", handleUserOffline);
     };
   }, [dispatch, isAuthenticated, user?.role]);
 

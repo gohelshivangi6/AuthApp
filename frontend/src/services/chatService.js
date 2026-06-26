@@ -25,3 +25,7 @@ export function sendMessage(id, content) {
 export function deleteMessage(id, msgId, deleteFrom) {
   return api.delete(`${BASE}/conversations/${id}/messages/${msgId}`, { data: { deleteFrom } });
 }
+
+export function getOnlineUsers() {
+  return api.get(`${BASE}/online`);
+}

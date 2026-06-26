@@ -46,6 +46,11 @@ async function deleteMessage(req, res, next) {
   } catch (err) { next(err); }
 }
 
+function getOnlineUsers(req, res) {
+  const { getActiveUserIds } = require("../utils/websocket");
+  res.json({ success: true, onlineUserIds: getActiveUserIds() });
+}
+
 module.exports = {
   getChatUsers,
   createConversation,
@@ -53,4 +58,5 @@ module.exports = {
   getMessages,
   sendMessage,
   deleteMessage,
+  getOnlineUsers,
 };

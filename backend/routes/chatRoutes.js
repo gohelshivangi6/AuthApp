@@ -6,6 +6,7 @@ const ctrl = require("../controllers/chatController");
 router.use(requireAuth);
 
 router.get("/users", ctrl.getChatUsers);
+router.get("/online", ctrl.getOnlineUsers);
 router.post("/conversations", ctrl.createConversation);
 router.get("/conversations", ctrl.getConversations);
 router.get("/conversations/:id/messages", ctrl.getMessages);

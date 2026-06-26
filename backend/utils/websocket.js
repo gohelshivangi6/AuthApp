@@ -79,6 +79,14 @@ function initWebSocket(httpServer) {
             socket.emit("inactivity-warning", { userId });
           }
         }
+
+        // Send current online users to the newly connected socket
+        socket.emit("presence-init", { onlineUserIds: getActiveUserIds() });
+
+        // If user was offline, broadcast online to all
+        if (userSockets.get(userId)?.size === 1) {
+          io.of("/user").emit("user-online", { userId });
+        }
       } catch (err) {
         console.error("[WS] init handler error for user", userId, err.message);
       }
@@ -234,9 +242,10 @@ function initWebSocket(httpServer) {
       // Don't delete userId from userSockets — user stays "logged in" even without WS connection.
       // Only remove on explicit logout via removeLoggedOutUser().
       
-      // Tell admin they disconnected (but may still be authenticated)
+      // If last socket disconnected, broadcast offline and notify admin
       if (!userSockets.get(userId) || userSockets.get(userId).size === 0) {
         emitAdminUserStatus(userId, "offline");
+        io.of("/user").emit("user-offline", { userId });
       }
 
       if (meta) {

@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import {
-  Box, Typography, Avatar, CircularProgress, Button, List, ListItem, ListItemAvatar,
+  Box, Typography, Avatar, Badge, CircularProgress, Button, List, ListItem, ListItemAvatar,
   ListItemText, Divider, TextField, InputAdornment,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
@@ -39,7 +39,7 @@ export default function DirectMessagePage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { conversationId } = useParams();
-  const { users, conversations, loadingUsers, loadingConversations } = useSelector((state) => state.chat);
+  const { users, conversations, onlineUserIds, loadingUsers, loadingConversations } = useSelector((state) => state.chat);
   const currentUser = useSelector((state) => state.auth.user);
   const [search, setSearch] = useState("");
 
@@ -197,17 +197,32 @@ export default function DirectMessagePage() {
                   }}
                 >
                   <ListItemAvatar>
-                    <Avatar
+                    <Badge
+                      overlap="circular"
+                      anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                      variant="dot"
                       sx={{
-                        bgcolor: selected ? "primary.dark" : "rgba(255,255,255,0.1)",
-                        width: 36,
-                        height: 36,
-                        fontSize: "0.85rem",
-                        fontWeight: 600,
+                        "& .MuiBadge-badge": {
+                          bgcolor: onlineUserIds.includes(u.id) ? "#22c55e" : "transparent",
+                          boxShadow: onlineUserIds.includes(u.id) ? "0 0 0 2px #121226" : "none",
+                          width: 10,
+                          height: 10,
+                          borderRadius: "50%",
+                        },
                       }}
                     >
-                      {u.name.charAt(0).toUpperCase()}
-                    </Avatar>
+                      <Avatar
+                        sx={{
+                          bgcolor: selected ? "primary.dark" : "rgba(255,255,255,0.1)",
+                          width: 36,
+                          height: 36,
+                          fontSize: "0.85rem",
+                          fontWeight: 600,
+                        }}
+                      >
+                        {u.name.charAt(0).toUpperCase()}
+                      </Avatar>
+                    </Badge>
                   </ListItemAvatar>
                   <ListItemText
                     primary={u.name}

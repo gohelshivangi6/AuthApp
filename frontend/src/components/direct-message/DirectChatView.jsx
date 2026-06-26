@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import {
-  Box, Typography, Button, TextField, CircularProgress, Paper, Avatar,
+  Box, Typography, Button, TextField, CircularProgress, Paper, Avatar, Badge,
   Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions,
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
@@ -27,7 +27,7 @@ function formatDate(ts) {
 export default function DirectChatView({ conversationId }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { conversations, messages, loadingMessages, sendingMessage } = useSelector((state) => state.chat);
+  const { conversations, messages, onlineUserIds, loadingMessages, sendingMessage } = useSelector((state) => state.chat);
   const user = useSelector((state) => state.auth.user);
 
   const conversation = conversations.find((c) => c.id === conversationId);
@@ -136,17 +136,32 @@ export default function DirectChatView({ conversationId }) {
         >
           <ArrowBackIcon sx={{ fontSize: 20 }} />
         </Button>
-        <Avatar
+        <Badge
+          overlap="circular"
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+          variant="dot"
           sx={{
-            width: 32,
-            height: 32,
-            bgcolor: "rgba(255,255,255,0.1)",
-            fontSize: "0.8rem",
-            fontWeight: 600,
+            "& .MuiBadge-badge": {
+              bgcolor: onlineUserIds.includes(otherUser?.id) ? "#22c55e" : "transparent",
+              boxShadow: onlineUserIds.includes(otherUser?.id) ? "0 0 0 2px #121226" : "none",
+              width: 10,
+              height: 10,
+              borderRadius: "50%",
+            },
           }}
         >
-          {otherUser?.name?.charAt(0)?.toUpperCase() || "?"}
-        </Avatar>
+          <Avatar
+            sx={{
+              width: 32,
+              height: 32,
+              bgcolor: "rgba(255,255,255,0.1)",
+              fontSize: "0.8rem",
+              fontWeight: 600,
+            }}
+          >
+            {otherUser?.name?.charAt(0)?.toUpperCase() || "?"}
+          </Avatar>
+        </Badge>
         <Box flex={1}>
           <Typography variant="h6" sx={{ fontFamily: "Outfit", fontWeight: 700, fontSize: "1rem" }}>
             {otherUser?.name || "User"}

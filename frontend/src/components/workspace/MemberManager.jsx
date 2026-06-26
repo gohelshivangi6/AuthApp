@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   Box, Typography, Button, Select, MenuItem, FormControl, InputLabel,
-  List, ListItem, ListItemAvatar, Avatar, ListItemText, IconButton,
+  List, ListItem, ListItemAvatar, Avatar, Badge, ListItemText, IconButton,
   Chip, Dialog, DialogTitle, DialogContent, DialogActions,
 } from "@mui/material";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
@@ -18,6 +18,7 @@ export default function MemberManager({ workspaceId, open, onClose }) {
   const { members } = useSelector((state) => state.workspace);
   const users = useSelector((state) => state.admin.users);
   const user = useSelector((state) => state.auth.user);
+  const onlineUserIds = useSelector((state) => state.chat.onlineUserIds);
   const isAdmin = user?.role === "admin";
 
   const workspaceMembers = members[workspaceId] || [];
@@ -100,9 +101,24 @@ export default function MemberManager({ workspaceId, open, onClose }) {
               }
             >
               <ListItemAvatar>
-                <Avatar sx={{ bgcolor: "primary.main", width: 36, height: 36 }}>
-                  {m.name?.charAt(0)?.toUpperCase() || "?"}
-                </Avatar>
+                <Badge
+                  overlap="circular"
+                  anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                  variant="dot"
+                  sx={{
+                    "& .MuiBadge-badge": {
+                      bgcolor: onlineUserIds.includes(m.userId) ? "#22c55e" : "transparent",
+                      boxShadow: onlineUserIds.includes(m.userId) ? "0 0 0 2px #121226" : "none",
+                      width: 10,
+                      height: 10,
+                      borderRadius: "50%",
+                    },
+                  }}
+                >
+                  <Avatar sx={{ bgcolor: "primary.main", width: 36, height: 36 }}>
+                    {m.name?.charAt(0)?.toUpperCase() || "?"}
+                  </Avatar>
+                </Badge>
               </ListItemAvatar>
               <ListItemText
                 primary={m.name}
