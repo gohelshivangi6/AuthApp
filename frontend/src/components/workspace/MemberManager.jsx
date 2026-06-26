@@ -88,7 +88,7 @@ export default function MemberManager({ workspaceId, open, onClose }) {
       </DialogTitle>
       <DialogContent sx={{ pb: 0 }}>
         {isAdmin && (
-          <Box display="flex" gap={1} mb={3} mt={1}>
+          <Box sx={{ display: "flex", gap: 2 }} mb={3} mt={1} alignItems="center">
             <FormControl size="small" fullWidth>
               <InputLabel>Add User</InputLabel>
               <Select
@@ -109,11 +109,12 @@ export default function MemberManager({ workspaceId, open, onClose }) {
               </Select>
             </FormControl>
             <Button
+              size="small"
               variant="contained"
               startIcon={<PersonAddIcon />}
               onClick={handleAdd}
               disabled={!selectedUserId}
-              sx={{ flexShrink: 0 }}
+              sx={{ borderRadius: "8px", textTransform: "none", fontWeight: 600, flexShrink: 0, height: 40 }}
             >
               Add
             </Button>
@@ -127,6 +128,7 @@ export default function MemberManager({ workspaceId, open, onClose }) {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           sx={{
+            mt: 2,
             mb: 1,
             "& .MuiOutlinedInput-root": { borderRadius: "8px", bgcolor: "rgba(255,255,255,0.03)" },
           }}

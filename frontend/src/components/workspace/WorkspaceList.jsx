@@ -59,9 +59,10 @@ export default function WorkspaceList() {
   const [search, setSearch] = useState("");
 
   const filteredWorkspaces = search.trim()
-    ? workspaces.filter((w) =>
-        w.name?.toLowerCase().includes(search.toLowerCase()) ||
-        w.description?.toLowerCase().includes(search.toLowerCase())
+    ? workspaces.filter(
+        (w) =>
+          w.name?.toLowerCase().includes(search.toLowerCase()) ||
+          w.description?.toLowerCase().includes(search.toLowerCase()),
       )
     : workspaces;
 
@@ -81,7 +82,15 @@ export default function WorkspaceList() {
       <Button
         startIcon={<DashboardIcon />}
         onClick={() => navigate("/dashboard")}
-        sx={{ mt: 2, mb: -1, ml: 2, textTransform: "none", fontFamily: "Outfit", fontWeight: 600, alignSelf: "flex-start" }}
+        sx={{
+          mt: 2,
+          mb: -1,
+          ml: 2,
+          textTransform: "none",
+          fontFamily: "Outfit",
+          fontWeight: 600,
+          alignSelf: "flex-start",
+        }}
       >
         Back to Dashboard
       </Button>
@@ -94,172 +103,192 @@ export default function WorkspaceList() {
           gap: 2,
         }}
       >
-      {/* Left sidebar */}
-      <Box
-        sx={{
-          width: 240,
-          flexShrink: 0,
-          minWidth: 240,
-          display: "flex",
-          flexDirection: "column",
-          bgcolor: "rgba(18,18,38,0.6)",
-          backdropFilter: "blur(16px)",
-          border: "1px solid rgba(255,255,255,0.08)",
-          borderRadius: "16px",
-          overflow: "hidden",
-        }}
-      >
+        {/* Left sidebar */}
         <Box
-          display="flex"
-          alignItems="center"
-          justifyContent="space-between"
-          px={2}
-          py={1.5}
+          sx={{
+            width: 240,
+            flexShrink: 0,
+            minWidth: 240,
+            display: "flex",
+            flexDirection: "column",
+            bgcolor: "rgba(18,18,38,0.6)",
+            backdropFilter: "blur(16px)",
+            border: "1px solid rgba(255,255,255,0.08)",
+            borderRadius: "16px",
+            overflow: "hidden",
+          }}
         >
-          <Typography
-            variant="h6"
-            sx={{ fontFamily: "Outfit", fontWeight: 700, fontSize: "1rem" }}
-          >
-            Workspaces
-          </Typography>
-          {isAdmin && (
-            <Button
-              size="small"
-              variant="contained"
-              startIcon={<AddIcon />}
-              onClick={() => setCreateOpen(true)}
-            >
-              Create
-            </Button>
-          )}
-        </Box>
-        <Divider sx={{ borderColor: "rgba(255,255,255,0.05)" }} />
-        <Box px={2} pt={1}>
-          <TextField
-            fullWidth
-            size="small"
-            placeholder="Search workspaces..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
+          <Box
             sx={{
-              "& .MuiOutlinedInput-root": { borderRadius: "8px", bgcolor: "rgba(255,255,255,0.03)" },
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              px: 2,
+              py: 1.5,
             }}
-            slotProps={{
-              input: {
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon sx={{ fontSize: 18, color: "text.secondary" }} />
-                  </InputAdornment>
-                ),
-              },
-            }}
-          />
-        </Box>
-        <Box sx={{ flex: 1, overflow: "auto", py: 1 }}>
-          {loading && workspaces.length === 0 && (
-            <Box textAlign="center" py={4}>
-              <CircularProgress size={24} />
-            </Box>
-          )}
-          {!loading && workspaces.length === 0 && !search.trim() && (
+          >
             <Typography
-              variant="body2"
-              color="textSecondary"
-              textAlign="center"
-              py={4}
+              variant="h6"
+              sx={{
+                fontFamily: "Outfit",
+                fontWeight: 700,
+                fontSize: "1rem",
+                lineHeight: 1,
+              }}
             >
-              No workspaces yet.
+              Workspaces
             </Typography>
-          )}
-          {filteredWorkspaces.length === 0 && search.trim() && (
-            <Typography
-              variant="body2"
-              color="textSecondary"
-              textAlign="center"
-              py={4}
-            >
-              No workspaces match your search.
-            </Typography>
-          )}
-          <List sx={{ px: 1 }}>
-            {filteredWorkspaces.map((w) => {
-              const selected = w.id === id;
-              return (
-                <ListItem
-                  key={w.id}
-                  button
-                  selected={selected}
-                  onClick={() => navigate(`/workspaces/${w.id}`)}
-                  sx={{
-                    borderRadius: "10px",
-                    mb: 0.5,
-                    "&.Mui-selected": {
-                      bgcolor: "primary.main",
-                      "&:hover": { bgcolor: "primary.dark" },
-                    },
-                    "&:hover": { bgcolor: "rgba(255,255,255,0.05)" },
-                  }}
-                >
-                  <ListItemAvatar>
-                    <Avatar
-                      sx={{
-                        bgcolor: selected
-                          ? "primary.dark"
-                          : "rgba(255,255,255,0.1)",
-                        width: 36,
-                        height: 36,
-                      }}
-                    >
-                      <ForumIcon sx={{ fontSize: 18 }} />
-                    </Avatar>
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary={w.name}
-                    secondary={w.description || ""}
-                    primaryTypographyProps={{
-                      variant: "body2",
-                      fontWeight: 600,
-                      noWrap: true,
-                    }}
-                    secondaryTypographyProps={{
-                      variant: "caption",
-                      noWrap: true,
-                      color: "textSecondary",
-                    }}
-                  />
-                </ListItem>
-              );
-            })}
-          </List>
-        </Box>
-      </Box>
-
-      {/* Right panel */}
-      <Box
-        sx={{
-          flex: 1,
-          bgcolor: "rgba(18,18,38,0.6)",
-          backdropFilter: "blur(16px)",
-          border: "1px solid rgba(255,255,255,0.08)",
-          borderRadius: "16px",
-          overflow: "hidden",
-          display: "flex",
-        }}
-      >
-        {id ? (
-          <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
-            <WorkspaceView workspaceId={id} />
+            {isAdmin && (
+              <Button
+                size="small"
+                variant="contained"
+                startIcon={<AddIcon />}
+                onClick={() => setCreateOpen(true)}
+                sx={{
+                  borderRadius: "8px",
+                  textTransform: "none",
+                  fontWeight: 600,
+                  fontSize: "0.8rem",
+                  py: 0.6,
+                  minWidth: 80,
+                }}
+              >
+                Create
+              </Button>
+            )}
           </Box>
-        ) : (
-          <EmptyState />
-        )}
-      </Box>
+          <Divider sx={{ borderColor: "rgba(255,255,255,0.05)" }} />
+          <Box px={2} pt={1}>
+            <TextField
+              fullWidth
+              size="small"
+              placeholder="Search workspaces..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: "8px",
+                  bgcolor: "rgba(255,255,255,0.03)",
+                },
+              }}
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon
+                        sx={{ fontSize: 18, color: "text.secondary" }}
+                      />
+                    </InputAdornment>
+                  ),
+                },
+              }}
+            />
+          </Box>
+          <Box sx={{ flex: 1, overflow: "auto", py: 1 }}>
+            {loading && workspaces.length === 0 && (
+              <Box textAlign="center" py={4}>
+                <CircularProgress size={24} />
+              </Box>
+            )}
+            {!loading && workspaces.length === 0 && !search.trim() && (
+              <Typography
+                variant="body2"
+                color="textSecondary"
+                textAlign="center"
+                py={4}
+              >
+                No workspaces yet.
+              </Typography>
+            )}
+            {filteredWorkspaces.length === 0 && search.trim() && (
+              <Typography
+                variant="body2"
+                color="textSecondary"
+                textAlign="center"
+                py={4}
+              >
+                No workspaces match your search.
+              </Typography>
+            )}
+            <List sx={{ px: 1 }}>
+              {filteredWorkspaces.map((w) => {
+                const selected = w.id === id;
+                return (
+                  <ListItem
+                    key={w.id}
+                    button
+                    selected={selected}
+                    onClick={() => navigate(`/workspaces/${w.id}`)}
+                    sx={{
+                      borderRadius: "10px",
+                      mb: 0.5,
+                      "&.Mui-selected": {
+                        bgcolor: "primary.main",
+                        "&:hover": { bgcolor: "primary.dark" },
+                      },
+                      "&:hover": { bgcolor: "rgba(255,255,255,0.05)" },
+                    }}
+                  >
+                    <ListItemAvatar>
+                      <Avatar
+                        sx={{
+                          bgcolor: selected
+                            ? "primary.dark"
+                            : "rgba(255,255,255,0.1)",
+                          width: 36,
+                          height: 36,
+                        }}
+                      >
+                        <ForumIcon sx={{ fontSize: 18 }} />
+                      </Avatar>
+                    </ListItemAvatar>
+                    <ListItemText
+                      primary={w.name}
+                      secondary={w.description || ""}
+                      primaryTypographyProps={{
+                        variant: "body2",
+                        fontWeight: 600,
+                        noWrap: true,
+                      }}
+                      secondaryTypographyProps={{
+                        variant: "caption",
+                        noWrap: true,
+                        color: "textSecondary",
+                      }}
+                    />
+                  </ListItem>
+                );
+              })}
+            </List>
+          </Box>
+        </Box>
 
-      <WorkspaceCreateDialog
-        open={createOpen}
-        onClose={() => setCreateOpen(false)}
-      />
-    </Box>
+        {/* Right panel */}
+        <Box
+          sx={{
+            flex: 1,
+            bgcolor: "rgba(18,18,38,0.6)",
+            backdropFilter: "blur(16px)",
+            border: "1px solid rgba(255,255,255,0.08)",
+            borderRadius: "16px",
+            overflow: "hidden",
+            display: "flex",
+          }}
+        >
+          {id ? (
+            <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
+              <WorkspaceView workspaceId={id} />
+            </Box>
+          ) : (
+            <EmptyState />
+          )}
+        </Box>
+
+        <WorkspaceCreateDialog
+          open={createOpen}
+          onClose={() => setCreateOpen(false)}
+        />
+      </Box>
     </>
   );
 }
