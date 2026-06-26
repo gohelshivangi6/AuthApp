@@ -12,10 +12,13 @@ import {
   ListItemAvatar,
   ListItemText,
   Divider,
+  TextField,
+  InputAdornment,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import ForumIcon from "@mui/icons-material/Forum";
 import DashboardIcon from "@mui/icons-material/Dashboard";
+import SearchIcon from "@mui/icons-material/Search";
 import WorkspaceView from "./WorkspaceView";
 import WorkspaceCreateDialog from "./WorkspaceCreateDialog";
 import {
@@ -53,6 +56,14 @@ export default function WorkspaceList() {
   const isAdmin = user?.role === "admin";
 
   const [createOpen, setCreateOpen] = useState(false);
+  const [search, setSearch] = useState("");
+
+  const filteredWorkspaces = search.trim()
+    ? workspaces.filter((w) =>
+        w.name?.toLowerCase().includes(search.toLowerCase()) ||
+        w.description?.toLowerCase().includes(search.toLowerCase())
+      )
+    : workspaces;
 
   useEffect(() => {
     dispatch(fetchWorkspaces());
@@ -123,13 +134,34 @@ export default function WorkspaceList() {
           )}
         </Box>
         <Divider sx={{ borderColor: "rgba(255,255,255,0.05)" }} />
+        <Box px={2} pt={1}>
+          <TextField
+            fullWidth
+            size="small"
+            placeholder="Search workspaces..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            sx={{
+              "& .MuiOutlinedInput-root": { borderRadius: "8px", bgcolor: "rgba(255,255,255,0.03)" },
+            }}
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon sx={{ fontSize: 18, color: "text.secondary" }} />
+                  </InputAdornment>
+                ),
+              },
+            }}
+          />
+        </Box>
         <Box sx={{ flex: 1, overflow: "auto", py: 1 }}>
           {loading && workspaces.length === 0 && (
             <Box textAlign="center" py={4}>
               <CircularProgress size={24} />
             </Box>
           )}
-          {!loading && workspaces.length === 0 && (
+          {!loading && workspaces.length === 0 && !search.trim() && (
             <Typography
               variant="body2"
               color="textSecondary"
@@ -139,8 +171,18 @@ export default function WorkspaceList() {
               No workspaces yet.
             </Typography>
           )}
+          {filteredWorkspaces.length === 0 && search.trim() && (
+            <Typography
+              variant="body2"
+              color="textSecondary"
+              textAlign="center"
+              py={4}
+            >
+              No workspaces match your search.
+            </Typography>
+          )}
           <List sx={{ px: 1 }}>
-            {workspaces.map((w) => {
+            {filteredWorkspaces.map((w) => {
               const selected = w.id === id;
               return (
                 <ListItem

@@ -1,28 +1,46 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import {
   Box, Typography, Button, Select, MenuItem, FormControl, InputLabel,
   List, ListItem, ListItemAvatar, Avatar, Badge, ListItemText, IconButton,
-  Chip, Dialog, DialogTitle, DialogContent, DialogActions,
+  Chip, Dialog, DialogTitle, DialogContent, DialogActions, TextField, InputAdornment,
 } from "@mui/material";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
+import ChatIcon from "@mui/icons-material/Chat";
 import GroupsIcon from "@mui/icons-material/Groups";
+import SearchIcon from "@mui/icons-material/Search";
 import { fetchUsers } from "../../redux/slices/adminSlice";
 import {
   fetchMembers, addMember, removeMember,
 } from "../../redux/slices/workspaceSlice";
+import { createConversation } from "../../redux/slices/chatSlice";
 
 export default function MemberManager({ workspaceId, open, onClose }) {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { members } = useSelector((state) => state.workspace);
   const users = useSelector((state) => state.admin.users);
   const user = useSelector((state) => state.auth.user);
   const onlineUserIds = useSelector((state) => state.chat.onlineUserIds);
+  const conversations = useSelector((state) => state.chat.conversations);
   const isAdmin = user?.role === "admin";
 
   const workspaceMembers = members[workspaceId] || [];
+  const sortedMembers = [
+    ...workspaceMembers.filter((m) => m.userId === user?.id),
+    ...workspaceMembers.filter((m) => m.userId !== user?.id),
+  ];
   const [selectedUserId, setSelectedUserId] = useState("");
+  const [search, setSearch] = useState("");
+
+  const filteredMembers = search.trim()
+    ? sortedMembers.filter((m) =>
+        m.name?.toLowerCase().includes(search.toLowerCase()) ||
+        m.email?.toLowerCase().includes(search.toLowerCase())
+      )
+    : sortedMembers;
 
   useEffect(() => {
     if (workspaceId && open) {
@@ -41,6 +59,21 @@ export default function MemberManager({ workspaceId, open, onClose }) {
     if (window.confirm("Remove this member?")) {
       await dispatch(removeMember({ workspaceId, userId }));
     }
+  };
+
+  const handleDM = async (targetUserId) => {
+    const existing = conversations.find((c) =>
+      c.participants?.includes(user?.id) && c.participants?.includes(targetUserId)
+    );
+    let convId;
+    if (existing) {
+      convId = existing.id;
+    } else {
+      const result = await dispatch(createConversation(targetUserId)).unwrap();
+      convId = result.id;
+    }
+    onClose();
+    navigate(`/direct-messages/${convId}`);
   };
 
   const memberIds = new Set(workspaceMembers.map((m) => m.userId));
@@ -87,16 +120,43 @@ export default function MemberManager({ workspaceId, open, onClose }) {
           </Box>
         )}
 
+        <TextField
+          fullWidth
+          size="small"
+          placeholder="Search members..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          sx={{
+            mb: 1,
+            "& .MuiOutlinedInput-root": { borderRadius: "8px", bgcolor: "rgba(255,255,255,0.03)" },
+          }}
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon sx={{ fontSize: 18, color: "text.secondary" }} />
+                </InputAdornment>
+              ),
+            },
+          }}
+        />
         <List sx={{ px: 0 }}>
-          {workspaceMembers.map((m) => (
+          {filteredMembers.map((m) => (
             <ListItem
               key={m.id}
               sx={{ borderRadius: "8px", mb: 0.5, "&:hover": { bgcolor: "rgba(255,255,255,0.03)" } }}
               secondaryAction={
-                isAdmin && m.userId !== user?.id ? (
-                  <IconButton edge="end" color="error" onClick={() => handleRemove(m.userId)}>
-                    <RemoveCircleIcon />
-                  </IconButton>
+                m.userId !== user?.id ? (
+                  <Box sx={{ display: "flex", gap: 0.5 }}>
+                    {isAdmin && (
+                      <IconButton color="error" onClick={() => handleRemove(m.userId)}>
+                        <RemoveCircleIcon />
+                      </IconButton>
+                    )}
+                    <IconButton onClick={() => handleDM(m.userId)}>
+                      <ChatIcon />
+                    </IconButton>
+                  </Box>
                 ) : null
               }
             >
@@ -131,9 +191,14 @@ export default function MemberManager({ workspaceId, open, onClose }) {
               )}
             </ListItem>
           ))}
-          {workspaceMembers.length === 0 && (
+          {workspaceMembers.length === 0 && !search.trim() && (
             <Typography variant="body2" color="textSecondary" textAlign="center" py={4}>
               No members yet.
+            </Typography>
+          )}
+          {filteredMembers.length === 0 && search.trim() && (
+            <Typography variant="body2" color="textSecondary" textAlign="center" py={4}>
+              No members match your search.
             </Typography>
           )}
         </List>
